@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Ink surfaces — near-black street asphalt */
+  --ink-950: #08080b;
+  --ink-900: #0d0d12;
+  --ink-800: #14141b;
+  --ink-700: #1d1d27;
+
+  /* Neon street palette */
+  --neon-magenta: #ff2d95;
+  --neon-cyan: #20e3ff;
+  --neon-acid: #a6ff00;
+  --neon-sunset: #ff6b1a;
+  --neon-gold: #ffd23f;
+
+  /* Glass */
+  --glass-bg: rgba(20, 20, 27, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
+
+  --ease-street: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ink-950 font-body text-white/85 antialiased;
+    background-image:
+      radial-gradient(60rem 60rem at 12% -10%, rgba(255, 45, 149, 0.14), transparent 60%),
+      radial-gradient(48rem 48rem at 100% 0%, rgba(32, 227, 255, 0.12), transparent 55%),
+      radial-gradient(60rem 40rem at 50% 120%, rgba(166, 255, 0, 0.08), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: var(--neon-magenta);
+    color: #08080b;
+  }
+
+  /* Street-grade scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--ink-950);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--neon-magenta), var(--neon-cyan));
+    border-radius: 999px;
+    border: 2px solid var(--ink-950);
+  }
+}
+
+@layer components {
+  /* Liquid glass surface */
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      0 8px 32px 0 rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 0 var(--glass-highlight);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+  }
+
+  /* Specular liquid-glass sheen along the top edge */
+  .glass-sheen {
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-sheen::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 40%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.14), transparent);
+    pointer-events: none;
+  }
+
+  /* Graffiti spray-outline display text */
+  .spray {
+    font-family: 'Anton', Impact, sans-serif;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.35);
+  }
+
+  .text-neon-magenta {
+    color: var(--neon-magenta);
+    text-shadow: 0 0 18px rgba(255, 45, 149, 0.55);
+  }
+  .text-neon-cyan {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 18px rgba(32, 227, 255, 0.5);
+  }
+  .text-neon-acid {
+    color: var(--neon-acid);
+    text-shadow: 0 0 18px rgba(166, 255, 0, 0.45);
+  }
+
+  .street-gradient {
+    background-image: linear-gradient(
+      100deg,
+      var(--neon-magenta),
+      var(--neon-sunset) 45%,
+      var(--neon-gold)
+    );
+  }
+  .cyan-gradient {
+    background-image: linear-gradient(100deg, var(--neon-cyan), var(--neon-acid));
+  }
+
+  .clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Pressable feedback for any button-like element */
+  .pressable {
+    transition:
+      transform 160ms var(--ease-street),
+      box-shadow 200ms var(--ease-street),
+      background-color 200ms var(--ease-street),
+      border-color 200ms var(--ease-street);
+  }
+  .pressable:active {
+    transform: scale(0.97);
+  }
+}
+
+@layer utilities {
+  .noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
