@@ -1,23 +1,28 @@
 import { ROUTES } from '@constants/routes.js';
 import Button from '@components/Button.jsx';
+import { ColorBar } from '@components/PrintMarks.jsx';
 
 export default function NotFound() {
   return (
-    <div className="mx-auto flex max-w-2xl flex-col items-center px-4 py-20 text-center sm:px-6">
-      <span className="spray text-8xl clip-text street-gradient sm:text-9xl">404</span>
-      <h1 className="mt-4 spray text-3xl text-white sm:text-4xl">This Page Got Painted Over</h1>
-      <p className="mt-3 max-w-md text-white/60">
+    <section className="mx-auto flex min-h-[70vh] max-w-[1400px] flex-col items-center justify-center px-5 py-24 text-center sm:px-8">
+      <span className="kicker text-flare">Error — 404</span>
+      <h1 className="display mt-6 text-[26vw] leading-[0.8] text-paper-100 sm:text-[12rem]">404</h1>
+      <ColorBar className="mt-2 h-2 w-40" />
+      <h2 className="display mt-8 text-3xl text-paper-100 sm:text-4xl">
+        This Page Got Painted Over
+      </h2>
+      <p className="mt-3 max-w-md text-paper-100/55">
         The page you&apos;re after isn&apos;t on the wall. Let&apos;s get you back to something we
         can print.
       </p>
-      <div className="mt-8 flex flex-wrap justify-center gap-4">
-        <Button to={ROUTES.home} variant="primary" size="lg">
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <Button to={ROUTES.home} variant="flare" size="lg">
           Back Home
         </Button>
         <Button to={ROUTES.products} variant="outline" size="lg">
-          Browse Products
+          Browse Catalog
         </Button>
       </div>
-    </div>
+    </section>
   );
 }

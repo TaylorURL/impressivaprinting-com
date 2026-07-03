@@ -1,54 +1,59 @@
 import { useCallback, useRef, useState } from 'react';
-import { Image as ImageIcon, Trash2, UploadCloud } from 'lucide-react';
+import { Trash2, UploadCloud } from 'lucide-react';
 import { useAuth } from '@hooks/useAuth.js';
 import { store } from '@data/store.js';
 import { PRODUCTS } from '@constants/products.js';
 import { formatBytes, readFileAsDataUrl, validateFile } from '@utils/files.js';
-import GlassCard from '@components/GlassCard.jsx';
+import Reveal from '@components/Reveal.jsx';
+import { ColorBar } from '@components/PrintMarks.jsx';
+
+const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
+const LABEL = 'kicker mb-2 block text-paper-100/45';
+const FIELD =
+  'w-full border-b border-paper-100/20 bg-transparent py-2.5 text-sm text-paper-100 placeholder:text-paper-100/30 outline-none transition-colors focus:border-flare';
 
 const STATUS_STYLE = {
-  new: 'bg-cyan/15 text-cyan border-cyan/30',
-  'in-production': 'bg-gold/15 text-gold border-gold/30',
-  ready: 'bg-acid/15 text-acid border-acid/30',
-  archived: 'bg-white/10 text-white/50 border-white/20',
+  new: 'text-proc-c',
+  'in-production': 'text-proc-y',
+  ready: 'text-flare',
+  archived: 'text-paper-100/40',
 };
 
 function UploadTile({ upload, onRemove }) {
   return (
-    <GlassCard className="group overflow-hidden">
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink-900">
+    <div className="group border border-paper-100/12 bg-ink-900">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink-950">
+        <div className="halftone pointer-events-none absolute inset-0 opacity-[0.03]" />
         <img
           src={upload.dataUrl}
           alt={upload.fileName}
-          className="h-full w-full object-contain p-3 transition-transform duration-300 ease-street group-hover:scale-[1.03]"
+          className="relative h-full w-full object-contain p-4 transition-transform duration-500 ease-editorial group-hover:scale-[1.03]"
         />
         <span
-          className={`absolute left-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-700 uppercase tracking-wide ${
-            STATUS_STYLE[upload.status] || STATUS_STYLE.new
-          }`}
+          className={`spec absolute left-3 top-3 text-[10px] uppercase tracking-[0.2em] ${STATUS_STYLE[upload.status]}`}
         >
-          {upload.status}
+          ● {upload.status}
         </span>
       </div>
-      <div className="p-4">
+      <div className="border-t border-paper-100/12 p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="truncate font-head text-sm font-600 text-white">{upload.fileName}</p>
-            <p className="mt-0.5 text-xs text-white/45">
+            <p className="truncate font-head text-sm font-700 text-paper-100">{upload.fileName}</p>
+            <p className="spec mt-1 text-[11px] text-paper-100/45">
               {upload.product} · {formatBytes(upload.size)}
             </p>
           </div>
           <button
             onClick={() => onRemove(upload.id)}
-            className="pressable grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 text-white/50 hover:border-magenta/60 hover:text-magenta"
+            className="pressable shrink-0 text-paper-100/40 hover:text-flare"
             aria-label="Delete upload"
           >
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
-        {upload.notes ? <p className="mt-2 text-xs text-white/50">{upload.notes}</p> : null}
+        {upload.notes ? <p className="mt-2 text-xs text-paper-100/50">{upload.notes}</p> : null}
       </div>
-    </GlassCard>
+    </div>
   );
 }
 
@@ -61,15 +66,12 @@ export default function Account() {
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef(null);
 
-  const refresh = useCallback(() => {
-    setUploads(store.getUploadsForUser(user.id));
-  }, [user.id]);
+  const refresh = useCallback(() => setUploads(store.getUploadsForUser(user.id)), [user.id]);
 
   const handleFiles = useCallback(
     async (fileList) => {
       setError('');
-      const files = Array.from(fileList || []);
-      for (const file of files) {
+      for (const file of Array.from(fileList || [])) {
         const problem = validateFile(file);
         if (problem) {
           setError(problem);
@@ -110,55 +112,52 @@ export default function Account() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-6 sm:px-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span className="font-graff text-lg text-neon-cyan rotate-[-2deg]">your desk</span>
-          <h1 className="mt-1 spray text-5xl text-white sm:text-6xl">
-            Yo, <span className="clip-text street-gradient">{user.name.split(' ')[0]}</span>
+    <>
+      <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
+        <div className={`${WRAP} pb-10 pt-14 sm:pt-20`}>
+          <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
+            <span className="kicker text-paper-100/50">Client Desk</span>
+            <span className="spec text-xs text-paper-100/50">{uploads.length} FILES ON FILE</span>
+          </div>
+          <h1 className="display mt-8 text-[15vw] leading-[0.8] text-paper-100 sm:text-8xl">
+            Yo, <span className="text-flare">{user.name.split(' ')[0]}</span>
           </h1>
-          <p className="mt-2 text-white/55">{user.email}</p>
+          <p className="spec mt-4 text-xs text-paper-100/50">{user.email}</p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-center">
-          <div className="spray text-3xl text-white">{uploads.length}</div>
-          <div className="text-xs uppercase tracking-widest text-white/45">Files On File</div>
-        </div>
-      </div>
+        <ColorBar className="h-2" />
+      </section>
 
-      <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_1.4fr]">
+      <section className={`${WRAP} grid gap-8 py-14 lg:grid-cols-[0.9fr_1.4fr]`}>
         {/* Uploader */}
-        <GlassCard className="p-7">
-          <h2 className="spray text-2xl text-white">Drop Your Art</h2>
-          <p className="mt-1 text-sm text-white/55">
-            PNG, JPG, WEBP, SVG or GIF. Up to 4MB each. Multiple files welcome.
+        <div className="self-start border border-paper-100/12 p-7">
+          <span className="kicker text-flare">Drop Zone</span>
+          <h2 className="display mt-3 text-3xl text-paper-100">Drop Your Art</h2>
+          <p className="mt-2 text-sm text-paper-100/55">
+            PNG, JPG, WEBP, SVG or GIF · up to 4MB each.
           </p>
 
-          <div className="mt-5 space-y-4">
+          <div className="mt-6 space-y-5">
             <div>
-              <label className="mb-1.5 block text-xs uppercase tracking-widest text-white/45">
-                For which product?
-              </label>
+              <label className={LABEL}>For which product</label>
               <select
                 value={product}
                 onChange={(e) => setProduct(e.target.value)}
-                className="w-full rounded-xl border border-white/15 bg-ink-800 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-cyan/60"
+                className={`${FIELD} appearance-none`}
               >
                 {PRODUCTS.map((p) => (
-                  <option key={p.id} value={p.name}>
+                  <option key={p.id} value={p.name} className="bg-ink-900 text-paper-100">
                     {p.name}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs uppercase tracking-widest text-white/45">
-                Notes (optional)
-              </label>
+              <label className={LABEL}>Notes (optional)</label>
               <input
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Qty, size, deadline…"
-                className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition-colors focus:border-cyan/60"
+                className={FIELD}
               />
             </div>
           </div>
@@ -171,19 +170,15 @@ export default function Account() {
             onDragLeave={() => setDragging(false)}
             onDrop={onDrop}
             onClick={() => inputRef.current?.click()}
-            className={`pressable mt-4 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-colors ${
-              dragging
-                ? 'border-cyan/70 bg-cyan/5'
-                : 'border-white/15 hover:border-magenta/50 hover:bg-white/[0.03]'
+            className={`pressable mt-6 flex cursor-pointer flex-col items-center justify-center border border-dashed px-6 py-10 text-center transition-colors ${
+              dragging ? 'border-flare bg-flare/5' : 'border-paper-100/25 hover:border-flare/60'
             }`}
           >
-            <span className="grid h-14 w-14 place-items-center rounded-2xl street-gradient text-ink-950">
-              <UploadCloud className="h-6 w-6" />
-            </span>
-            <p className="mt-4 font-head text-sm font-600 text-white">
-              Drag files here or click to browse
+            <UploadCloud className="h-7 w-7 text-flare" strokeWidth={1.6} />
+            <p className="spec mt-4 text-xs uppercase tracking-[0.15em] text-paper-100">
+              Drag files or click to browse
             </p>
-            <p className="mt-1 text-xs text-white/45">Your art stays in this browser (demo)</p>
+            <p className="spec mt-1 text-[11px] text-paper-100/40">Stored in this browser (demo)</p>
             <input
               ref={inputRef}
               type="file"
@@ -195,38 +190,43 @@ export default function Account() {
           </div>
 
           {error ? (
-            <p className="mt-3 rounded-xl border border-magenta/40 bg-magenta/10 px-4 py-2.5 text-sm text-white">
+            <p className="spec mt-4 border-l-2 border-flare bg-flare/10 px-4 py-2.5 text-xs text-paper-100">
               {error}
             </p>
           ) : null}
-        </GlassCard>
+        </div>
 
         {/* Gallery */}
         <div>
-          <div className="flex items-center justify-between">
-            <h2 className="spray text-2xl text-white">Your Uploads</h2>
+          <div className="flex items-center justify-between border-b border-paper-100/12 pb-3">
+            <span className="kicker text-paper-100/50">Your Uploads</span>
+            <span className="spec text-xs text-paper-100/40">
+              {String(uploads.length).padStart(2, '0')}
+            </span>
           </div>
 
           {uploads.length === 0 ? (
-            <GlassCard className="mt-4 flex flex-col items-center justify-center px-6 py-16 text-center">
-              <span className="grid h-16 w-16 place-items-center rounded-full border border-white/10 bg-white/5">
-                <ImageIcon className="h-7 w-7 text-white/40" />
-              </span>
-              <p className="mt-4 font-head text-lg font-600 text-white">Nothing here yet</p>
-              <p className="mt-1 max-w-xs text-sm text-white/50">
-                Drop your first PNG on the left and it&apos;ll show up here — and land on the
-                shop&apos;s admin panel.
+            <div className="mt-8 flex flex-col items-center justify-center border border-dashed border-paper-100/15 px-6 py-20 text-center">
+              <span className="display text-6xl text-paper-100/15">00</span>
+              <p className="spec mt-4 text-xs uppercase tracking-[0.15em] text-paper-100/60">
+                Nothing here yet
               </p>
-            </GlassCard>
+              <p className="mt-2 max-w-xs text-sm text-paper-100/45">
+                Drop your first file on the left — it shows here and lands on the shop&apos;s admin
+                panel.
+              </p>
+            </div>
           ) : (
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              {uploads.map((upload) => (
-                <UploadTile key={upload.id} upload={upload} onRemove={handleRemove} />
+            <div className="mt-6 grid gap-5 sm:grid-cols-2">
+              {uploads.map((upload, i) => (
+                <Reveal key={upload.id} delay={i * 50}>
+                  <UploadTile upload={upload} onRemove={handleRemove} />
+                </Reveal>
               ))}
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }

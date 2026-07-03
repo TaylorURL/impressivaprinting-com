@@ -23,6 +23,16 @@ export const STATS = [
   { value: '12', label: 'Print Machines' },
 ];
 
+// Studio capability sheet — reads like a real print spec doc.
+export const CAPABILITIES = [
+  { k: 'Stocks', v: '14pt – 32pt · 13–18oz vinyl · cotton · SBS board' },
+  { k: 'Finishes', v: 'Soft-touch · spot UV · foil · die-cut · lamination' },
+  { k: 'Process', v: 'Offset · digital · DTF · screen · wide-format' },
+  { k: 'Color', v: 'CMYK + spot · G7 calibrated · hand-proofed' },
+  { k: 'Turnaround', v: 'Standard 3–5 days · rush same-day' },
+  { k: 'Delivery', v: 'Shop pickup · local courier · nationwide ship' },
+];
+
 export const PROCESS = [
   {
     step: '01',

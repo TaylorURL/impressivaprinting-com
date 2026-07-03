@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#08080b" />
-  <rect x="4" y="4" width="56" height="56" rx="11" fill="none" stroke="#20e3ff" stroke-width="1.5" opacity="0.5" />
-  <text x="32" y="45" font-family="Anton, Impact, sans-serif" font-size="40" fill="#ff2d95" text-anchor="middle" transform="rotate(-6 32 32)">IP</text>
+  <rect width="64" height="64" fill="#08080a" />
+  <rect x="0" y="0" width="64" height="6" fill="#ff3d1f" />
+  <text x="32" y="46" font-family="Anton, Impact, sans-serif" font-size="42" fill="#f4efe3" text-anchor="middle" letter-spacing="-2">IP</text>
 </svg>

@@ -3,141 +3,213 @@
 @tailwind utilities;
 
 :root {
-  /* Ink surfaces — near-black street asphalt */
-  --ink-950: #08080b;
-  --ink-900: #0d0d12;
-  --ink-800: #14141b;
-  --ink-700: #1d1d27;
+  --ink: #08080a;
+  --ink-2: #0d0d10;
+  --paper: #f4efe3;
+  --paper-2: #ebe4d3;
+  --flare: #ff3d1f;
 
-  /* Neon street palette */
-  --neon-magenta: #ff2d95;
-  --neon-cyan: #20e3ff;
-  --neon-acid: #a6ff00;
-  --neon-sunset: #ff6b1a;
-  --neon-gold: #ffd23f;
-
-  /* Glass */
-  --glass-bg: rgba(20, 20, 27, 0.55);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-highlight: rgba(255, 255, 255, 0.08);
-
-  --ease-street: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   body {
-    @apply bg-ink-950 font-body text-white/85 antialiased;
-    background-image:
-      radial-gradient(60rem 60rem at 12% -10%, rgba(255, 45, 149, 0.14), transparent 60%),
-      radial-gradient(48rem 48rem at 100% 0%, rgba(32, 227, 255, 0.12), transparent 55%),
-      radial-gradient(60rem 40rem at 50% 120%, rgba(166, 255, 0, 0.08), transparent 60%);
-    background-attachment: fixed;
+    @apply bg-ink-950 font-body text-paper-100/80;
+    font-feature-settings: 'ss01', 'cv01';
   }
 
   ::selection {
-    background: var(--neon-magenta);
-    color: #08080b;
+    background: var(--flare);
+    color: #fff;
   }
 
-  /* Street-grade scrollbar */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 9px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--ink-950);
+    background: var(--ink);
   }
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(var(--neon-magenta), var(--neon-cyan));
-    border-radius: 999px;
-    border: 2px solid var(--ink-950);
+    background: #2a2a31;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--flare);
   }
 }
 
 @layer components {
-  /* Liquid glass surface */
-  .glass {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    box-shadow:
-      0 8px 32px 0 rgba(0, 0, 0, 0.55),
-      inset 0 1px 0 0 var(--glass-highlight);
-    backdrop-filter: blur(18px) saturate(160%);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
+  /* ---- Editorial type ---- */
+  .display {
+    font-family: 'Anton', Impact, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 0.82;
+  }
+  .kicker {
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    font-size: 0.7rem;
+  }
+  .spec {
+    font-family: 'Space Mono', monospace;
+    font-variant-numeric: tabular-nums;
   }
 
-  /* Specular liquid-glass sheen along the top edge */
-  .glass-sheen {
+  /* ---- Print marks ---- */
+  .cropmarks {
     position: relative;
-    overflow: hidden;
   }
-  .glass-sheen::before {
+  .cropmarks::before,
+  .cropmarks::after {
     content: '';
     position: absolute;
-    inset: 0 0 auto 0;
-    height: 40%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.14), transparent);
+    width: 14px;
+    height: 14px;
     pointer-events: none;
   }
-
-  /* Graffiti spray-outline display text */
-  .spray {
-    font-family: 'Anton', Impact, sans-serif;
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
-    -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.35);
+  .cropmarks::before {
+    top: 10px;
+    left: 10px;
+    border-top: 1px solid currentColor;
+    border-left: 1px solid currentColor;
+  }
+  .cropmarks::after {
+    bottom: 10px;
+    right: 10px;
+    border-bottom: 1px solid currentColor;
+    border-right: 1px solid currentColor;
   }
 
-  .text-neon-magenta {
-    color: var(--neon-magenta);
-    text-shadow: 0 0 18px rgba(255, 45, 149, 0.55);
+  /* CMYK registration target */
+  .registration {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
   }
-  .text-neon-cyan {
-    color: var(--neon-cyan);
-    text-shadow: 0 0 18px rgba(32, 227, 255, 0.5);
+  .registration::before,
+  .registration::after {
+    content: '';
+    position: absolute;
+    background: currentColor;
   }
-  .text-neon-acid {
-    color: var(--neon-acid);
-    text-shadow: 0 0 18px rgba(166, 255, 0, 0.45);
+  .registration::before {
+    left: 50%;
+    top: -6px;
+    bottom: -6px;
+    width: 1px;
+    transform: translateX(-50%);
   }
-
-  .street-gradient {
-    background-image: linear-gradient(
-      100deg,
-      var(--neon-magenta),
-      var(--neon-sunset) 45%,
-      var(--neon-gold)
-    );
-  }
-  .cyan-gradient {
-    background-image: linear-gradient(100deg, var(--neon-cyan), var(--neon-acid));
-  }
-
-  .clip-text {
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  .registration::after {
+    top: 50%;
+    left: -6px;
+    right: -6px;
+    height: 1px;
+    transform: translateY(-50%);
   }
 
-  /* Pressable feedback for any button-like element */
+  /* CMYK ink color bar */
+  .colorbar {
+    display: flex;
+    height: 8px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .colorbar > span {
+    flex: 1;
+  }
+
+  /* ---- Surfaces ---- */
+  .rule {
+    border-color: rgba(244, 239, 227, 0.14);
+  }
+  .rule-ink {
+    border-color: rgba(24, 21, 16, 0.16);
+  }
+
+  /* Restrained liquid-glass — only for floating chrome (nav) */
+  .glass {
+    background: rgba(13, 13, 16, 0.6);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid rgba(244, 239, 227, 0.1);
+  }
+
+  /* ---- Link + button feedback ---- */
   .pressable {
     transition:
-      transform 160ms var(--ease-street),
-      box-shadow 200ms var(--ease-street),
-      background-color 200ms var(--ease-street),
-      border-color 200ms var(--ease-street);
+      transform 180ms var(--ease),
+      background-color 220ms var(--ease),
+      color 220ms var(--ease),
+      border-color 220ms var(--ease);
   }
   .pressable:active {
-    transform: scale(0.97);
+    transform: translateY(1px);
+  }
+
+  /* Word-reveal wrapper: child slides up from a clipped baseline */
+  .reveal-line {
+    overflow: hidden;
+    display: block;
+  }
+
+  /* Underline that wipes in on hover */
+  .link-wipe {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0 1px;
+    transition: background-size 320ms var(--ease);
+  }
+  .link-wipe:hover {
+    background-size: 100% 1px;
   }
 }
 
 @layer utilities {
-  .noise {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  .text-flare {
+    color: var(--flare);
+  }
+  .outline-type {
+    color: transparent;
+    -webkit-text-stroke: 1.4px currentColor;
+  }
+
+  /* Halftone dot field */
+  .halftone {
+    background-image: radial-gradient(rgba(244, 239, 227, 0.5) 1px, transparent 1.4px);
+    background-size: 7px 7px;
+  }
+  .halftone-ink {
+    background-image: radial-gradient(rgba(24, 21, 16, 0.55) 1px, transparent 1.4px);
+    background-size: 7px 7px;
+  }
+
+  /* Fine engineering grid */
+  .blueprint {
+    background-image:
+      linear-gradient(rgba(244, 239, 227, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(244, 239, 227, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Paper grain */
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   }
 }
 

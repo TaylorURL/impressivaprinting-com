@@ -1,28 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { LogOut, Menu, ShieldCheck, User, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { NAV_ITEMS, ROUTES } from '@constants/routes.js';
 import { useAuth } from '@hooks/useAuth.js';
-import Button from '@components/Button.jsx';
 
 function Brand() {
   return (
-    <Link to={ROUTES.home} className="group flex items-center gap-2.5">
-      <span className="grid h-9 w-9 place-items-center rounded-xl street-gradient text-ink-950 shadow-neon-magenta">
-        <span className="spray text-lg leading-none">IP</span>
-      </span>
-      <span className="spray text-xl tracking-tight text-white">
-        Impressiva<span className="text-neon-magenta">.</span>
-      </span>
+    <Link to={ROUTES.home} className="group flex items-baseline gap-2">
+      <span className="display text-2xl leading-none text-paper-100">IMPRESSIVA</span>
+      <span className="h-2 w-2 bg-flare" aria-hidden />
     </Link>
   );
-}
-
-function navLinkClass({ isActive }) {
-  return [
-    'relative font-head text-sm font-600 uppercase tracking-wide transition-colors duration-200',
-    isActive ? 'text-white' : 'text-white/55 hover:text-white',
-  ].join(' ');
 }
 
 export default function Nav() {
@@ -32,7 +20,7 @@ export default function Nav() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -52,148 +40,155 @@ export default function Nav() {
   };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
+    <header className="fixed inset-x-0 top-0 z-50">
       <div
-        className={`mx-auto flex max-w-6xl items-center justify-between rounded-2xl px-4 py-3 transition-all duration-300 ease-street sm:px-6 ${
-          scrolled ? 'glass glass-sheen' : 'border border-transparent'
-        }`}
+        className={`transition-colors duration-300 ${scrolled ? 'glass' : 'border-b border-transparent'}`}
       >
-        <Brand />
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-4 sm:px-8">
+          <Brand />
 
-        <nav className="hidden items-center gap-8 md:flex">
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={navLinkClass}
-              end={item.to === ROUTES.home}
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="hidden items-center gap-3 md:flex">
-          {isAuthed ? (
-            <>
-              {isAdmin ? (
-                <Button to={ROUTES.admin} variant="outline" size="sm">
-                  <ShieldCheck className="h-4 w-4" /> Admin
-                </Button>
-              ) : null}
-              <Button to={ROUTES.account} variant="glass" size="sm">
-                <User className="h-4 w-4" /> {user?.name?.split(' ')[0] || 'Account'}
-              </Button>
-              <button
-                onClick={handleLogout}
-                className="pressable grid h-10 w-10 place-items-center rounded-full border border-white/15 text-white/60 hover:border-magenta/60 hover:text-white"
-                aria-label="Log out"
+          <nav className="hidden items-center gap-9 md:flex">
+            {NAV_ITEMS.map((item, i) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === ROUTES.home}
+                className={({ isActive }) =>
+                  `spec text-xs uppercase tracking-[0.2em] transition-colors ${
+                    isActive ? 'text-flare' : 'text-paper-100/60 hover:text-paper-100'
+                  }`
+                }
               >
-                <LogOut className="h-4 w-4" />
-              </button>
-            </>
-          ) : (
-            <>
-              <Button to={ROUTES.login} variant="ghost" size="sm">
-                Log In
-              </Button>
-              <Button to={ROUTES.signup} variant="primary" size="sm">
-                Start a Job
-              </Button>
-            </>
-          )}
-        </div>
+                <span className="text-paper-100/25">{String(i + 1).padStart(2, '0')} </span>
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
 
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="pressable grid h-10 w-10 place-items-center rounded-xl glass text-white md:hidden"
-          aria-label="Toggle menu"
-          aria-expanded={open}
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+          <div className="hidden items-center gap-5 md:flex">
+            {isAuthed ? (
+              <>
+                {isAdmin ? (
+                  <Link
+                    to={ROUTES.admin}
+                    className="spec text-xs uppercase tracking-[0.2em] text-paper-100/60 transition-colors hover:text-paper-100"
+                  >
+                    Admin
+                  </Link>
+                ) : null}
+                <Link
+                  to={ROUTES.account}
+                  className="spec text-xs uppercase tracking-[0.2em] text-paper-100 link-wipe"
+                >
+                  {user?.name?.split(' ')[0] || 'Account'}
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="spec pressable text-xs uppercase tracking-[0.2em] text-paper-100/50 hover:text-flare"
+                >
+                  Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to={ROUTES.login}
+                  className="spec text-xs uppercase tracking-[0.2em] text-paper-100/60 transition-colors hover:text-paper-100"
+                >
+                  Log In
+                </Link>
+                <Link
+                  to={ROUTES.signup}
+                  className="spec pressable bg-flare px-5 py-2.5 text-xs font-700 uppercase tracking-[0.2em] text-white hover:bg-flare-deep"
+                >
+                  Start a Job
+                </Link>
+              </>
+            )}
+          </div>
+
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className="pressable text-paper-100 md:hidden"
+            aria-label="Toggle menu"
+            aria-expanded={open}
+          >
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+        <div className="colorbar h-[3px]" aria-hidden>
+          <span className="bg-proc-c" />
+          <span className="bg-proc-m" />
+          <span className="bg-proc-y" />
+          <span className="bg-flare" />
+        </div>
       </div>
 
-      {/* Mobile sheet */}
       {open ? (
-        <div className="mt-3 md:hidden">
-          <div className="glass glass-sheen mx-auto flex max-w-6xl flex-col gap-1 rounded-2xl p-4">
-            {NAV_ITEMS.map((item) => (
+        <div className="glass border-t border-paper-100/10 md:hidden">
+          <nav className="mx-auto flex max-w-[1400px] flex-col px-5 py-2 sm:px-8">
+            {NAV_ITEMS.map((item, i) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === ROUTES.home}
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
-                  `rounded-xl px-4 py-3 font-head text-sm font-600 uppercase tracking-wide transition-colors ${
-                    isActive
-                      ? 'bg-white/10 text-white'
-                      : 'text-white/60 hover:bg-white/5 hover:text-white'
+                  `flex items-center gap-3 border-b border-paper-100/8 py-4 spec text-sm uppercase tracking-[0.2em] ${
+                    isActive ? 'text-flare' : 'text-paper-100/70'
                   }`
                 }
               >
+                <span className="text-paper-100/25">{String(i + 1).padStart(2, '0')}</span>
                 {item.label}
               </NavLink>
             ))}
-            <div className="mt-2 grid grid-cols-2 gap-2">
+            <div className="flex gap-3 py-4">
               {isAuthed ? (
                 <>
-                  <Button
+                  <Link
                     to={ROUTES.account}
-                    variant="glass"
-                    size="sm"
                     onClick={() => setOpen(false)}
+                    className="spec flex-1 border border-paper-100/20 py-3 text-center text-xs uppercase tracking-[0.2em] text-paper-100"
                   >
-                    <User className="h-4 w-4" /> Account
-                  </Button>
+                    Account
+                  </Link>
                   {isAdmin ? (
-                    <Button
+                    <Link
                       to={ROUTES.admin}
-                      variant="outline"
-                      size="sm"
                       onClick={() => setOpen(false)}
+                      className="spec flex-1 border border-paper-100/20 py-3 text-center text-xs uppercase tracking-[0.2em] text-paper-100"
                     >
-                      <ShieldCheck className="h-4 w-4" /> Admin
-                    </Button>
-                  ) : (
-                    <Button
-                      to={ROUTES.products}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setOpen(false)}
-                    >
-                      Products
-                    </Button>
-                  )}
+                      Admin
+                    </Link>
+                  ) : null}
                   <button
                     onClick={handleLogout}
-                    className="pressable col-span-2 rounded-full border border-white/15 py-3 font-head text-sm font-600 uppercase tracking-wide text-white/70 hover:border-magenta/60 hover:text-white"
+                    className="spec flex-1 bg-flare py-3 text-xs uppercase tracking-[0.2em] text-white"
                   >
                     Log Out
                   </button>
                 </>
               ) : (
                 <>
-                  <Button
+                  <Link
                     to={ROUTES.login}
-                    variant="outline"
-                    size="sm"
                     onClick={() => setOpen(false)}
+                    className="spec flex-1 border border-paper-100/20 py-3 text-center text-xs uppercase tracking-[0.2em] text-paper-100"
                   >
                     Log In
-                  </Button>
-                  <Button
+                  </Link>
+                  <Link
                     to={ROUTES.signup}
-                    variant="primary"
-                    size="sm"
                     onClick={() => setOpen(false)}
+                    className="spec flex-1 bg-flare py-3 text-center text-xs uppercase tracking-[0.2em] text-white"
                   >
                     Start a Job
-                  </Button>
+                  </Link>
                 </>
               )}
             </div>
-          </div>
+          </nav>
         </div>
       ) : null}
     </header>

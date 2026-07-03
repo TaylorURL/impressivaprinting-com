@@ -6,22 +6,19 @@ import Footer from '@components/Footer.jsx';
 export default function Layout() {
   const { pathname } = useLocation();
 
-  // Reset scroll on route change so each page opens at the top.
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+    window.scrollTo(0, 0);
   }, [pathname]);
 
   return (
-    <div className="relative min-h-screen overflow-x-clip">
-      {/* Street grid backdrop */}
+    <div className="relative min-h-screen overflow-x-clip bg-ink-950">
+      {/* Fixed paper-grain veil for a printed-surface feel */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 bg-grid-street bg-grid opacity-40 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]"
+        className="grain pointer-events-none fixed inset-0 -z-10 opacity-[0.04] mix-blend-screen"
       />
-      <div aria-hidden className="noise pointer-events-none fixed inset-0 -z-10 opacity-[0.15]" />
-
       <Nav />
-      <main className="pt-28">
+      <main className="pt-[68px]">
         <Outlet />
       </main>
       <Footer />

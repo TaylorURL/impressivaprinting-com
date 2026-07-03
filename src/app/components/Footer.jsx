@@ -1,30 +1,30 @@
 import { Link } from 'react-router-dom';
-import { Mail, MapPin, Phone } from 'lucide-react';
 import { NAV_ITEMS, ROUTES } from '@constants/routes.js';
 import { SITE } from '@constants/site.js';
+import { ColorBar } from '@components/PrintMarks.jsx';
 
 export default function Footer() {
   return (
-    <footer className="relative mt-24 border-t border-white/10">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
+    <footer className="relative mt-32 bg-ink-950">
+      <ColorBar className="h-2" />
+
+      {/* Oversized wordmark band */}
+      <div className="overflow-hidden border-b border-paper-100/10 px-5 py-10 sm:px-8">
+        <div className="display text-[18vw] leading-[0.8] text-paper-100/[0.07]">IMPRESSIVA</div>
+      </div>
+
+      <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.6fr_1fr_1fr]">
         <div>
-          <Link to={ROUTES.home} className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-xl street-gradient text-ink-950">
-              <span className="spray text-lg leading-none">IP</span>
-            </span>
-            <span className="spray text-xl text-white">
-              Impressiva<span className="text-neon-magenta">.</span>
-            </span>
-          </Link>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/55">{SITE.blurb}</p>
-          <div className="mt-5 flex gap-3">
+          <span className="kicker text-flare">Impressiva Printing Co.</span>
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-paper-100/55">{SITE.blurb}</p>
+          <div className="mt-6 flex gap-6">
             {SITE.socials.map((s) => (
               <a
                 key={s.label}
                 href={s.href}
                 target="_blank"
                 rel="noreferrer"
-                className="pressable rounded-full border border-white/15 px-4 py-2 font-head text-xs font-600 uppercase tracking-wide text-white/60 hover:border-cyan/60 hover:text-white"
+                className="spec text-xs uppercase tracking-[0.2em] text-paper-100/50 link-wipe hover:text-paper-100"
               >
                 {s.label}
               </a>
@@ -33,22 +33,26 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="spray text-lg text-white">Explore</h4>
-          <ul className="mt-4 space-y-2.5">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.to}>
+          <span className="kicker text-paper-100/40">Index</span>
+          <ul className="mt-5 space-y-3">
+            {NAV_ITEMS.map((item, i) => (
+              <li key={item.to} className="flex items-center gap-3">
+                <span className="spec text-xs text-paper-100/25">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
                 <Link
                   to={item.to}
-                  className="text-sm text-white/55 transition-colors hover:text-neon-cyan"
+                  className="spec text-xs uppercase tracking-[0.15em] text-paper-100/70 hover:text-flare"
                 >
                   {item.label}
                 </Link>
               </li>
             ))}
-            <li>
+            <li className="flex items-center gap-3">
+              <span className="spec text-xs text-paper-100/25">05</span>
               <Link
                 to={ROUTES.login}
-                className="text-sm text-white/55 transition-colors hover:text-neon-cyan"
+                className="spec text-xs uppercase tracking-[0.15em] text-paper-100/70 hover:text-flare"
               >
                 Account
               </Link>
@@ -57,28 +61,24 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="spray text-lg text-white">The Shop</h4>
-          <ul className="mt-4 space-y-3 text-sm text-white/55">
-            <li className="flex items-center gap-2.5">
-              <Phone className="h-4 w-4 text-neon-magenta" /> {SITE.phone}
-            </li>
-            <li className="flex items-center gap-2.5">
-              <Mail className="h-4 w-4 text-neon-cyan" /> {SITE.email}
-            </li>
-            <li className="flex items-start gap-2.5">
-              <MapPin className="mt-0.5 h-4 w-4 text-neon-acid" /> {SITE.address}
-            </li>
-            <li className="pl-6 text-white/40">{SITE.hours}</li>
+          <span className="kicker text-paper-100/40">Contact</span>
+          <ul className="mt-5 space-y-3 text-sm text-paper-100/70">
+            <li className="spec text-xs">{SITE.phone}</li>
+            <li className="spec break-all text-xs">{SITE.email}</li>
+            <li className="spec text-xs leading-relaxed">{SITE.address}</li>
+            <li className="spec text-xs text-paper-100/40">{SITE.hours}</li>
           </ul>
         </div>
       </div>
 
-      <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-6 text-xs text-white/40 sm:flex-row sm:px-6">
-          <span>
-            © {2026} {SITE.name}. All rights reserved.
+      <div className="border-t border-paper-100/10">
+        <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-2 px-5 py-6 sm:flex-row sm:items-center sm:px-8">
+          <span className="spec text-[11px] uppercase tracking-[0.2em] text-paper-100/40">
+            © 2026 {SITE.name} — All Rights Reserved
           </span>
-          <span className="font-graff text-base text-white/50">Print Loud. Print Proud.</span>
+          <span className="spec text-[11px] uppercase tracking-[0.2em] text-paper-100/40">
+            Print Loud <span className="text-flare">/</span> Print Proud
+          </span>
         </div>
       </div>
     </footer>
