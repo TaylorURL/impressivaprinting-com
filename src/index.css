@@ -3,11 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --ink: #08080a;
-  --ink-2: #0d0d10;
-  --paper: #f4efe3;
-  --paper-2: #ebe4d3;
-  --flare: #ff3d1f;
+  --ink: #07080a;
+  --ink-2: #0c0e11;
+  --paper: #d2d6db;
+  --paper-2: #c0c5cc;
+  --flare: #ff5205;
+  --volt: #2f6bff;
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -178,6 +179,47 @@
   .link-wipe:hover {
     background-size: 100% 1px;
   }
+
+  /* Moving light-sweep on solid buttons */
+  .shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    transform: translateX(-160%) skewX(-18deg);
+    pointer-events: none;
+  }
+  .shine:hover::after {
+    animation: shine 900ms var(--ease);
+  }
+
+  /* Flare wipe that fills from the left on hover (catalog rows) */
+  .wipe-flare {
+    position: relative;
+  }
+  .wipe-flare::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--flare);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 320ms var(--ease);
+  }
+  .wipe-flare:hover::before,
+  .group:hover .wipe-flare::before {
+    transform: scaleY(1);
+  }
 }
 
 @layer utilities {
@@ -191,20 +233,37 @@
 
   /* Halftone dot field */
   .halftone {
-    background-image: radial-gradient(rgba(244, 239, 227, 0.5) 1px, transparent 1.4px);
+    background-image: radial-gradient(rgba(210, 214, 219, 0.5) 1px, transparent 1.4px);
     background-size: 7px 7px;
   }
   .halftone-ink {
-    background-image: radial-gradient(rgba(24, 21, 16, 0.55) 1px, transparent 1.4px);
+    background-image: radial-gradient(rgba(14, 16, 19, 0.6) 1px, transparent 1.4px);
     background-size: 7px 7px;
   }
 
-  /* Fine engineering grid */
+  /* Fine engineering grid — animatable via animate-drift */
   .blueprint {
     background-image:
-      linear-gradient(rgba(244, 239, 227, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(244, 239, 227, 0.04) 1px, transparent 1px);
+      linear-gradient(rgba(210, 214, 219, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(210, 214, 219, 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
+  }
+
+  /* Diagonal hazard hatch */
+  .hazard {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--flare) 0,
+      var(--flare) 10px,
+      #0c0e11 10px,
+      #0c0e11 20px
+    );
+  }
+
+  /* Scanline sweep overlay */
+  .scanlines {
+    background: linear-gradient(rgba(47, 107, 255, 0.09), transparent);
+    height: 40vh;
   }
 
   /* Paper grain */

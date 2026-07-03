@@ -5,6 +5,7 @@ import { ROUTES } from '@constants/routes.js';
 import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
 import Marquee from '@components/Marquee.jsx';
+import CountUp from '@components/CountUp.jsx';
 import ProductPlate from '@components/ProductPlate.jsx';
 import SectionHeading from '@components/SectionHeading.jsx';
 import { ColorBar, Registration } from '@components/PrintMarks.jsx';
@@ -13,14 +14,15 @@ const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 
 function Hero() {
   return (
-    <section className="relative cropmarks border-b border-paper-100/10 text-paper-100/40">
-      <div className="blueprint pointer-events-none absolute inset-0 -z-0 opacity-60" />
+    <section className="relative cropmarks overflow-hidden border-b border-paper-100/10 text-paper-100/40">
+      <div className="blueprint animate-drift pointer-events-none absolute inset-0 -z-0 opacity-60" />
+      <div className="scanlines animate-scan pointer-events-none absolute inset-x-0 top-0 -z-0" />
       <div className={`relative ${WRAP} pb-14 pt-14 sm:pb-20 sm:pt-20`}>
         {/* Meta row */}
         <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
           <span className="kicker text-paper-100/50">No. 001 — Custom Print House</span>
           <span className="hidden kicker text-paper-100/50 sm:block">Est. Bay City</span>
-          <Registration className="text-flare" />
+          <Registration className="animate-spin-slow text-flare" />
         </div>
 
         {/* Headline + deck */}
@@ -29,7 +31,7 @@ function Hero() {
             <span className="block text-[19vw] leading-[0.78] sm:text-[15vw] lg:text-[12rem]">
               Print
             </span>
-            <span className="block text-[19vw] leading-[0.78] text-flare sm:text-[15vw] lg:text-[12rem]">
+            <span className="animate-glitch block text-[19vw] leading-[0.78] text-flare sm:text-[15vw] lg:text-[12rem]">
               Loud.
             </span>
           </h1>
@@ -52,24 +54,29 @@ function Hero() {
           {STATS.map((s, i) => (
             <div
               key={s.label}
-              className={`p-5 ${i !== 0 ? 'border-l border-paper-100/12' : ''} ${
-                i >= 2 ? 'border-t sm:border-t-0' : ''
-              } ${i === 2 ? 'border-t border-paper-100/12' : ''}`}
+              className={`group p-5 transition-colors duration-300 hover:bg-paper-100/[0.03] ${
+                i !== 0 ? 'border-l border-paper-100/12' : ''
+              } ${i >= 2 ? 'border-t sm:border-t-0' : ''} ${
+                i === 2 ? 'border-t border-paper-100/12' : ''
+              }`}
             >
-              <div className="display text-4xl text-paper-100 sm:text-5xl">{s.value}</div>
+              <CountUp
+                value={s.value}
+                className="display block text-4xl text-paper-100 transition-colors group-hover:text-flare sm:text-5xl"
+              />
               <div className="kicker mt-2 text-paper-100/45">{s.label}</div>
             </div>
           ))}
         </div>
       </div>
-      <ColorBar className="h-2" />
+      <ColorBar className="animate-bar-pulse h-2" />
     </section>
   );
 }
 
 function Ticker() {
   return (
-    <section className="border-b border-paper-100/10 bg-flare py-4 text-white">
+    <section className="border-y border-ink-950/20 bg-flare py-4 text-white">
       <Marquee
         items={[
           'Business Cards',

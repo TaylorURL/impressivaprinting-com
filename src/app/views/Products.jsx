@@ -15,10 +15,10 @@ const FILTERS = [
 function CatalogRow({ product, index }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="group border-b border-paper-100/12">
+    <div className="wipe-flare group relative border-b border-paper-100/12">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 py-6 text-left transition-colors duration-300 hover:bg-ink-900 sm:grid-cols-[70px_1fr_180px_140px_auto] sm:gap-6 sm:px-4"
+        className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 py-6 pl-3 text-left transition-colors duration-300 hover:bg-ink-900 sm:grid-cols-[70px_1fr_180px_140px_auto] sm:gap-6 sm:px-4"
       >
         <span className="spec text-xs tracking-[0.2em] text-paper-100/35">
           {String(index).padStart(2, '0')}

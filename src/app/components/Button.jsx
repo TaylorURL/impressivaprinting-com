@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom';
 
 // Sharp editorial buttons — square corners, mono label, no gradients.
 const VARIANTS = {
-  flare: 'bg-flare text-white hover:bg-flare-deep',
-  ink: 'bg-ink-950 text-paper-100 hover:bg-ink-850 border border-paper-100/15',
-  paper: 'bg-paper-100 text-ink-950 hover:bg-paper-200',
+  flare: 'shine bg-flare text-white hover:bg-flare-deep hover:-translate-y-0.5',
+  volt: 'shine bg-volt text-white hover:brightness-110 hover:-translate-y-0.5',
+  ink: 'bg-ink-950 text-paper-100 hover:bg-ink-850 border border-paper-100/15 hover:-translate-y-0.5',
+  paper: 'bg-paper-100 text-ink-950 hover:bg-paper-200 hover:-translate-y-0.5',
   outline: 'border border-current text-paper-100 hover:bg-paper-100 hover:text-ink-950',
   'outline-ink': 'border border-ink-950/30 text-ink-950 hover:bg-ink-950 hover:text-paper-100',
 };

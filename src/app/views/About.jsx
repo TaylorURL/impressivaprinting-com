@@ -2,6 +2,7 @@ import { STATS, SITE } from '@constants/site.js';
 import { ROUTES } from '@constants/routes.js';
 import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
+import CountUp from '@components/CountUp.jsx';
 import SectionHeading from '@components/SectionHeading.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
 
@@ -77,7 +78,7 @@ export default function About() {
                 i !== 0 ? 'border-t border-paper-100/12' : ''
               }`}
             >
-              <span className="display text-5xl text-flare">{s.value}</span>
+              <CountUp value={s.value} className="display text-5xl text-flare" />
               <span className="kicker text-paper-100/45">{s.label}</span>
             </div>
           ))}

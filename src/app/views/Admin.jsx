@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Download, Trash2 } from 'lucide-react';
 import { store, UPLOAD_STATUSES } from '@data/store.js';
 import { formatBytes } from '@utils/files.js';
+import CountUp from '@components/CountUp.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
@@ -132,7 +133,7 @@ export default function Admin() {
               key={s.k}
               className={`p-6 ${i !== 0 ? 'border-t border-paper-100/12 sm:border-l sm:border-t-0' : ''}`}
             >
-              <div className="display text-5xl text-paper-100">{s.v}</div>
+              <CountUp value={String(s.v)} className="display block text-5xl text-paper-100" />
               <div className="kicker mt-2 text-paper-100/45">{s.k}</div>
             </div>
           ))}

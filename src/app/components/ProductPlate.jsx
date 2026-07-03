@@ -16,7 +16,7 @@ export default function ProductPlate({ product, index, tone = 'ink' }) {
   return (
     <Link
       to={ROUTES.products}
-      className={`pressable group relative flex flex-col border p-6 transition-colors duration-300 ease-editorial ${base}`}
+      className={`pressable group relative flex flex-col border p-6 transition-[background-color,border-color,transform] duration-300 ease-editorial hover:-translate-y-1 ${base}`}
     >
       <div className="flex items-start justify-between">
         <span className="spec text-xs tracking-[0.2em]">{product.code}</span>
