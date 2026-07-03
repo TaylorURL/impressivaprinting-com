@@ -3,6 +3,7 @@ import { ROUTES } from '@constants/routes.js';
 import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
 import CountUp from '@components/CountUp.jsx';
+import Timeline from '@components/Timeline.jsx';
 import SectionHeading from '@components/SectionHeading.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
 
@@ -37,7 +38,7 @@ export default function About() {
             <span className="kicker text-paper-100/50">Since Day One</span>
           </div>
           <h1 className="display mt-8 text-[16vw] leading-[0.8] text-paper-100 sm:text-8xl">
-            From the <span className="text-flare">Streets Up</span>
+            Our <span className="text-flare">Story</span>
           </h1>
         </div>
         <ColorBar className="h-2" />
@@ -47,25 +48,25 @@ export default function About() {
       <section className={`${WRAP} grid gap-12 py-20 sm:py-28 lg:grid-cols-[1.4fr_1fr]`}>
         <Reveal className="space-y-5 text-lg leading-relaxed text-paper-100/70">
           <p>
-            Impressiva started in a corner of a warehouse with one press, a stack of blank tees, and
-            a refusal to print boring. We came up printing gig posters, crew merch, and storefront
-            banners for the block — work that had to look right the first time.
+            Impressiva began in a single warehouse room with one press and a simple standard: never
+            print anything forgettable. Early work — event posters, custom apparel, and storefront
+            banners for local businesses — had to be right the first time, every time.
           </p>
           <p>
-            Today we run a full floor of pro gear, but the mindset hasn&apos;t moved: treat every
-            job like it&apos;s going on the wall of the city. Whether it&apos;s 100 business cards
-            or a building-wide banner, it gets the same obsessive eye.
+            Today we operate a full production floor, but the approach hasn&apos;t changed. Every
+            job gets the same attention to detail, whether it&apos;s 100 business cards or a
+            building-wide banner.
           </p>
           <p className="text-paper-100/90">
-            A print shop with a street soul and a modern spine — real craft, real turnaround, no
-            corporate stiffness.
+            A print studio that pairs bold creative work with disciplined craft — genuine quality,
+            dependable turnaround, and a team that treats your deadline as its own.
           </p>
           <div className="flex flex-wrap gap-3 pt-4">
             <Button to={ROUTES.contact} variant="flare" size="lg">
-              Come Through
+              Get in Touch
             </Button>
-            <Button to={ROUTES.products} variant="outline" size="lg">
-              See the Work
+            <Button to={ROUTES.work} variant="outline" size="lg">
+              View Our Work
             </Button>
           </div>
         </Reveal>
@@ -86,6 +87,16 @@ export default function About() {
             <span className="spec text-xs text-paper-100/50">{SITE.hours}</span>
           </div>
         </Reveal>
+      </section>
+
+      {/* Scroll-scrubbed history */}
+      <section className="border-t border-paper-100/10 bg-ink-900">
+        <div className={`${WRAP} py-20 sm:py-28`}>
+          <Reveal>
+            <SectionHeading index="—" kicker="The Timeline" title="How We Got Here" tone="ink" />
+          </Reveal>
+          <Timeline />
+        </div>
       </section>
 
       {/* Values on paper */}

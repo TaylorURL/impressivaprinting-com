@@ -37,7 +37,7 @@ export const PRODUCTS = [
     price: 18,
     unit: 'per piece',
     stock: 'DTF/SCR',
-    blurb: 'DTF and screen-printed tees, hoodies and crews. Your crew, your colorway.',
+    blurb: 'DTF and screen-printed tees, hoodies, and team apparel. Your design, your colors.',
     featured: true,
     details: ['DTF full-color', 'Screen print', 'Embroidery', 'Tees · hoodies · caps'],
   },

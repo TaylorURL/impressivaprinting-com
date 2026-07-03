@@ -9,6 +9,10 @@ import CountUp from '@components/CountUp.jsx';
 import ProductPlate from '@components/ProductPlate.jsx';
 import SectionHeading from '@components/SectionHeading.jsx';
 import { ColorBar, Registration } from '@components/PrintMarks.jsx';
+import LogoMarquee from '@components/LogoMarquee.jsx';
+import WorkStrip from '@components/WorkStrip.jsx';
+import Testimonials from '@components/Testimonials.jsx';
+import Faq from '@components/Faq.jsx';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 
@@ -40,7 +44,7 @@ function Hero() {
             <p className="max-w-md text-lg leading-relaxed text-paper-100/70">{SITE.blurb}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button to={ROUTES.products} variant="flare" size="lg">
-                See the Lineup <ArrowRight className="h-4 w-4" />
+                View Products <ArrowRight className="h-4 w-4" />
               </Button>
               <Button to={ROUTES.signup} variant="outline" size="lg">
                 Start a Job
@@ -98,7 +102,7 @@ function Featured() {
       <div className="halftone-ink pointer-events-none absolute inset-0 opacity-[0.05]" />
       <div className={`relative ${WRAP} py-20 sm:py-28`}>
         <Reveal>
-          <SectionHeading index="02" kicker="The Lineup" title="Selected Work" tone="paper">
+          <SectionHeading index="02" kicker="Products" title="What We Print" tone="paper">
             08 Services
           </SectionHeading>
         </Reveal>
@@ -125,8 +129,8 @@ function Process() {
   return (
     <section className={`${WRAP} py-20 sm:py-28`}>
       <Reveal>
-        <SectionHeading index="03" kicker="The Method" title="Four Moves" tone="ink">
-          Zero Stress
+        <SectionHeading index="03" kicker="Our Process" title="How It Works" tone="ink">
+          Four Steps
         </SectionHeading>
       </Reveal>
       <div className="mt-12 grid gap-px border border-paper-100/12 bg-paper-100/12 md:grid-cols-2 lg:grid-cols-4">
@@ -179,13 +183,13 @@ function CTA() {
     <section className="grain relative bg-paper-100 text-ink-950">
       <div className={`${WRAP} py-24 text-center sm:py-32`}>
         <Reveal>
-          <span className="kicker text-flare">Got Art?</span>
+          <span className="kicker text-flare">Ready to Start?</span>
           <h2 className="display mx-auto mt-6 max-w-4xl text-[16vw] leading-[0.82] sm:text-8xl">
-            Let&apos;s Run It.
+            Let&apos;s Get Started.
           </h2>
           <p className="mx-auto mt-6 max-w-md text-ink-950/60">
-            Make an account, drop your PNG or files, and we&apos;ll have a proof back before you
-            finish your coffee.
+            Create an account, upload your files, and we&apos;ll send a proof back promptly —
+            usually the same day.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Button to={ROUTES.signup} variant="flare" size="lg">
@@ -206,9 +210,13 @@ export default function Home() {
     <>
       <Hero />
       <Ticker />
+      <LogoMarquee />
       <Featured />
       <Process />
+      <WorkStrip />
       <SpecSheet />
+      <Testimonials />
+      <Faq />
       <CTA />
     </>
   );

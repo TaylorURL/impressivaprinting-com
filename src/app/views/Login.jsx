@@ -42,8 +42,8 @@ export default function Login() {
       }
     >
       <span className="kicker text-flare">Log In</span>
-      <h1 className="display mt-4 text-5xl text-paper-100">Your Desk</h1>
-      <p className="mt-3 text-sm text-paper-100/55">Manage your jobs and drop new art.</p>
+      <h1 className="display mt-4 text-5xl text-paper-100">Your Account</h1>
+      <p className="mt-3 text-sm text-paper-100/55">Manage your orders and upload new artwork.</p>
 
       <form onSubmit={handleSubmit} className="mt-9 space-y-7">
         <div>

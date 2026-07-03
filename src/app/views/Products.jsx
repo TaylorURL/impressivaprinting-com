@@ -4,6 +4,7 @@ import { PRODUCTS } from '@constants/products.js';
 import { ROUTES } from '@constants/routes.js';
 import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
+import QuoteCalculator from '@components/QuoteCalculator.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
@@ -135,6 +136,8 @@ export default function Products() {
           </div>
         </Reveal>
       </section>
+
+      <QuoteCalculator />
     </>
   );
 }

@@ -4,6 +4,7 @@ import ProtectedRoute from '@components/ProtectedRoute.jsx';
 import { ROUTES } from '@constants/routes.js';
 import Home from '@views/Home.jsx';
 import Products from '@views/Products.jsx';
+import Work from '@views/Work.jsx';
 import About from '@views/About.jsx';
 import Contact from '@views/Contact.jsx';
 import Login from '@views/Login.jsx';
@@ -18,6 +19,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path={ROUTES.home} element={<Home />} />
         <Route path={ROUTES.products} element={<Products />} />
+        <Route path={ROUTES.work} element={<Work />} />
         <Route path={ROUTES.about} element={<About />} />
         <Route path={ROUTES.contact} element={<Contact />} />
         <Route path={ROUTES.login} element={<Login />} />

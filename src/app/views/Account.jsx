@@ -5,6 +5,7 @@ import { store } from '@data/store.js';
 import { PRODUCTS } from '@constants/products.js';
 import { formatBytes, readFileAsDataUrl, validateFile } from '@utils/files.js';
 import Reveal from '@components/Reveal.jsx';
+import JobTracker from '@components/JobTracker.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
@@ -116,11 +117,11 @@ export default function Account() {
       <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
         <div className={`${WRAP} pb-10 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
-            <span className="kicker text-paper-100/50">Client Desk</span>
+            <span className="kicker text-paper-100/50">Client Dashboard</span>
             <span className="spec text-xs text-paper-100/50">{uploads.length} FILES ON FILE</span>
           </div>
           <h1 className="display mt-8 text-[15vw] leading-[0.8] text-paper-100 sm:text-8xl">
-            Yo, <span className="text-flare">{user.name.split(' ')[0]}</span>
+            Welcome, <span className="text-flare">{user.name.split(' ')[0]}</span>
           </h1>
           <p className="spec mt-4 text-xs text-paper-100/50">{user.email}</p>
         </div>
@@ -130,8 +131,8 @@ export default function Account() {
       <section className={`${WRAP} grid gap-8 py-14 lg:grid-cols-[0.9fr_1.4fr]`}>
         {/* Uploader */}
         <div className="self-start border border-paper-100/12 p-7">
-          <span className="kicker text-flare">Drop Zone</span>
-          <h2 className="display mt-3 text-3xl text-paper-100">Drop Your Art</h2>
+          <span className="kicker text-flare">Upload</span>
+          <h2 className="display mt-3 text-3xl text-paper-100">Upload Artwork</h2>
           <p className="mt-2 text-sm text-paper-100/55">
             PNG, JPG, WEBP, SVG or GIF · up to 4MB each.
           </p>
@@ -226,6 +227,10 @@ export default function Account() {
             </div>
           )}
         </div>
+      </section>
+
+      <section className={`${WRAP} pb-16`}>
+        <JobTracker />
       </section>
     </>
   );

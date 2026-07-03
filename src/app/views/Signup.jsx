@@ -42,8 +42,8 @@ export default function Signup() {
       }
     >
       <span className="kicker text-flare">Create Account</span>
-      <h1 className="display mt-4 text-5xl text-paper-100">Roll With Us</h1>
-      <p className="mt-3 text-sm text-paper-100/55">Upload art and track your prints.</p>
+      <h1 className="display mt-4 text-5xl text-paper-100">Get Started</h1>
+      <p className="mt-3 text-sm text-paper-100/55">Upload artwork and track your orders.</p>
 
       <form onSubmit={handleSubmit} className="mt-9 space-y-7">
         <div>

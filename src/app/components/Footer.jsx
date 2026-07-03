@@ -1,17 +1,28 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { NAV_ITEMS, ROUTES } from '@constants/routes.js';
 import { SITE } from '@constants/site.js';
 import { ColorBar } from '@components/PrintMarks.jsx';
+import Parallax from '@components/Parallax.jsx';
 
 export default function Footer() {
+  const isHome = useLocation().pathname === ROUTES.home;
+
   return (
     <footer className="relative mt-32 bg-ink-950">
       <ColorBar className="h-2" />
 
-      {/* Oversized wordmark band */}
-      <div className="overflow-hidden border-b border-paper-100/10 px-5 py-10 sm:px-8">
-        <div className="display text-[18vw] leading-[0.8] text-paper-100/[0.07]">IMPRESSIVA</div>
-      </div>
+      {/* Oversized wordmark band — home only, drifts sideways on scroll */}
+      {isHome ? (
+        <div className="overflow-hidden border-b border-paper-100/10 py-10">
+          <Parallax
+            axis="x"
+            distance={140}
+            className="display whitespace-nowrap px-5 text-[18vw] leading-[0.8] text-paper-100/[0.07] sm:px-8"
+          >
+            IMPRESSIVA · PRINT LOUD · IMPRESSIVA
+          </Parallax>
+        </div>
+      ) : null}
 
       <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.6fr_1fr_1fr]">
         <div>
@@ -49,7 +60,9 @@ export default function Footer() {
               </li>
             ))}
             <li className="flex items-center gap-3">
-              <span className="spec text-xs text-paper-100/25">05</span>
+              <span className="spec text-xs text-paper-100/25">
+                {String(NAV_ITEMS.length + 1).padStart(2, '0')}
+              </span>
               <Link
                 to={ROUTES.login}
                 className="spec text-xs uppercase tracking-[0.15em] text-paper-100/70 hover:text-flare"

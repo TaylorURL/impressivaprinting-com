@@ -33,7 +33,7 @@ export default function Contact() {
             <span className="kicker text-paper-100/50">Reply Within 1 Day</span>
           </div>
           <h1 className="display mt-8 text-[16vw] leading-[0.8] text-paper-100 sm:text-8xl">
-            Start the <span className="text-flare">Convo</span>
+            Get in <span className="text-flare">Touch</span>
           </h1>
         </div>
         <ColorBar className="h-2" />
@@ -53,8 +53,8 @@ export default function Contact() {
             </div>
           ))}
           <p className="mt-8 max-w-xs text-sm leading-relaxed text-paper-100/50">
-            Prefer to roll through? The floor is open during shop hours — bring your files or just
-            an idea on a napkin.
+            Prefer to visit? The studio is open during business hours — bring your files or just an
+            idea to talk through.
           </p>
         </Reveal>
 
@@ -62,10 +62,10 @@ export default function Contact() {
           {sent ? (
             <div className="flex h-full min-h-[24rem] flex-col items-center justify-center border border-paper-100/12 p-10 text-center">
               <span className="display text-7xl text-flare">✓</span>
-              <h3 className="display mt-6 text-4xl text-paper-100">Message Slung</h3>
+              <h3 className="display mt-6 text-4xl text-paper-100">Message Sent</h3>
               <p className="mt-3 max-w-sm text-sm text-paper-100/55">
-                Thanks for reaching out. This is a demo form — in production it lands straight in
-                the shop inbox. We&apos;d hit you back within one business day.
+                Thanks for reaching out. This is a demo form — in production it would route directly
+                to our studio inbox, and we&apos;d respond within one business day.
               </p>
               <Button
                 as="button"

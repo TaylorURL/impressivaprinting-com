@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Nav from '@components/Nav.jsx';
 import Footer from '@components/Footer.jsx';
+import ScrollProgressBar from '@components/ScrollProgressBar.jsx';
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -17,6 +18,7 @@ export default function Layout() {
         aria-hidden
         className="grain pointer-events-none fixed inset-0 -z-10 opacity-[0.04] mix-blend-screen"
       />
+      <ScrollProgressBar />
       <Nav />
       <main className="pt-[68px]">
         <Outlet />
