@@ -1,20 +1,23 @@
 <p align="center">
-  <img src="docs/logo.svg" alt="Impressiva Printing" width="210">
+  <img src="docs/logo.svg" width="210" alt="Impressiva Printing" />
 </p>
 
 <h1 align="center">Impressiva Printing</h1>
 
+<p align="center"><b>A bold custom print-shop site with a street / graffiti, liquid-glass aesthetic.</b></p>
 <p align="center">
-  Front end for <a href="https://impressivaprinting.com">impressivaprinting.com</a> — a bold custom print-shop site with a street / graffiti, liquid-glass aesthetic. <em>Print Loud. Print Proud.</em>
+  Front end for <a href="https://impressivaprinting.com">impressivaprinting.com</a>. <em>Print Loud. Print Proud.</em>
 </p>
 
 <p align="center">
-  <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black&style=flat-square">
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white&style=flat-square">
-  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-3-38BDF8?logo=tailwindcss&logoColor=white&style=flat-square">
-  <img alt="Framer Motion" src="https://img.shields.io/badge/Framer_Motion-11-0055FF?logo=framer&logoColor=white&style=flat-square">
-  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-deployed-000000?logo=vercel&logoColor=white&style=flat-square">
+  <img alt="React" src="https://img.shields.io/badge/React-19-ff5205?style=for-the-badge&logo=react&logoColor=white" />
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-7-ff5205?style=for-the-badge&logo=vite&logoColor=white" />
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-3-ff5205?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img alt="Framer Motion" src="https://img.shields.io/badge/Framer_Motion-11-ff5205?style=for-the-badge&logo=framer&logoColor=white" />
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-deployed-ff5205?style=for-the-badge&logo=vercel&logoColor=white" />
 </p>
+
+<br />
 
 - **Front end only** — no server. Accounts, sessions, and uploaded artwork all live in the browser via `localStorage`.
 - **Full storefront** — animated home, filterable product catalog, work portfolio, quote calculator, and a job tracker.
