@@ -1,28 +1,77 @@
-# Impressiva Printing
+<p align="center">
+  <img src="docs/logo.svg" alt="Impressiva Printing" width="210">
+</p>
 
-Front-end for **impressivaprinting.com** — a custom print shop with a GTA / street / graffiti / liquid-glass aesthetic and a modern twist.
+<h1 align="center">Impressiva Printing</h1>
 
-Built with **React 19 + Vite + Tailwind CSS**. This is a **front-end-only** build: there is no server. Accounts, sessions, and uploaded artwork all persist in the browser via `localStorage`.
+<p align="center">
+  Front end for <a href="https://impressivaprinting.com">impressivaprinting.com</a> — a bold custom print-shop site with a street / graffiti, liquid-glass aesthetic. <em>Print Loud. Print Proud.</em>
+</p>
+
+<p align="center">
+  <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black&style=flat-square">
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white&style=flat-square">
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-3-38BDF8?logo=tailwindcss&logoColor=white&style=flat-square">
+  <img alt="Framer Motion" src="https://img.shields.io/badge/Framer_Motion-11-0055FF?logo=framer&logoColor=white&style=flat-square">
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-deployed-000000?logo=vercel&logoColor=white&style=flat-square">
+</p>
+
+- **Front end only** — no server. Accounts, sessions, and uploaded artwork all live in the browser via `localStorage`.
+- **Full storefront** — animated home, filterable product catalog, work portfolio, quote calculator, and a job tracker.
+- **Mock accounts** — customers sign up, upload print-ready art, and manage their files; staff review every upload from an admin view.
 
 ## Stack
 
-- React 19, React Router 7
-- Vite 7
-- Tailwind CSS 3
-- Framer Motion, lucide-react
+| Layer | Choice |
+|-------|--------|
+| Framework | React 19 + React Router 7 |
+| Build | Vite 7 |
+| Styling | Tailwind CSS 3 |
+| Motion / icons | Framer Motion · lucide-react |
+| Persistence | Browser `localStorage` (no backend) |
+| Hosting | Vercel (SPA rewrites in `vercel.json`) |
 
-## What's in it
+## Getting started
 
-- **Home** — hero, product marquee, featured products, process, CTA
-- **Products** — full catalog with filters
-- **About** / **Contact** — informational pages (contact form is demo-only)
-- **Login / Signup** — mock auth backed by `localStorage`
-- **Account** — customers upload PNG/JPG/WEBP/SVG/GIF art and manage their files
-- **Admin** — staff view of every uploaded file across all customers, with status + delete
+```bash
+npm install
+npm run dev        # Vite dev server
+npm run build      # production build
+npm run lint       # eslint
+npm run format     # prettier --write
+```
+
+## Pages
+
+| Route | What it is |
+|-------|-----------|
+| Home | Hero, product marquee, capabilities, process timeline, testimonials, FAQ |
+| Products | Full catalog with category filters |
+| Work | Portfolio strip of finished jobs |
+| About / Contact | Info pages; contact form is demo-only |
+| Login / Signup | Mock auth backed by `localStorage` |
+| Account | Customers upload PNG/JPG/WEBP/SVG/GIF art (≤ 4 MB) and manage files |
+| Admin | Staff view of every uploaded file across customers, with status + delete |
+
+## How persistence works
+
+There is no backend. A single `store.js` module is the whole data layer — it seeds an
+admin, tracks the session, and stores uploads as data URLs, all in `localStorage`.
+
+```mermaid
+flowchart LR
+  U[Visitor] -->|browse| V[React SPA · views]
+  V <-->|read / write| S[store.js]
+  S --> LS[(localStorage)]
+  UP[Upload art] -->|data URL up to 4 MB| S
+  ADM[Admin] -->|review / delete| S
+```
+
+Because data is per-browser, it clears when the visitor clears site data.
 
 ## Demo credentials
 
-Admin account is seeded automatically:
+An admin is seeded automatically on first load:
 
 ```
 admin@impressivaprinting.com / admin123
@@ -30,18 +79,19 @@ admin@impressivaprinting.com / admin123
 
 Customers create their own accounts via **Sign up**.
 
-## Develop
+## Project structure
 
-```bash
-npm install
-npm run dev
-npm run build
-npm run lint
-npm run format
+```
+src/app/
+  components/   reusable UI (Nav, Marquee, QuoteCalculator, JobTracker, …)
+  views/        pages (Home, Products, Work, Account, Admin, …)
+  context/      auth context + provider
+  data/store.js localStorage persistence layer
+  constants/    site config, product catalog, routes
+  utils/        upload validation (type + 4 MB cap)
+public/         favicon, release.json
 ```
 
-## Notes
+## License
 
-- Uploads are stored as data URLs in `localStorage`, capped at 4MB each for demo stability.
-- Because there is no backend, data is per-browser and clears when site data is cleared.
-- Deployed on Vercel; `vercel.json` rewrites all routes to `index.html` for the SPA.
+Private project — all rights reserved. Made by [TaylorURL](https://taylorurl.com).
