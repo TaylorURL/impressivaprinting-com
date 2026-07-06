@@ -13,11 +13,11 @@
 </p>
 
 <p align="center">
-  <img alt="React" src="https://img.shields.io/badge/React-19-ff5205?style=for-the-badge&logo=react&logoColor=white" />
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-7-ff5205?style=for-the-badge&logo=vite&logoColor=white" />
-  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-3-ff5205?style=for-the-badge&logo=tailwindcss&logoColor=white" />
-  <img alt="Framer Motion" src="https://img.shields.io/badge/Framer_Motion-11-ff5205?style=for-the-badge&logo=framer&logoColor=white" />
-  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-deployed-ff5205?style=for-the-badge&logo=vercel&logoColor=white" />
+  <img alt="React" src="https://img.shields.io/badge/React-19-2563eb?style=for-the-badge&logo=react&logoColor=white" />
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-7-2563eb?style=for-the-badge&logo=vite&logoColor=white" />
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-3-2563eb?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img alt="Framer Motion" src="https://img.shields.io/badge/Framer_Motion-11-1f56cf?style=for-the-badge&logo=framer&logoColor=white" />
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-deployed-3b82f6?style=for-the-badge&logo=vercel&logoColor=white" />
 </p>
 
 <br />
