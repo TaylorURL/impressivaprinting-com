@@ -60,12 +60,19 @@ A print shop needs a storefront that looks as loud as its work — but not every
 
 ```bash
 npm install
-npm run dev        # Vite dev server
-npm run build      # production build to dist/
-npm run preview    # serve the built app
-npm run lint       # eslint
-npm run format     # prettier --write
+npm run dev        # Vite dev server on localhost
 ```
+
+## Scripts
+
+| Script                 | What it does                                   |
+| :--------------------- | :--------------------------------------------- |
+| `npm run dev`          | Start the Vite dev server                      |
+| `npm run build`        | Production build to `dist/`                    |
+| `npm run preview`      | Serve the built app locally                    |
+| `npm run lint`         | Lint with ESLint                               |
+| `npm run format`       | Format `src/` with Prettier                    |
+| `npm run format:check` | Check formatting without writing changes       |
 
 ## Pages
 
