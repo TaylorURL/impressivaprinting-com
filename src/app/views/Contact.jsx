@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import { SITE } from '@constants/site.js';
 import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
@@ -61,7 +61,7 @@ export default function Contact() {
         <Reveal delay={120}>
           {sent ? (
             <div className="flex h-full min-h-[24rem] flex-col items-center justify-center border border-paper-100/12 p-10 text-center">
-              <span className="display text-7xl text-flare">✓</span>
+              <Check className="h-20 w-20 text-flare" strokeWidth={2} aria-hidden />
               <h3 className="display mt-6 text-4xl text-paper-100">Message Sent</h3>
               <p className="mt-3 max-w-sm text-sm text-paper-100/55">
                 Thanks for reaching out. This is a demo form — in production it would route directly

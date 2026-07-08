@@ -90,7 +90,7 @@ function Ticker() {
           'Signage',
           'Same-Day Rush',
         ]}
-        separator="✳"
+        separator="/"
       />
     </section>
   );

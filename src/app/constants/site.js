@@ -2,9 +2,9 @@ export const SITE = {
   name: 'Impressiva Printing',
   short: 'Impressiva',
   domain: 'impressivaprinting.com',
-  tagline: 'Print Loud. Print Proud.',
+  tagline: 'Custom printing, done right.',
   blurb:
-    'Premium custom printing for brands that refuse to blend in. From business cards to building-size banners, produced boldly and built to last.',
+    'Custom printing for businesses and brands — from business cards to building-size banners, produced quickly and finished to a high standard.',
   phone: '(555) 018-7746',
   email: 'hello@impressivaprinting.com',
   address: '2200 Warehouse District, Bay City',

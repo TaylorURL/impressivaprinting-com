@@ -33,7 +33,8 @@ function UploadTile({ upload, onRemove }) {
         <span
           className={`spec absolute left-3 top-3 text-[10px] uppercase tracking-[0.2em] ${STATUS_STYLE[upload.status]}`}
         >
-          ● {upload.status}
+          <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-current align-middle" />
+          {upload.status}
         </span>
       </div>
       <div className="border-t border-paper-100/12 p-4">

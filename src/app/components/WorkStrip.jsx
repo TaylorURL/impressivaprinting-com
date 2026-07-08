@@ -21,7 +21,9 @@ export default function WorkStrip() {
             <span className="kicker text-paper-100/50">
               <span className="text-flare">04</span> / Recent Work
             </span>
-            <span className="spec hidden text-xs text-paper-100/40 sm:block">Scroll to pan →</span>
+            <span className="spec hidden items-center gap-1.5 text-xs text-paper-100/40 sm:flex">
+              Scroll to pan <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            </span>
           </div>
         </div>
 
