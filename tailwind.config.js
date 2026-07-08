@@ -19,14 +19,14 @@ export default {
           300: '#a6adb5',
           ink: '#0e1013',
         },
-        flare: '#ff5205',
-        'flare-deep': '#d83d00',
+        flare: '#e5352b',
+        'flare-deep': '#b81f16',
         volt: '#2f6bff',
-        // Industrial ink swatches (drove the old CMYK bar; no pink/yellow).
+        // Semantic status swatches (dashboard job states) — no CMYK rainbow.
         proc: {
-          c: '#2f6bff',
+          c: '#4b9fe0',
           m: '#6b7683',
-          y: '#ff9e1b',
+          y: '#34c77b',
         },
       },
       fontFamily: {

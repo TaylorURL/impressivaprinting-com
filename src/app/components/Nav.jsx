@@ -117,10 +117,10 @@ export default function Nav() {
           </button>
         </div>
         <div className="colorbar h-[3px]" aria-hidden>
-          <span className="bg-proc-c" />
-          <span className="bg-proc-m" />
-          <span className="bg-proc-y" />
           <span className="bg-flare" />
+          <span className="bg-paper-300" />
+          <span className="bg-ink-700" />
+          <span className="bg-flare-deep" />
         </div>
       </div>
 

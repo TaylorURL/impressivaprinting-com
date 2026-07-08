@@ -8,7 +8,7 @@ export const PORTFOLIO = [
     client: 'Riot Coffee',
     category: 'Wide Format',
     year: '2026',
-    accent: '#ff5205',
+    accent: '#e5352b',
     kind: 'banner',
   },
   {
@@ -26,7 +26,7 @@ export const PORTFOLIO = [
     client: 'Vault Barbers',
     category: 'Business Cards',
     year: '2025',
-    accent: '#ff9e1b',
+    accent: '#b81f16',
     kind: 'cards',
   },
   {
@@ -44,7 +44,7 @@ export const PORTFOLIO = [
     client: 'Golden Wok',
     category: 'Signage',
     year: '2025',
-    accent: '#ff5205',
+    accent: '#e5352b',
     kind: 'sign',
   },
   {
@@ -62,7 +62,7 @@ export const PORTFOLIO = [
     client: 'Ember Candle Co.',
     category: 'Packaging',
     year: '2024',
-    accent: '#ff9e1b',
+    accent: '#b81f16',
     kind: 'box',
   },
   {

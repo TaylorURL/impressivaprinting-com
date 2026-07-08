@@ -1,12 +1,13 @@
-// Print-shop visual language: CMYK ink bar + registration target.
+// Print-shop visual language: ink registration bar + registration target.
 // These are the studio's signature marks — used as structural accents, not decoration.
+// Red-and-steel duotone, not a CMYK rainbow.
 
 export function ColorBar({ className = '' }) {
   return (
     <div className={`colorbar ${className}`} aria-hidden>
-      <span className="bg-proc-c" />
-      <span className="bg-proc-m" />
-      <span className="bg-proc-y" />
+      <span className="bg-flare" />
+      <span className="bg-flare-deep" />
+      <span className="bg-paper-300" />
       <span className="bg-ink-950" />
       <span className="bg-paper-100" />
       <span className="bg-flare" />
