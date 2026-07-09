@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" role="img" aria-label="Impressiva Printing" overflow="visible">
+  <title>Impressiva Printing</title>
+  <defs>
+    <style>
+      .impressiva { font-family: 'Anton', 'Arial Black', Impact, sans-serif; font-weight: 900; font-size: 132px; letter-spacing: -2px; }
+      .printing { font-family: 'Anton', 'Arial Black', Impact, sans-serif; font-weight: 900; font-size: 108px; font-style: italic; letter-spacing: -1px; }
+    </style>
+  </defs>
+
+  <!-- Teal outer shadow layer -->
+  <g transform="translate(6 8)">
+    <text x="20" y="130" class="impressiva" fill="none" stroke="#1E7A85" stroke-width="20" stroke-linejoin="round" transform="skewX(-8)">Impressiva</text>
+    <text x="160" y="235" class="printing" fill="none" stroke="#1E7A85" stroke-width="20" stroke-linejoin="round" transform="skewX(-14)">Printing</text>
+  </g>
+
+  <!-- Black outline layer -->
+  <text x="20" y="130" class="impressiva" fill="none" stroke="#0A0A0A" stroke-width="9" stroke-linejoin="round" transform="skewX(-8)">Impressiva</text>
+  <text x="160" y="235" class="printing" fill="none" stroke="#0A0A0A" stroke-width="9" stroke-linejoin="round" transform="skewX(-14)">Printing</text>
+
+  <!-- Fill layer -->
+  <text x="20" y="130" class="impressiva" fill="#F5F5F5" transform="skewX(-8)">Impressiva</text>
+  <text x="160" y="235" class="printing" fill="#E5352B" transform="skewX(-14)">Printing</text>
+
+  <!-- Highlight streaks -->
+  <g opacity="0.55" fill="#FFFFFF">
+    <rect x="40" y="40" width="180" height="4" transform="skewX(-8) rotate(-2 40 40)" />
+    <rect x="180" y="160" width="120" height="3" transform="skewX(-14) rotate(-2 180 160)" />
+  </g>
+</svg>
