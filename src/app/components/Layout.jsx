@@ -20,7 +20,7 @@ export default function Layout() {
       />
       <ScrollProgressBar />
       <Nav />
-      <main className="pt-[68px]">
+      <main className="pt-[88px]">
         <Outlet />
       </main>
       <Footer />

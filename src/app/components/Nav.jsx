@@ -3,12 +3,18 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { NAV_ITEMS, ROUTES } from '@constants/routes.js';
 import { useAuth } from '@hooks/useAuth.js';
+import SocialIcons from '@components/SocialIcons.jsx';
 
 function Brand() {
   return (
-    <Link to={ROUTES.home} className="group flex items-baseline gap-2">
-      <span className="display text-2xl leading-none text-paper-100">IMPRESSIVA</span>
-      <span className="h-2 w-2 bg-flare" aria-hidden />
+    <Link to={ROUTES.home} className="group flex items-center" aria-label="Impressiva Printing home">
+      <img
+        src="/logo.svg"
+        alt="Impressiva Printing"
+        className="h-11 w-auto sm:h-12"
+        width="600"
+        height="260"
+      />
     </Link>
   );
 }
@@ -66,6 +72,11 @@ export default function Nav() {
           </nav>
 
           <div className="hidden items-center gap-5 md:flex">
+            <SocialIcons
+              className="mr-2 gap-4 border-r border-paper-100/12 pr-5"
+              itemClassName="text-paper-100/55 hover:text-flare"
+              iconClassName="h-4 w-4"
+            />
             {isAuthed ? (
               <>
                 {isAdmin ? (
@@ -143,6 +154,16 @@ export default function Nav() {
                 {item.label}
               </NavLink>
             ))}
+            <div className="flex items-center justify-between border-b border-paper-100/8 py-4">
+              <span className="spec text-xs uppercase tracking-[0.2em] text-paper-100/40">
+                Follow
+              </span>
+              <SocialIcons
+                className="gap-5"
+                itemClassName="text-paper-100/70 hover:text-flare"
+                iconClassName="h-5 w-5"
+              />
+            </div>
             <div className="flex gap-3 py-4">
               {isAuthed ? (
                 <>

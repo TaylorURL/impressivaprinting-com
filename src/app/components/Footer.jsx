@@ -3,6 +3,7 @@ import { NAV_ITEMS, ROUTES } from '@constants/routes.js';
 import { SITE } from '@constants/site.js';
 import { ColorBar } from '@components/PrintMarks.jsx';
 import Parallax from '@components/Parallax.jsx';
+import SocialIcons from '@components/SocialIcons.jsx';
 
 export default function Footer() {
   const isHome = useLocation().pathname === ROUTES.home;
@@ -26,20 +27,23 @@ export default function Footer() {
 
       <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.6fr_1fr_1fr]">
         <div>
-          <span className="kicker text-flare">Impressiva Printing Co.</span>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-paper-100/55">{SITE.blurb}</p>
-          <div className="mt-6 flex gap-6">
-            {SITE.socials.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target="_blank"
-                rel="noreferrer"
-                className="spec text-xs uppercase tracking-[0.2em] text-paper-100/50 link-wipe hover:text-paper-100"
-              >
-                {s.label}
-              </a>
-            ))}
+          <img
+            src="/logo.svg"
+            alt="Impressiva Printing"
+            className="h-14 w-auto"
+            width="600"
+            height="260"
+          />
+          <p className="mt-6 max-w-sm text-sm leading-relaxed text-paper-100/55">{SITE.blurb}</p>
+          <div className="mt-6 flex items-center gap-5">
+            <span className="spec text-xs uppercase tracking-[0.2em] text-paper-100/40">
+              Follow
+            </span>
+            <SocialIcons
+              className="gap-4"
+              itemClassName="text-paper-100/60 hover:text-flare"
+              iconClassName="h-5 w-5"
+            />
           </div>
         </div>
 

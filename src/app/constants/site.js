@@ -10,9 +10,9 @@ export const SITE = {
   address: '2200 Warehouse District, Bay City',
   hours: 'Mon–Fri 8a–6p · Sat 10a–3p',
   socials: [
-    { label: 'Instagram', href: 'https://instagram.com' },
-    { label: 'TikTok', href: 'https://tiktok.com' },
-    { label: 'Twitter', href: 'https://twitter.com' },
+    { label: 'Facebook', href: 'https://www.facebook.com/impressivaprinting/', icon: 'facebook' },
+    { label: 'Instagram', href: 'https://www.instagram.com/impressivaprinting/', icon: 'instagram' },
+    { label: 'TikTok', href: 'https://www.tiktok.com/@impressivaprinting', icon: 'tiktok' },
   ],
 };
 
