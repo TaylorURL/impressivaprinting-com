@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { ROUTES } from '@constants/routes.js';
+import { pad2 } from '@utils/format.js';
 
 // Editorial product plate: oversized index, SKU chip, Anton name, mono spec row.
 // Monochrome by default; flare + swatch reveal on hover. Tone-aware.
@@ -34,7 +35,7 @@ export default function ProductPlate({ product, index, tone = 'ink' }) {
       </div>
 
       <span className="display mt-10 text-[3.5rem] leading-[0.85] opacity-15 transition-opacity duration-300 group-hover:opacity-40">
-        {String(index).padStart(2, '0')}
+        {pad2(index)}
       </span>
 
       <h3 className="display mt-2 text-3xl">{product.name}</h3>

@@ -1,4 +1,4 @@
-// Placeholder marketing content — portfolio, social proof, FAQ, quote engine.
+// Placeholder marketing content — portfolio and instant-quote engine.
 // Front-end only; no real client data.
 
 export const PORTFOLIO = [
@@ -84,71 +84,6 @@ export const CATEGORIES = [
   'Stickers',
   'Signage',
   'Posters',
-];
-
-export const TESTIMONIALS = [
-  {
-    quote:
-      'They turned a rough concept into a building-side banner in 48 hours, and the color was exactly right.',
-    name: 'Marcus Vega',
-    role: 'Owner',
-    company: 'Riot Coffee',
-  },
-  {
-    quote:
-      'Every merchandise run we have ordered has sold out. The print quality is a clear step above anyone we used before.',
-    name: 'Dani Okafor',
-    role: 'Team Manager',
-    company: 'Southside FC',
-  },
-  {
-    quote:
-      'The foil business cards draw a comment nearly every time I hand one over. Well worth the investment.',
-    name: 'Theo Brandt',
-    role: 'Founder',
-    company: 'Vault Barbers',
-  },
-  {
-    quote:
-      'A rush order on a Friday afternoon, handled without a hitch — proof back within the hour, finished product the next morning.',
-    name: 'Priya Nair',
-    role: 'Marketing Lead',
-    company: 'Golden Wok',
-  },
-];
-
-export const LOGOS = [
-  'RIOT COFFEE',
-  'SOUTHSIDE FC',
-  'VAULT BARBERS',
-  'STATIC SKATE',
-  'GOLDEN WOK',
-  'EMBER CO.',
-  'BASEMENT SHOWS',
-  'TAQUERÍA LUZ',
-];
-
-export const FAQS = [
-  {
-    q: 'How fast can you turn a job around?',
-    a: 'Standard runs ship in 3–5 business days. Most products offer same-day rush if your files are print-ready and approved before noon.',
-  },
-  {
-    q: 'What files do you need?',
-    a: 'Print-ready PDF, PNG, SVG or high-res JPG at 300dpi with a 0.125" bleed. No art? Our designers will build it — just upload a reference from your account.',
-  },
-  {
-    q: 'Do you match exact colors?',
-    a: 'Yes. Our presses are G7-calibrated and every job is hand-proofed. For brand-critical work we can hit specified spot/Pantone values.',
-  },
-  {
-    q: 'Is there a minimum order?',
-    a: 'Most products start at low quantities — 50 stickers, 100 cards, a single banner. Larger runs unlock better per-unit pricing.',
-  },
-  {
-    q: 'Can I get it shipped?',
-    a: 'Shop pickup and local courier are available same-week; we also ship nationwide. Shipping is quoted per job at checkout.',
-  },
 ];
 
 // Instant-quote engine (placeholder math — indicative only, not a real cart).

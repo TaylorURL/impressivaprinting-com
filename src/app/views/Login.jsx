@@ -3,12 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@hooks/useAuth.js';
 import { ROUTES } from '@constants/routes.js';
+import { FORM_LABEL as LABEL, FORM_INPUT as INPUT } from '@constants/ui.js';
 import Button from '@components/Button.jsx';
 import AuthShell from '@components/AuthShell.jsx';
-
-const LABEL = 'kicker mb-2 block text-paper-100/45';
-const INPUT =
-  'w-full border-b border-paper-100/20 bg-transparent py-3 text-paper-100 placeholder:text-paper-100/30 outline-none transition-colors focus:border-flare';
 
 export default function Login() {
   const { login } = useAuth();

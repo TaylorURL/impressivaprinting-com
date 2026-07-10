@@ -1,10 +1,13 @@
 import { ROUTES } from '@constants/routes.js';
+import { CONTAINER } from '@constants/ui.js';
 import Button from '@components/Button.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
 
 export default function NotFound() {
   return (
-    <section className="mx-auto flex min-h-[70vh] max-w-[1400px] flex-col items-center justify-center px-5 py-24 text-center sm:px-8">
+    <section
+      className={`${CONTAINER} flex min-h-[70vh] flex-col items-center justify-center py-24 text-center`}
+    >
       <span className="kicker text-flare">Error — 404</span>
       <h1 className="display mt-6 text-[26vw] leading-[0.8] text-paper-100 sm:text-[12rem]">404</h1>
       <ColorBar className="mt-2 h-2 w-40" />

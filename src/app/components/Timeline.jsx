@@ -4,7 +4,7 @@ import { TIMELINE } from '@constants/content.js';
 // Scroll-scrubbed studio history: a vertical rail fills as you scroll through,
 // lighting each milestone as the fill reaches it.
 export default function Timeline() {
-  const [ref, progress] = useScrollProgress('through');
+  const [ref, progress] = useScrollProgress();
 
   return (
     <div ref={ref} className="relative mt-12 pl-8 sm:pl-12">
