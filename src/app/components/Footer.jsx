@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_ITEMS, ROUTES } from '@constants/routes.js';
 import { SITE } from '@constants/site.js';
+import { pad2 } from '@utils/format.js';
 import { ColorBar } from '@components/PrintMarks.jsx';
 import Parallax from '@components/Parallax.jsx';
 import SocialIcons from '@components/SocialIcons.jsx';
@@ -52,9 +53,7 @@ export default function Footer() {
           <ul className="mt-5 space-y-3">
             {NAV_ITEMS.map((item, i) => (
               <li key={item.to} className="flex items-center gap-3">
-                <span className="spec text-xs text-paper-100/25">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
+                <span className="spec text-xs text-paper-100/25">{pad2(i + 1)}</span>
                 <Link
                   to={item.to}
                   className="spec text-xs uppercase tracking-[0.15em] text-paper-100/70 hover:text-flare"
@@ -64,9 +63,7 @@ export default function Footer() {
               </li>
             ))}
             <li className="flex items-center gap-3">
-              <span className="spec text-xs text-paper-100/25">
-                {String(NAV_ITEMS.length + 1).padStart(2, '0')}
-              </span>
+              <span className="spec text-xs text-paper-100/25">{pad2(NAV_ITEMS.length + 1)}</span>
               <Link
                 to={ROUTES.login}
                 className="spec text-xs uppercase tracking-[0.15em] text-paper-100/70 hover:text-flare"

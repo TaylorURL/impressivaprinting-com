@@ -2,17 +2,9 @@ import { useMemo, useState } from 'react';
 import { Download, Trash2 } from 'lucide-react';
 import { store, UPLOAD_STATUSES } from '@data/store.js';
 import { formatBytes } from '@utils/files.js';
+import { CONTAINER, UPLOAD_STATUS_STYLE } from '@constants/ui.js';
 import CountUp from '@components/CountUp.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
-
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
-
-const STATUS_STYLE = {
-  new: 'text-proc-c',
-  'in-production': 'text-proc-y',
-  ready: 'text-flare',
-  archived: 'text-paper-100/40',
-};
 
 function AdminTile({ upload, onStatus, onRemove }) {
   return (
@@ -25,7 +17,7 @@ function AdminTile({ upload, onStatus, onRemove }) {
           className="relative h-full w-full object-contain p-4"
         />
         <span
-          className={`spec absolute left-3 top-3 text-[10px] uppercase tracking-[0.2em] ${STATUS_STYLE[upload.status]}`}
+          className={`spec absolute left-3 top-3 text-[10px] uppercase tracking-[0.2em] ${UPLOAD_STATUS_STYLE[upload.status]}`}
         >
           <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-current align-middle" />
           {upload.status}
@@ -112,7 +104,7 @@ export default function Admin() {
   return (
     <>
       <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
-        <div className={`${WRAP} pb-10 pt-14 sm:pt-20`}>
+        <div className={`${CONTAINER} pb-10 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-flare">Back of House</span>
             <span className="kicker text-paper-100/50">Restricted</span>
@@ -127,7 +119,7 @@ export default function Admin() {
         <ColorBar className="h-2" />
       </section>
 
-      <section className={`${WRAP} py-14`}>
+      <section className={`${CONTAINER} py-14`}>
         <div className="grid grid-cols-1 border border-paper-100/12 sm:grid-cols-3">
           {STAT_ROWS.map((s, i) => (
             <div

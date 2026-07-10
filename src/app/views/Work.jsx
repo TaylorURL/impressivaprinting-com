@@ -6,8 +6,7 @@ import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
 import WorkTile from '@components/WorkTile.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
-
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
+import { CONTAINER } from '@constants/ui.js';
 
 export default function Work() {
   const [cat, setCat] = useState('All');
@@ -16,7 +15,7 @@ export default function Work() {
   return (
     <>
       <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
-        <div className={`${WRAP} pb-12 pt-14 sm:pt-20`}>
+        <div className={`${CONTAINER} pb-12 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-paper-100/50">No. 007 — Portfolio</span>
             <span className="kicker text-paper-100/50">{PORTFOLIO.length} Projects</span>
@@ -32,7 +31,7 @@ export default function Work() {
         <ColorBar className="h-2" />
       </section>
 
-      <section className={`${WRAP} py-12`}>
+      <section className={`${CONTAINER} py-12`}>
         <div className="mb-8 flex flex-wrap gap-5">
           {CATEGORIES.map((c) => (
             <button

@@ -7,10 +7,9 @@ import {
   QUOTE_TURNAROUND,
 } from '@constants/content.js';
 import { ROUTES } from '@constants/routes.js';
+import { CONTAINER } from '@constants/ui.js';
 import Button from '@components/Button.jsx';
 import CountUp from '@components/CountUp.jsx';
-
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 
 function Choice({ active, onClick, children }) {
   return (
@@ -46,7 +45,7 @@ export default function QuoteCalculator() {
 
   return (
     <section className="border-y border-paper-100/10 bg-ink-900">
-      <div className={`${WRAP} py-20 sm:py-28`}>
+      <div className={`${CONTAINER} py-20 sm:py-28`}>
         <div className="flex items-end justify-between border-b border-paper-100/12 pb-4">
           <span className="kicker text-flare">Instant Estimate</span>
           <span className="spec hidden text-xs text-paper-100/40 sm:block">Indicative only</span>
