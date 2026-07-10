@@ -11,8 +11,7 @@ import SectionHeading from '@components/SectionHeading.jsx';
 import WorkTile from '@components/WorkTile.jsx';
 import SocialIcons from '@components/SocialIcons.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
-
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
+import { CONTAINER } from '@constants/ui.js';
 
 const CATEGORIES = [
   {
@@ -45,7 +44,7 @@ function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-paper-100/10 bg-ink-950">
       <div className="blueprint pointer-events-none absolute inset-0 opacity-40" />
-      <div className={`relative ${WRAP} pb-16 pt-12 sm:pb-24 sm:pt-16`}>
+      <div className={`relative ${CONTAINER} pb-16 pt-12 sm:pb-24 sm:pt-16`}>
         <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
           <Reveal>
             <img
@@ -102,13 +101,10 @@ function Featured() {
   return (
     <section className="grain relative bg-paper-100 text-ink-950">
       <div className="halftone-ink pointer-events-none absolute inset-0 opacity-[0.05]" />
-      <div className={`relative ${WRAP} py-20 sm:py-24`}>
+      <div className={`relative ${CONTAINER} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="01" kicker="Featured" title="Best Sellers" tone="paper">
-            <Link
-              to={ROUTES.products}
-              className="inline-flex items-center gap-1 hover:text-flare"
-            >
+            <Link to={ROUTES.products} className="inline-flex items-center gap-1 hover:text-flare">
               View all <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </SectionHeading>
@@ -129,7 +125,7 @@ function Featured() {
 function Categories() {
   return (
     <section className="border-y border-paper-100/10 bg-ink-950">
-      <div className={`${WRAP} py-20 sm:py-24`}>
+      <div className={`${CONTAINER} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="02" kicker="Shop by" title="Categories" tone="ink">
             04 Departments
@@ -184,13 +180,10 @@ function Catalog() {
   const rest = PRODUCTS.filter((p) => !p.featured);
   return (
     <section className="grain relative bg-paper-100 text-ink-950">
-      <div className={`relative ${WRAP} py-20 sm:py-24`}>
+      <div className={`relative ${CONTAINER} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="03" kicker="Also Available" title="More Products" tone="paper">
-            <Link
-              to={ROUTES.products}
-              className="inline-flex items-center gap-1 hover:text-flare"
-            >
+            <Link to={ROUTES.products} className="inline-flex items-center gap-1 hover:text-flare">
               Full catalog <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </SectionHeading>
@@ -216,7 +209,7 @@ function RecentWork() {
   const items = PORTFOLIO.slice(0, 3);
   return (
     <section className="bg-ink-950">
-      <div className={`${WRAP} py-20 sm:py-24`}>
+      <div className={`${CONTAINER} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="04" kicker="Portfolio" title="Recent Work" tone="ink">
             <Link to={ROUTES.work} className="inline-flex items-center gap-1 hover:text-flare">
@@ -240,15 +233,15 @@ function RecentWork() {
 function CTA() {
   return (
     <section className="grain relative bg-paper-100 text-ink-950">
-      <div className={`${WRAP} py-20 text-center sm:py-24`}>
+      <div className={`${CONTAINER} py-20 text-center sm:py-24`}>
         <Reveal>
           <span className="kicker text-flare">Ready to Start?</span>
           <h2 className="display mx-auto mt-6 max-w-4xl text-[14vw] leading-[0.85] sm:text-7xl">
             Let&apos;s Print It.
           </h2>
           <p className="mx-auto mt-6 max-w-md text-ink-950/60">
-            Send us your files or a rough idea. We&apos;ll send a proof back the same day and get
-            it on press.
+            Send us your files or a rough idea. We&apos;ll send a proof back the same day and get it
+            on press.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Button to={ROUTES.contact} variant="flare" size="lg">

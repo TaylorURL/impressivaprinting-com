@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { ArrowUpRight, Plus } from 'lucide-react';
 import { PRODUCTS } from '@constants/products.js';
 import { ROUTES } from '@constants/routes.js';
+import { CONTAINER } from '@constants/ui.js';
+import { pad2 } from '@utils/format.js';
 import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
 import QuoteCalculator from '@components/QuoteCalculator.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
 
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 const FILTERS = [
   { key: 'all', label: 'All' },
   { key: 'featured', label: 'Best Sellers' },
@@ -21,9 +22,7 @@ function CatalogRow({ product, index }) {
         onClick={() => setOpen((v) => !v)}
         className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 py-6 pl-3 text-left transition-colors duration-300 hover:bg-ink-900 sm:grid-cols-[70px_1fr_180px_140px_auto] sm:gap-6 sm:px-4"
       >
-        <span className="spec text-xs tracking-[0.2em] text-paper-100/35">
-          {String(index).padStart(2, '0')}
-        </span>
+        <span className="spec text-xs tracking-[0.2em] text-paper-100/35">{pad2(index)}</span>
         <span className="flex items-center gap-3">
           <span
             className="h-3 w-3 shrink-0 rounded-full"
@@ -82,7 +81,7 @@ export default function Products() {
   return (
     <>
       <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
-        <div className={`${WRAP} pb-12 pt-14 sm:pt-20`}>
+        <div className={`${CONTAINER} pb-12 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-paper-100/50">No. 002 — Catalog</span>
             <span className="kicker text-paper-100/50">{PRODUCTS.length} Services</span>
@@ -98,7 +97,7 @@ export default function Products() {
         <ColorBar className="h-2" />
       </section>
 
-      <section className={`${WRAP} py-12`}>
+      <section className={`${CONTAINER} py-12`}>
         <div className="mb-4 flex gap-6">
           {FILTERS.map((f) => (
             <button
