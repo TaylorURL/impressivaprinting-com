@@ -8,6 +8,7 @@ import CountUp from '@components/CountUp.jsx';
 import Timeline from '@components/Timeline.jsx';
 import SectionHeading from '@components/SectionHeading.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
+import { SplitText, ScrollReveal, SpotlightCard, Squares } from '@reactbits';
 
 const VALUES = [
   {
@@ -31,14 +32,21 @@ const VALUES = [
 export default function About() {
   return (
     <>
-      <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
-        <div className={`${CONTAINER} pb-12 pt-14 sm:pt-20`}>
+      <section className="cropmarks relative overflow-hidden border-b border-paper-100/10 text-paper-100/40">
+        {/* react-bits Squares — drifting blueprint grid behind the studio header */}
+        <div className="pointer-events-none absolute inset-0 opacity-40">
+          <Squares direction="diagonal" speed={0.22} squareSize={50} />
+        </div>
+        <div className={`relative ${CONTAINER} pb-12 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-paper-100/50">No. 003 — Studio</span>
             <span className="kicker text-paper-100/50">Since Day One</span>
           </div>
           <h1 className="display mt-8 text-[16vw] leading-[0.8] text-paper-100 sm:text-8xl">
-            Our <span className="text-flare">Story</span>
+            <SplitText text="Our " splitType="chars" delay={30} />
+            <span className="text-flare">
+              <SplitText text="Story" splitType="chars" delay={30} />
+            </span>
           </h1>
         </div>
         <ColorBar className="h-2" />
@@ -46,30 +54,31 @@ export default function About() {
 
       {/* Story */}
       <section className={`${CONTAINER} grid gap-12 py-20 sm:py-28 lg:grid-cols-[1.4fr_1fr]`}>
-        <Reveal className="space-y-5 text-lg leading-relaxed text-paper-100/70">
-          <p>
+        <div className="space-y-5 text-lg leading-relaxed text-paper-100/70">
+          {/* react-bits ScrollReveal — words sharpen and rise as you scroll the story */}
+          <ScrollReveal containerClassName="text-lg leading-relaxed text-paper-100/70">
             Impressiva began in a single warehouse room with one press and a simple standard: never
             print anything forgettable. Early work — event posters, custom apparel, and storefront
             banners for local businesses — had to be right the first time, every time.
-          </p>
-          <p>
-            Today we operate a full production floor, but the approach hasn&apos;t changed. Every
-            job gets the same attention to detail, whether it&apos;s 100 business cards or a
-            building-wide banner.
-          </p>
-          <p className="text-paper-100/90">
+          </ScrollReveal>
+          <ScrollReveal containerClassName="text-lg leading-relaxed text-paper-100/70">
+            Today we operate a full production floor, but the approach has not changed. Every job
+            gets the same attention to detail, whether it is 100 business cards or a building-wide
+            banner.
+          </ScrollReveal>
+          <ScrollReveal containerClassName="text-lg leading-relaxed text-paper-100/90">
             A print studio that pairs bold creative work with disciplined craft — genuine quality,
             dependable turnaround, and a team that treats your deadline as its own.
-          </p>
-          <div className="flex flex-wrap gap-3 pt-4">
-            <Button to={ROUTES.contact} variant="flare" size="lg">
+          </ScrollReveal>
+          <Reveal className="flex flex-wrap gap-3 pt-4">
+            <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
               Get in Touch
             </Button>
-            <Button to={ROUTES.work} variant="outline" size="lg">
+            <Button to={ROUTES.work} variant="outline" size="lg" magnetic>
               View Our Work
             </Button>
-          </div>
-        </Reveal>
+          </Reveal>
+        </div>
 
         <Reveal delay={120} className="self-start border border-paper-100/12">
           {STATS.map((s, i) => (
@@ -90,8 +99,11 @@ export default function About() {
       </section>
 
       {/* Scroll-scrubbed history */}
-      <section className="border-t border-paper-100/10 bg-ink-900">
-        <div className={`${CONTAINER} py-20 sm:py-28`}>
+      <section className="relative overflow-hidden border-t border-paper-100/10 bg-ink-900">
+        <div className="pointer-events-none absolute inset-0 opacity-40">
+          <Squares direction="up" speed={0.2} squareSize={48} />
+        </div>
+        <div className={`relative ${CONTAINER} py-20 sm:py-28`}>
           <Reveal>
             <SectionHeading index="—" kicker="The Timeline" title="How We Got Here" tone="ink" />
           </Reveal>
@@ -107,12 +119,17 @@ export default function About() {
           </Reveal>
           <div className="mt-12 grid gap-px border border-ink-950/15 bg-ink-950/15 sm:grid-cols-2 lg:grid-cols-4">
             {VALUES.map((v, i) => (
-              <Reveal key={v.title} delay={i * 70} className="bg-paper-100 p-7">
-                <span className="display text-5xl text-ink-950/15">{pad2(i + 1)}</span>
-                <h3 className="mt-5 font-head text-lg font-800 uppercase tracking-tight text-ink-950">
-                  {v.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-ink-950/60">{v.body}</p>
+              <Reveal key={v.title} delay={i * 70}>
+                <SpotlightCard
+                  className="h-full bg-paper-100 p-7"
+                  spotlightColor="rgba(229, 53, 43, 0.16)"
+                >
+                  <span className="display text-5xl text-ink-950/15">{pad2(i + 1)}</span>
+                  <h3 className="mt-5 font-head text-lg font-800 uppercase tracking-tight text-ink-950">
+                    {v.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-ink-950/60">{v.body}</p>
+                </SpotlightCard>
               </Reveal>
             ))}
           </div>

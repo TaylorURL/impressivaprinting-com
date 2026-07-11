@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { ArrowUpRight, Plus } from 'lucide-react';
+import { ArrowUpRight, Mail, Phone, Plus } from 'lucide-react';
 import { PRODUCTS } from '@constants/products.js';
 import { ROUTES } from '@constants/routes.js';
+import { SITE } from '@constants/site.js';
 import { CONTAINER } from '@constants/ui.js';
 import { pad2 } from '@utils/format.js';
 import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
-import QuoteCalculator from '@components/QuoteCalculator.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
+import { SplitText, ShinyText, Squares, GlareHover } from '@reactbits';
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -20,7 +21,7 @@ function CatalogRow({ product, index }) {
     <div className="wipe-flare group relative border-b border-paper-100/12">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 py-6 pl-3 text-left transition-colors duration-300 hover:bg-ink-900 sm:grid-cols-[70px_1fr_180px_140px_auto] sm:gap-6 sm:px-4"
+        className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 py-6 pl-3 text-left transition-colors duration-300 hover:bg-ink-900 sm:grid-cols-[70px_1fr_180px_auto] sm:gap-6 sm:px-4"
       >
         <span className="spec text-xs tracking-[0.2em] text-paper-100/35">{pad2(index)}</span>
         <span className="flex items-center gap-3">
@@ -34,9 +35,6 @@ function CatalogRow({ product, index }) {
         </span>
         <span className="spec hidden text-xs uppercase tracking-[0.15em] text-paper-100/45 sm:block">
           {product.tag}
-        </span>
-        <span className="spec hidden text-xs text-paper-100/70 sm:block">
-          From ${product.price}
         </span>
         <Plus
           className={`h-5 w-5 text-paper-100/40 transition-transform duration-300 ease-editorial ${
@@ -80,18 +78,25 @@ export default function Products() {
 
   return (
     <>
-      <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
-        <div className={`${CONTAINER} pb-12 pt-14 sm:pt-20`}>
+      <section className="cropmarks relative overflow-hidden border-b border-paper-100/10 text-paper-100/40">
+        {/* react-bits Squares — faint blueprint grid behind the catalog header */}
+        <div className="pointer-events-none absolute inset-0 opacity-40">
+          <Squares direction="right" speed={0.25} squareSize={52} />
+        </div>
+        <div className={`relative ${CONTAINER} pb-12 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-paper-100/50">No. 002 — Catalog</span>
-            <span className="kicker text-paper-100/50">{PRODUCTS.length} Services</span>
+            <ShinyText text={`${PRODUCTS.length} Services`} className="kicker" speed={5} />
           </div>
           <h1 className="display mt-8 text-[17vw] leading-[0.8] text-paper-100 sm:text-8xl">
-            Everything <span className="text-flare">We Print</span>
+            <SplitText text="Everything " splitType="chars" delay={24} />
+            <span className="text-flare">
+              <SplitText text="We Print" splitType="chars" delay={24} />
+            </span>
           </h1>
           <p className="mt-6 max-w-xl text-paper-100/60">
-            Real stocks, real inks, tight color. Every job proofed before it runs. Figures are
-            starting points — tap a line for specs, or request a quote on your exact job.
+            Real stocks, real inks, tight color. Every job proofed before it runs. Tap a line for
+            specs, then call or email for a quote on your exact job.
           </p>
         </div>
         <ColorBar className="h-2" />
@@ -120,23 +125,82 @@ export default function Products() {
           ))}
         </div>
 
-        <Reveal className="mt-16 grain relative bg-paper-100 p-8 text-ink-950 sm:p-12">
-          <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
-            <div>
-              <span className="kicker text-flare">Off-Menu</span>
-              <h3 className="display mt-3 text-4xl sm:text-5xl">Don&apos;t see your thing?</h3>
-              <p className="mt-3 max-w-md text-ink-950/60">
-                If it can be printed, we can print it. Send the spec and we&apos;ll quote it.
-              </p>
+        <Reveal className="mt-16">
+          <GlareHover
+            className="grain relative bg-paper-100 p-8 text-ink-950 sm:p-12"
+            glareColor="rgba(229, 53, 43, 0.35)"
+          >
+            <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+              <div>
+                <span className="kicker text-flare">Off-Menu</span>
+                <h3 className="display mt-3 text-4xl sm:text-5xl">Don&apos;t see your thing?</h3>
+                <p className="mt-3 max-w-md text-ink-950/60">
+                  If it can be printed, we can print it. Send the spec and we&apos;ll quote it.
+                </p>
+              </div>
+              <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
+                Custom Quote <ArrowUpRight className="h-4 w-4" />
+              </Button>
             </div>
-            <Button to={ROUTES.contact} variant="flare" size="lg">
-              Custom Quote <ArrowUpRight className="h-4 w-4" />
-            </Button>
-          </div>
+          </GlareHover>
         </Reveal>
       </section>
 
-      <QuoteCalculator />
+      <section className="border-y border-paper-100/10 bg-ink-900">
+        <div className={`${CONTAINER} py-20 sm:py-28`}>
+          <div className="flex items-end justify-between border-b border-paper-100/12 pb-4">
+            <span className="kicker text-flare">Get a Quote</span>
+            <span className="spec hidden text-xs text-paper-100/40 sm:block">
+              Every job priced to spec
+            </span>
+          </div>
+          <h2 className="display mt-5 text-5xl text-paper-100 sm:text-6xl">
+            Call or Email for a Quote
+          </h2>
+          <p className="mt-5 max-w-xl text-paper-100/60">
+            We quote every job by hand. Send your specs, quantities, and deadline and we&apos;ll get
+            a number back to you the same day — no two runs are alike, so nothing here is sold at a
+            fixed price.
+          </p>
+
+          <div className="mt-10 grid gap-px border border-paper-100/12 bg-paper-100/12 sm:grid-cols-2">
+            <a
+              href={`tel:${SITE.phone.replace(/[^0-9+]/g, '')}`}
+              className="group flex items-center justify-between gap-4 bg-ink-950 p-7 transition-colors hover:bg-ink-900"
+            >
+              <span className="flex items-center gap-4">
+                <Phone className="h-6 w-6 shrink-0 text-flare" strokeWidth={1.6} />
+                <span>
+                  <span className="kicker block text-paper-100/45">Call</span>
+                  <span className="display mt-1 block text-2xl text-paper-100">{SITE.phone}</span>
+                </span>
+              </span>
+              <ArrowUpRight className="h-5 w-5 shrink-0 text-paper-100/40 transition-transform duration-300 ease-editorial group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-flare" />
+            </a>
+            <a
+              href={`mailto:${SITE.email}`}
+              className="group flex items-center justify-between gap-4 bg-ink-950 p-7 transition-colors hover:bg-ink-900"
+            >
+              <span className="flex min-w-0 items-center gap-4">
+                <Mail className="h-6 w-6 shrink-0 text-flare" strokeWidth={1.6} />
+                <span className="min-w-0">
+                  <span className="kicker block text-paper-100/45">Email</span>
+                  <span className="display mt-1 block break-all text-2xl text-paper-100">
+                    {SITE.email}
+                  </span>
+                </span>
+              </span>
+              <ArrowUpRight className="h-5 w-5 shrink-0 text-paper-100/40 transition-transform duration-300 ease-editorial group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-flare" />
+            </a>
+          </div>
+
+          <div className="mt-8">
+            <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
+              Send a Quote Request <ArrowUpRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
