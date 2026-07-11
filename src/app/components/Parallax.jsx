@@ -11,7 +11,7 @@ export default function Parallax({
   ...rest
 }) {
   const Tag = as;
-  const [ref, progress] = useScrollProgress('through');
+  const [ref, progress] = useScrollProgress();
   const offset = (progress - 0.5) * distance;
   const transform =
     axis === 'x' ? `translate3d(${offset}px, 0, 0)` : `translate3d(0, ${offset}px, 0)`;

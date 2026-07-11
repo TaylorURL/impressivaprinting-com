@@ -1,5 +1,7 @@
 import { STATS, SITE } from '@constants/site.js';
 import { ROUTES } from '@constants/routes.js';
+import { CONTAINER } from '@constants/ui.js';
+import { pad2 } from '@utils/format.js';
 import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
 import CountUp from '@components/CountUp.jsx';
@@ -7,8 +9,6 @@ import Timeline from '@components/Timeline.jsx';
 import SectionHeading from '@components/SectionHeading.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
 import { SplitText, ScrollReveal, SpotlightCard, Squares } from '@reactbits';
-
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 
 const VALUES = [
   {
@@ -37,7 +37,7 @@ export default function About() {
         <div className="pointer-events-none absolute inset-0 opacity-40">
           <Squares direction="diagonal" speed={0.22} squareSize={50} />
         </div>
-        <div className={`relative ${WRAP} pb-12 pt-14 sm:pt-20`}>
+        <div className={`relative ${CONTAINER} pb-12 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-paper-100/50">No. 003 — Studio</span>
             <span className="kicker text-paper-100/50">Since Day One</span>
@@ -53,7 +53,7 @@ export default function About() {
       </section>
 
       {/* Story */}
-      <section className={`${WRAP} grid gap-12 py-20 sm:py-28 lg:grid-cols-[1.4fr_1fr]`}>
+      <section className={`${CONTAINER} grid gap-12 py-20 sm:py-28 lg:grid-cols-[1.4fr_1fr]`}>
         <div className="space-y-5 text-lg leading-relaxed text-paper-100/70">
           {/* react-bits ScrollReveal — words sharpen and rise as you scroll the story */}
           <ScrollReveal containerClassName="text-lg leading-relaxed text-paper-100/70">
@@ -103,7 +103,7 @@ export default function About() {
         <div className="pointer-events-none absolute inset-0 opacity-40">
           <Squares direction="up" speed={0.2} squareSize={48} />
         </div>
-        <div className={`relative ${WRAP} py-20 sm:py-28`}>
+        <div className={`relative ${CONTAINER} py-20 sm:py-28`}>
           <Reveal>
             <SectionHeading index="—" kicker="The Timeline" title="How We Got Here" tone="ink" />
           </Reveal>
@@ -113,7 +113,7 @@ export default function About() {
 
       {/* Values on paper */}
       <section className="grain relative bg-paper-100 text-ink-950">
-        <div className={`${WRAP} py-20 sm:py-28`}>
+        <div className={`${CONTAINER} py-20 sm:py-28`}>
           <Reveal>
             <SectionHeading index="—" kicker="The Code" title="What We Stand On" tone="paper" />
           </Reveal>
@@ -124,9 +124,7 @@ export default function About() {
                   className="h-full bg-paper-100 p-7"
                   spotlightColor="rgba(229, 53, 43, 0.16)"
                 >
-                  <span className="display text-5xl text-ink-950/15">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
+                  <span className="display text-5xl text-ink-950/15">{pad2(i + 1)}</span>
                   <h3 className="mt-5 font-head text-lg font-800 uppercase tracking-tight text-ink-950">
                     {v.title}
                   </h3>

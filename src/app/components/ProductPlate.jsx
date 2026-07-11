@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { ROUTES } from '@constants/routes.js';
+import { pad2 } from '@utils/format.js';
 import { SpotlightCard } from '@reactbits';
 
 // Editorial product plate: oversized index, SKU chip, Anton name, mono spec row.
@@ -40,7 +41,7 @@ export default function ProductPlate({ product, index, tone = 'ink' }) {
       </div>
 
       <span className="display mt-10 text-[3.5rem] leading-[0.85] opacity-15 transition-opacity duration-300 group-hover:opacity-40">
-        {String(index).padStart(2, '0')}
+        {pad2(index)}
       </span>
 
       <h3 className="display mt-2 text-3xl">{product.name}</h3>
@@ -50,8 +51,8 @@ export default function ProductPlate({ product, index, tone = 'ink' }) {
         className={`mt-6 flex items-center justify-between border-t pt-4 ${paper ? 'border-ink-950/15 group-hover:border-paper-100/20' : 'border-paper-100/12 group-hover:border-white/25'}`}
       >
         <span className="spec text-xs">
-          FROM ${product.price}
-          <span className={dim}> · {product.unit}</span>
+          {product.tag}
+          <span className={dim}> · Quote on request</span>
         </span>
         <span className="spec text-xs tracking-[0.2em]">{product.stock}</span>
       </div>

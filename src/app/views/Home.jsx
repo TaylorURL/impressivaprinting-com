@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Mail, Phone } from 'lucide-react';
 import { FEATURED_PRODUCTS, PRODUCTS } from '@constants/products.js';
 import { PORTFOLIO } from '@constants/content.js';
 import { SITE } from '@constants/site.js';
@@ -11,6 +11,7 @@ import SectionHeading from '@components/SectionHeading.jsx';
 import WorkTile from '@components/WorkTile.jsx';
 import SocialIcons from '@components/SocialIcons.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
+import { CONTAINER } from '@constants/ui.js';
 import {
   BlurText,
   RotatingText,
@@ -21,8 +22,6 @@ import {
   Squares,
   SpotlightCard,
 } from '@reactbits';
-
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 
 const CATEGORIES = [
   {
@@ -66,7 +65,7 @@ function Hero() {
       <div className="pointer-events-none absolute inset-0 opacity-[0.55]">
         <Threads color="#e5352b" amplitude={1.1} distance={0.5} />
       </div>
-      <div className={`relative ${WRAP} pb-16 pt-12 sm:pb-24 sm:pt-16`}>
+      <div className={`relative ${CONTAINER} pb-16 pt-12 sm:pb-24 sm:pt-16`}>
         <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
           <Reveal>
             <img
@@ -91,11 +90,11 @@ function Hero() {
               />
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button to={ROUTES.products} variant="flare" size="lg" magnetic>
-                Shop Products <ArrowRight className="h-4 w-4" />
+              <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
+                Get a Quote <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button to={ROUTES.contact} variant="outline" size="lg" magnetic>
-                Get a Quote
+              <Button to={ROUTES.products} variant="outline" size="lg" magnetic>
+                View Products
               </Button>
             </div>
             <div className="mt-8 flex items-center gap-4">
@@ -138,13 +137,10 @@ function Featured() {
   return (
     <section className="grain relative bg-paper-100 text-ink-950">
       <div className="halftone-ink pointer-events-none absolute inset-0 opacity-[0.05]" />
-      <div className={`relative ${WRAP} py-20 sm:py-24`}>
+      <div className={`relative ${CONTAINER} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="01" kicker="Featured" title="Best Sellers" tone="paper">
-            <Link
-              to={ROUTES.products}
-              className="inline-flex items-center gap-1 hover:text-flare"
-            >
+            <Link to={ROUTES.products} className="inline-flex items-center gap-1 hover:text-flare">
               View all <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </SectionHeading>
@@ -169,9 +165,9 @@ function Categories() {
       <div className="pointer-events-none absolute inset-0 opacity-60">
         <Squares direction="diagonal" speed={0.3} squareSize={46} />
       </div>
-      <div className={`relative ${WRAP} py-20 sm:py-24`}>
+      <div className={`relative ${CONTAINER} py-20 sm:py-24`}>
         <Reveal>
-          <SectionHeading index="02" kicker="Shop by" title="Categories" tone="ink">
+          <SectionHeading index="02" kicker="Browse by" title="Categories" tone="ink">
             04 Departments
           </SectionHeading>
         </Reveal>
@@ -226,13 +222,10 @@ function Catalog() {
   const rest = PRODUCTS.filter((p) => !p.featured);
   return (
     <section className="grain relative bg-paper-100 text-ink-950">
-      <div className={`relative ${WRAP} py-20 sm:py-24`}>
+      <div className={`relative ${CONTAINER} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="03" kicker="Also Available" title="More Products" tone="paper">
-            <Link
-              to={ROUTES.products}
-              className="inline-flex items-center gap-1 hover:text-flare"
-            >
+            <Link to={ROUTES.products} className="inline-flex items-center gap-1 hover:text-flare">
               Full catalog <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </SectionHeading>
@@ -258,7 +251,7 @@ function RecentWork() {
   const items = PORTFOLIO.slice(0, 3);
   return (
     <section className="bg-ink-950">
-      <div className={`${WRAP} py-20 sm:py-24`}>
+      <div className={`${CONTAINER} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="04" kicker="Portfolio" title="Recent Work" tone="ink">
             <Link to={ROUTES.work} className="inline-flex items-center gap-1 hover:text-flare">
@@ -292,15 +285,15 @@ function CTA() {
           proximity={120}
         />
       </div>
-      <div className={`relative ${WRAP} py-20 text-center sm:py-24`}>
+      <div className={`relative ${CONTAINER} py-20 text-center sm:py-24`}>
         <Reveal>
           <span className="kicker text-flare">Ready to Start?</span>
           <h2 className="display mx-auto mt-6 max-w-4xl text-[14vw] leading-[0.85] sm:text-7xl">
             <SplitText text="Let's Print It." splitType="chars" delay={34} duration={0.7} />
           </h2>
           <p className="mx-auto mt-6 max-w-md text-ink-950/60">
-            Send us your files or a rough idea. We&apos;ll send a proof back the same day and get
-            it on press.
+            Every job is quoted to spec — no fixed prices, no online cart. Send your files or a
+            rough idea and we&apos;ll get a proof and a quote back the same day.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
@@ -309,6 +302,20 @@ function CTA() {
             <Button to={ROUTES.signup} variant="outline-ink" size="lg" magnetic>
               Create Account
             </Button>
+          </div>
+          <div className="spec mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-ink-950/70">
+            <a
+              href={`tel:${SITE.phone.replace(/[^0-9+]/g, '')}`}
+              className="inline-flex items-center gap-2 transition-colors hover:text-flare"
+            >
+              <Phone className="h-4 w-4" strokeWidth={1.8} /> {SITE.phone}
+            </a>
+            <a
+              href={`mailto:${SITE.email}`}
+              className="inline-flex items-center gap-2 break-all transition-colors hover:text-flare"
+            >
+              <Mail className="h-4 w-4" strokeWidth={1.8} /> {SITE.email}
+            </a>
           </div>
         </Reveal>
       </div>

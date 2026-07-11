@@ -6,9 +6,8 @@ import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
 import WorkTile from '@components/WorkTile.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
+import { CONTAINER } from '@constants/ui.js';
 import { SplitText, ShinyText, DotGrid, GlareHover } from '@reactbits';
-
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 
 export default function Work() {
   const [cat, setCat] = useState('All');
@@ -19,9 +18,15 @@ export default function Work() {
       <section className="cropmarks relative overflow-hidden border-b border-paper-100/10 text-paper-100/40">
         {/* react-bits DotGrid — dots scatter from the cursor behind the header */}
         <div className="pointer-events-none absolute inset-0 opacity-70">
-          <DotGrid dotSize={2.5} gap={32} baseColor="rgba(210, 214, 219, 0.12)" activeColor="#e5352b" proximity={110} />
+          <DotGrid
+            dotSize={2.5}
+            gap={32}
+            baseColor="rgba(210, 214, 219, 0.12)"
+            activeColor="#e5352b"
+            proximity={110}
+          />
         </div>
-        <div className={`relative ${WRAP} pb-12 pt-14 sm:pt-20`}>
+        <div className={`relative ${CONTAINER} pb-12 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-paper-100/50">No. 007 — Portfolio</span>
             <ShinyText text={`${PORTFOLIO.length} Projects`} className="kicker" speed={5} />
@@ -40,7 +45,7 @@ export default function Work() {
         <ColorBar className="h-2" />
       </section>
 
-      <section className={`${WRAP} py-12`}>
+      <section className={`${CONTAINER} py-12`}>
         <div className="mb-8 flex flex-wrap gap-5">
           {CATEGORIES.map((c) => (
             <button
@@ -66,7 +71,10 @@ export default function Work() {
         </div>
 
         <Reveal className="mt-16">
-          <GlareHover className="grain relative bg-paper-100 p-8 text-ink-950 sm:p-12" glareColor="rgba(229, 53, 43, 0.35)">
+          <GlareHover
+            className="grain relative bg-paper-100 p-8 text-ink-950 sm:p-12"
+            glareColor="rgba(229, 53, 43, 0.35)"
+          >
             <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
               <div>
                 <span className="kicker text-flare">Get Started</span>

@@ -94,35 +94,6 @@
     border-right: 1px solid currentColor;
   }
 
-  /* CMYK registration target */
-  .registration {
-    position: relative;
-    width: 34px;
-    height: 34px;
-    border-radius: 999px;
-    border: 1px solid currentColor;
-  }
-  .registration::before,
-  .registration::after {
-    content: '';
-    position: absolute;
-    background: currentColor;
-  }
-  .registration::before {
-    left: 50%;
-    top: -6px;
-    bottom: -6px;
-    width: 1px;
-    transform: translateX(-50%);
-  }
-  .registration::after {
-    top: 50%;
-    left: -6px;
-    right: -6px;
-    height: 1px;
-    transform: translateY(-50%);
-  }
-
   /* CMYK ink color bar */
   .colorbar {
     display: flex;
@@ -135,13 +106,6 @@
   }
 
   /* ---- Surfaces ---- */
-  .rule {
-    border-color: rgba(244, 239, 227, 0.14);
-  }
-  .rule-ink {
-    border-color: rgba(24, 21, 16, 0.16);
-  }
-
   /* Restrained liquid-glass — only for floating chrome (nav) */
   .glass {
     background: rgba(13, 13, 16, 0.6);
@@ -160,12 +124,6 @@
   }
   .pressable:active {
     transform: translateY(1px);
-  }
-
-  /* Word-reveal wrapper: child slides up from a clipped baseline */
-  .reveal-line {
-    overflow: hidden;
-    display: block;
   }
 
   /* Underline that wipes in on hover */
@@ -226,10 +184,6 @@
   .text-flare {
     color: var(--flare);
   }
-  .outline-type {
-    color: transparent;
-    -webkit-text-stroke: 1.4px currentColor;
-  }
 
   /* Halftone dot field */
   .halftone {
@@ -241,29 +195,12 @@
     background-size: 7px 7px;
   }
 
-  /* Fine engineering grid — animatable via animate-drift */
+  /* Fine engineering grid */
   .blueprint {
     background-image:
       linear-gradient(rgba(210, 214, 219, 0.05) 1px, transparent 1px),
       linear-gradient(90deg, rgba(210, 214, 219, 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
-  }
-
-  /* Diagonal hazard hatch */
-  .hazard {
-    background-image: repeating-linear-gradient(
-      -45deg,
-      var(--flare) 0,
-      var(--flare) 10px,
-      #0c0e11 10px,
-      #0c0e11 20px
-    );
-  }
-
-  /* Scanline sweep overlay */
-  .scanlines {
-    background: linear-gradient(rgba(229, 53, 43, 0.08), transparent);
-    height: 40vh;
   }
 
   /* Paper grain */
