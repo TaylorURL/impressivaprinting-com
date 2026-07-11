@@ -4,6 +4,7 @@ import { SITE } from '@constants/site.js';
 import { ColorBar } from '@components/PrintMarks.jsx';
 import Parallax from '@components/Parallax.jsx';
 import SocialIcons from '@components/SocialIcons.jsx';
+import { ShinyText } from '@reactbits';
 
 export default function Footer() {
   const isHome = useLocation().pathname === ROUTES.home;
@@ -93,9 +94,11 @@ export default function Footer() {
           <span className="spec text-[11px] uppercase tracking-[0.2em] text-paper-100/40">
             © 2026 {SITE.name} — All Rights Reserved
           </span>
-          <span className="spec text-[11px] uppercase tracking-[0.2em] text-paper-100/40">
-            Print Loud <span className="text-flare">/</span> Print Proud
-          </span>
+          <ShinyText
+            text="Print Loud / Print Proud"
+            className="spec text-[11px] uppercase tracking-[0.2em]"
+            speed={6}
+          />
         </div>
       </div>
     </footer>

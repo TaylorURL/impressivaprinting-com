@@ -1,10 +1,14 @@
+import { TiltedCard } from '@reactbits';
+
 // CSS "poster" placeholder for portfolio work — no photography needed.
 // Builds a distinct printed-piece look per item from its accent + kind.
+// Wrapped in a react-bits TiltedCard so posters tilt toward the cursor.
 export default function WorkTile({ item, className = '' }) {
   return (
-    <article
-      className={`group relative flex flex-col overflow-hidden border border-paper-100/12 bg-ink-900 ${className}`}
-    >
+    <TiltedCard className="h-full" rotateAmplitude={7} scaleOnHover={1.02}>
+      <article
+        className={`group relative flex h-full flex-col overflow-hidden border border-paper-100/12 bg-ink-900 ${className}`}
+      >
       {/* Poster face */}
       <div className="relative aspect-[4/5] w-full overflow-hidden">
         <div className="halftone pointer-events-none absolute inset-0 z-10 opacity-[0.06]" />
@@ -40,6 +44,7 @@ export default function WorkTile({ item, className = '' }) {
         </div>
         <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.accent }} />
       </div>
-    </article>
+      </article>
+    </TiltedCard>
   );
 }

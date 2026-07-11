@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react';
 import { NAV_ITEMS, ROUTES } from '@constants/routes.js';
 import { useAuth } from '@hooks/useAuth.js';
 import SocialIcons from '@components/SocialIcons.jsx';
+import { Magnet } from '@reactbits';
 
 function Brand() {
   return (
@@ -108,12 +109,14 @@ export default function Nav() {
                 >
                   Log In
                 </Link>
-                <Link
-                  to={ROUTES.signup}
-                  className="spec pressable bg-flare px-5 py-2.5 text-xs font-700 uppercase tracking-[0.2em] text-white hover:bg-flare-deep"
-                >
-                  Start a Job
-                </Link>
+                <Magnet padding={60} magnetStrength={5}>
+                  <Link
+                    to={ROUTES.signup}
+                    className="spec pressable inline-block bg-flare px-5 py-2.5 text-xs font-700 uppercase tracking-[0.2em] text-white hover:bg-flare-deep"
+                  >
+                    Start a Job
+                  </Link>
+                </Magnet>
               </>
             )}
           </div>

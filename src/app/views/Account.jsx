@@ -7,6 +7,7 @@ import { formatBytes, readFileAsDataUrl, validateFile } from '@utils/files.js';
 import Reveal from '@components/Reveal.jsx';
 import JobTracker from '@components/JobTracker.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
+import { SplitText, DecryptedText, Squares } from '@reactbits';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 const LABEL = 'kicker mb-2 block text-paper-100/45';
@@ -115,16 +116,28 @@ export default function Account() {
 
   return (
     <>
-      <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
-        <div className={`${WRAP} pb-10 pt-14 sm:pt-20`}>
+      <section className="cropmarks relative overflow-hidden border-b border-paper-100/10 text-paper-100/40">
+        {/* react-bits Squares — drifting grid behind the client dashboard header */}
+        <div className="pointer-events-none absolute inset-0 opacity-40">
+          <Squares direction="diagonal" speed={0.22} squareSize={48} />
+        </div>
+        <div className={`relative ${WRAP} pb-10 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-paper-100/50">Client Dashboard</span>
             <span className="spec text-xs text-paper-100/50">{uploads.length} FILES ON FILE</span>
           </div>
           <h1 className="display mt-8 text-[15vw] leading-[0.8] text-paper-100 sm:text-8xl">
-            Welcome, <span className="text-flare">{user.name.split(' ')[0]}</span>
+            <SplitText text="Welcome, " splitType="chars" delay={26} />
+            <span className="text-flare">
+              <SplitText text={user.name.split(' ')[0]} splitType="chars" delay={26} />
+            </span>
           </h1>
-          <p className="spec mt-4 text-xs text-paper-100/50">{user.email}</p>
+          <DecryptedText
+            text={user.email}
+            className="spec mt-4 block text-xs text-paper-100/50"
+            encryptedClassName="text-flare/70"
+            speed={26}
+          />
         </div>
         <ColorBar className="h-2" />
       </section>

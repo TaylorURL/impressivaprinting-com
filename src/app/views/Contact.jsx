@@ -4,6 +4,7 @@ import { SITE } from '@constants/site.js';
 import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
+import { SplitText, DecryptedText, DotGrid } from '@reactbits';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 const LABEL = 'kicker mb-2 block text-paper-100/45';
@@ -26,14 +27,21 @@ export default function Contact() {
 
   return (
     <>
-      <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
-        <div className={`${WRAP} pb-12 pt-14 sm:pt-20`}>
+      <section className="cropmarks relative overflow-hidden border-b border-paper-100/10 text-paper-100/40">
+        {/* react-bits DotGrid — reactive dot field behind the contact header */}
+        <div className="pointer-events-none absolute inset-0 opacity-70">
+          <DotGrid dotSize={2.5} gap={32} baseColor="rgba(210, 214, 219, 0.12)" activeColor="#e5352b" proximity={110} />
+        </div>
+        <div className={`relative ${WRAP} pb-12 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-paper-100/50">No. 004 — Contact</span>
             <span className="kicker text-paper-100/50">Reply Within 1 Day</span>
           </div>
           <h1 className="display mt-8 text-[16vw] leading-[0.8] text-paper-100 sm:text-8xl">
-            Get in <span className="text-flare">Touch</span>
+            <SplitText text="Get in " splitType="chars" delay={30} />
+            <span className="text-flare">
+              <SplitText text="Touch" splitType="chars" delay={30} />
+            </span>
           </h1>
         </div>
         <ColorBar className="h-2" />
@@ -49,7 +57,12 @@ export default function Contact() {
               <span className="spec text-xs uppercase tracking-[0.18em] text-flare">
                 {String(i + 1).padStart(2, '0')} {item.k}
               </span>
-              <span className="spec break-all text-sm text-paper-100/75">{item.v}</span>
+              <DecryptedText
+                text={item.v}
+                className="spec break-all text-sm text-paper-100/75"
+                encryptedClassName="text-flare/70"
+                speed={30}
+              />
             </div>
           ))}
           <p className="mt-8 max-w-xs text-sm leading-relaxed text-paper-100/50">
@@ -62,7 +75,9 @@ export default function Contact() {
           {sent ? (
             <div className="flex h-full min-h-[24rem] flex-col items-center justify-center border border-paper-100/12 p-10 text-center">
               <Check className="h-20 w-20 text-flare" strokeWidth={2} aria-hidden />
-              <h3 className="display mt-6 text-4xl text-paper-100">Message Sent</h3>
+              <h3 className="display mt-6 text-4xl text-paper-100">
+                <SplitText text="Message Sent" splitType="chars" delay={30} />
+              </h3>
               <p className="mt-3 max-w-sm text-sm text-paper-100/55">
                 Thanks for reaching out. This is a demo form — in production it would route directly
                 to our studio inbox, and we&apos;d respond within one business day.
@@ -101,7 +116,7 @@ export default function Contact() {
                   required
                 />
               </div>
-              <Button as="button" type="submit" variant="flare" size="lg" full>
+              <Button as="button" type="submit" variant="flare" size="lg" full magnetic>
                 Send It <ArrowRight className="h-4 w-4" />
               </Button>
             </form>

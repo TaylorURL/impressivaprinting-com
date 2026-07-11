@@ -11,6 +11,16 @@ import SectionHeading from '@components/SectionHeading.jsx';
 import WorkTile from '@components/WorkTile.jsx';
 import SocialIcons from '@components/SocialIcons.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
+import {
+  BlurText,
+  RotatingText,
+  CountUp,
+  SplitText,
+  Threads,
+  DotGrid,
+  Squares,
+  SpotlightCard,
+} from '@reactbits';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 
@@ -41,10 +51,21 @@ const CATEGORIES = [
   },
 ];
 
+const HERO_STATS = [
+  { k: 'Turnaround', to: 24, suffix: 'hr', tail: 'Rush' },
+  { k: 'Presses', to: 12, suffix: '', tail: 'On-Site' },
+  { k: 'Jobs Shipped', to: 18, suffix: 'K+', tail: '' },
+  { k: 'Repeat Clients', to: 99, suffix: '%', tail: '' },
+];
+
 function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-paper-100/10 bg-ink-950">
       <div className="blueprint pointer-events-none absolute inset-0 opacity-40" />
+      {/* react-bits Threads — flowing WebGL line accent behind the hero */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.55]">
+        <Threads color="#e5352b" amplitude={1.1} distance={0.5} />
+      </div>
       <div className={`relative ${WRAP} pb-16 pt-12 sm:pb-24 sm:pt-16`}>
         <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
           <Reveal>
@@ -55,12 +76,25 @@ function Hero() {
               width="600"
               height="260"
             />
-            <p className="mt-8 max-w-lg text-lg leading-relaxed text-paper-100/70">{SITE.blurb}</p>
+            <BlurText
+              as="p"
+              text={SITE.blurb}
+              className="mt-8 max-w-lg text-lg leading-relaxed text-paper-100/70"
+              delay={40}
+            />
+            <div className="mt-6 flex items-center gap-3">
+              <span className="kicker text-flare">We Print</span>
+              <RotatingText
+                texts={['Business Cards', 'Vinyl Banners', 'Custom Apparel', 'Stickers', 'Signage']}
+                mainClassName="font-head text-lg font-800 uppercase tracking-tight text-paper-100"
+                rotationInterval={2000}
+              />
+            </div>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button to={ROUTES.products} variant="flare" size="lg">
+              <Button to={ROUTES.products} variant="flare" size="lg" magnetic>
                 Shop Products <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button to={ROUTES.contact} variant="outline" size="lg">
+              <Button to={ROUTES.contact} variant="outline" size="lg" magnetic>
                 Get a Quote
               </Button>
             </div>
@@ -78,15 +112,17 @@ function Hero() {
 
           <Reveal delay={120}>
             <div className="grid grid-cols-2 gap-px border border-paper-100/12 bg-paper-100/12">
-              {[
-                { k: 'Turnaround', v: '24hr Rush' },
-                { k: 'Presses', v: '12 On-Site' },
-                { k: 'Jobs Shipped', v: '18K+' },
-                { k: 'Repeat Clients', v: '99%' },
-              ].map((s) => (
+              {HERO_STATS.map((s) => (
                 <div key={s.k} className="bg-ink-900 p-6">
                   <div className="kicker text-paper-100/45">{s.k}</div>
-                  <div className="display mt-3 text-4xl text-paper-100 sm:text-5xl">{s.v}</div>
+                  <div className="display mt-3 text-4xl text-paper-100 sm:text-5xl">
+                    <CountUp to={s.to} suffix={s.suffix} separator="" />
+                    {s.tail ? (
+                      <span className="ml-2 align-middle text-lg text-paper-100/55 sm:text-xl">
+                        {s.tail}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               ))}
             </div>
@@ -128,8 +164,12 @@ function Featured() {
 
 function Categories() {
   return (
-    <section className="border-y border-paper-100/10 bg-ink-950">
-      <div className={`${WRAP} py-20 sm:py-24`}>
+    <section className="relative overflow-hidden border-y border-paper-100/10 bg-ink-950">
+      {/* react-bits Squares — drifting blueprint grid behind the departments */}
+      <div className="pointer-events-none absolute inset-0 opacity-60">
+        <Squares direction="diagonal" speed={0.3} squareSize={46} />
+      </div>
+      <div className={`relative ${WRAP} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="02" kicker="Shop by" title="Categories" tone="ink">
             04 Departments
@@ -139,10 +179,11 @@ function Categories() {
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {CATEGORIES.map((cat, i) => (
             <Reveal key={cat.id} delay={i * 70}>
-              <Link
-                to={ROUTES.products}
-                className="pressable group relative flex h-full flex-col overflow-hidden border border-paper-100/12 bg-ink-900 transition-colors duration-300 hover:border-flare"
-              >
+              <SpotlightCard className="h-full" spotlightColor="rgba(229, 53, 43, 0.2)">
+                <Link
+                  to={ROUTES.products}
+                  className="pressable group relative flex h-full flex-col overflow-hidden border border-paper-100/12 bg-ink-900 transition-colors duration-300 hover:border-flare"
+                >
                 <div className="relative aspect-[4/3] w-full overflow-hidden">
                   <div
                     className="absolute inset-0 transition-transform duration-700 ease-editorial group-hover:scale-105"
@@ -171,7 +212,8 @@ function Categories() {
                     strokeWidth={2}
                   />
                 </div>
-              </Link>
+                </Link>
+              </SpotlightCard>
             </Reveal>
           ))}
         </div>
@@ -239,22 +281,32 @@ function RecentWork() {
 
 function CTA() {
   return (
-    <section className="grain relative bg-paper-100 text-ink-950">
-      <div className={`${WRAP} py-20 text-center sm:py-24`}>
+    <section className="grain relative overflow-hidden bg-paper-100 text-ink-950">
+      {/* react-bits DotGrid — dots scatter from the cursor across the CTA */}
+      <div className="pointer-events-none absolute inset-0 opacity-70">
+        <DotGrid
+          dotSize={3}
+          gap={34}
+          baseColor="rgba(14, 16, 19, 0.14)"
+          activeColor="#e5352b"
+          proximity={120}
+        />
+      </div>
+      <div className={`relative ${WRAP} py-20 text-center sm:py-24`}>
         <Reveal>
           <span className="kicker text-flare">Ready to Start?</span>
           <h2 className="display mx-auto mt-6 max-w-4xl text-[14vw] leading-[0.85] sm:text-7xl">
-            Let&apos;s Print It.
+            <SplitText text="Let's Print It." splitType="chars" delay={34} duration={0.7} />
           </h2>
           <p className="mx-auto mt-6 max-w-md text-ink-950/60">
             Send us your files or a rough idea. We&apos;ll send a proof back the same day and get
             it on press.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <Button to={ROUTES.contact} variant="flare" size="lg">
+            <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
               Get a Quote <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button to={ROUTES.signup} variant="outline-ink" size="lg">
+            <Button to={ROUTES.signup} variant="outline-ink" size="lg" magnetic>
               Create Account
             </Button>
           </div>

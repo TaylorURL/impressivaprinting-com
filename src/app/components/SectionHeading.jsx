@@ -1,5 +1,8 @@
+import { SplitText } from '@reactbits';
+
 // Editorial section header: index number + mono kicker on a hairline rule,
 // then a heavy Archivo title. Tone-aware for the dark/paper rhythm.
+// The title characters stagger in on scroll via react-bits SplitText.
 export default function SectionHeading({
   index,
   kicker,
@@ -22,7 +25,13 @@ export default function SectionHeading({
         </span>
         {children ? <span className={`spec text-xs ${dim}`}>{children}</span> : null}
       </div>
-      <h2 className={`display mt-5 text-5xl sm:text-6xl md:text-7xl ${strong}`}>{title}</h2>
+      <h2 className={`display mt-5 text-5xl sm:text-6xl md:text-7xl ${strong}`}>
+        {typeof title === 'string' ? (
+          <SplitText text={title} splitType="chars" delay={26} duration={0.6} />
+        ) : (
+          title
+        )}
+      </h2>
     </div>
   );
 }

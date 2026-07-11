@@ -8,7 +8,7 @@ import {
 } from '@constants/content.js';
 import { ROUTES } from '@constants/routes.js';
 import Button from '@components/Button.jsx';
-import CountUp from '@components/CountUp.jsx';
+import { CountUp } from '@reactbits';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 
@@ -105,9 +105,9 @@ export default function QuoteCalculator() {
               <div className="mt-3 flex items-baseline gap-1">
                 <span className="display text-6xl text-flare sm:text-7xl">$</span>
                 <CountUp
-                  key={total}
-                  value={String(total)}
-                  duration={600}
+                  to={total}
+                  duration={0.6}
+                  separator=","
                   className="display text-6xl text-paper-100 sm:text-7xl"
                 />
               </div>
@@ -120,7 +120,7 @@ export default function QuoteCalculator() {
             </div>
 
             <div className="mt-8">
-              <Button to={ROUTES.contact} variant="flare" size="lg" full>
+              <Button to={ROUTES.contact} variant="flare" size="lg" full magnetic>
                 Lock In a Real Quote <ArrowRight className="h-4 w-4" />
               </Button>
               <p className="spec mt-3 text-center text-[11px] text-paper-100/35">

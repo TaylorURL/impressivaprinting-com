@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Magnet } from '@reactbits';
 
 // Sharp editorial buttons — square corners, mono label, no gradients.
 const VARIANTS = {
@@ -33,29 +34,39 @@ export default function Button({
   variant = 'flare',
   size = 'md',
   full = false,
+  magnetic = false,
   className = '',
   children,
   ...rest
 }) {
   const cls = `${classes({ variant, size, full })} ${className}`;
+
+  let el;
   if (to) {
-    return (
+    el = (
       <Link to={to} className={cls} {...rest}>
         {children}
       </Link>
     );
-  }
-  if (href) {
-    return (
+  } else if (href) {
+    el = (
       <a href={href} className={cls} {...rest}>
         {children}
       </a>
     );
+  } else {
+    const Tag = as;
+    el = (
+      <Tag className={cls} {...rest}>
+        {children}
+      </Tag>
+    );
   }
-  const Tag = as;
+
+  if (!magnetic) return el;
   return (
-    <Tag className={cls} {...rest}>
-      {children}
-    </Tag>
+    <Magnet padding={70} magnetStrength={5} wrapperClassName={full ? 'block w-full' : 'inline-block'}>
+      {el}
+    </Magnet>
   );
 }
