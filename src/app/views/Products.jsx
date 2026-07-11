@@ -8,6 +8,7 @@ import { pad2 } from '@utils/format.js';
 import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
+import { SplitText, ShinyText, Squares, GlareHover } from '@reactbits';
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -77,14 +78,21 @@ export default function Products() {
 
   return (
     <>
-      <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
-        <div className={`${CONTAINER} pb-12 pt-14 sm:pt-20`}>
+      <section className="cropmarks relative overflow-hidden border-b border-paper-100/10 text-paper-100/40">
+        {/* react-bits Squares — faint blueprint grid behind the catalog header */}
+        <div className="pointer-events-none absolute inset-0 opacity-40">
+          <Squares direction="right" speed={0.25} squareSize={52} />
+        </div>
+        <div className={`relative ${CONTAINER} pb-12 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-paper-100/50">No. 002 — Catalog</span>
-            <span className="kicker text-paper-100/50">{PRODUCTS.length} Services</span>
+            <ShinyText text={`${PRODUCTS.length} Services`} className="kicker" speed={5} />
           </div>
           <h1 className="display mt-8 text-[17vw] leading-[0.8] text-paper-100 sm:text-8xl">
-            Everything <span className="text-flare">We Print</span>
+            <SplitText text="Everything " splitType="chars" delay={24} />
+            <span className="text-flare">
+              <SplitText text="We Print" splitType="chars" delay={24} />
+            </span>
           </h1>
           <p className="mt-6 max-w-xl text-paper-100/60">
             Real stocks, real inks, tight color. Every job proofed before it runs. Tap a line for
@@ -117,19 +125,24 @@ export default function Products() {
           ))}
         </div>
 
-        <Reveal className="mt-16 grain relative bg-paper-100 p-8 text-ink-950 sm:p-12">
-          <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
-            <div>
-              <span className="kicker text-flare">Off-Menu</span>
-              <h3 className="display mt-3 text-4xl sm:text-5xl">Don&apos;t see your thing?</h3>
-              <p className="mt-3 max-w-md text-ink-950/60">
-                If it can be printed, we can print it. Send the spec and we&apos;ll quote it.
-              </p>
+        <Reveal className="mt-16">
+          <GlareHover
+            className="grain relative bg-paper-100 p-8 text-ink-950 sm:p-12"
+            glareColor="rgba(229, 53, 43, 0.35)"
+          >
+            <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+              <div>
+                <span className="kicker text-flare">Off-Menu</span>
+                <h3 className="display mt-3 text-4xl sm:text-5xl">Don&apos;t see your thing?</h3>
+                <p className="mt-3 max-w-md text-ink-950/60">
+                  If it can be printed, we can print it. Send the spec and we&apos;ll quote it.
+                </p>
+              </div>
+              <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
+                Custom Quote <ArrowUpRight className="h-4 w-4" />
+              </Button>
             </div>
-            <Button to={ROUTES.contact} variant="flare" size="lg">
-              Custom Quote <ArrowUpRight className="h-4 w-4" />
-            </Button>
-          </div>
+          </GlareHover>
         </Reveal>
       </section>
 
@@ -182,7 +195,7 @@ export default function Products() {
           </div>
 
           <div className="mt-8">
-            <Button to={ROUTES.contact} variant="flare" size="lg">
+            <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
               Send a Quote Request <ArrowUpRight className="h-4 w-4" />
             </Button>
           </div>

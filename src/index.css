@@ -209,6 +209,179 @@
   }
 }
 
+/* ==========================================================================
+   react-bits — styles for the CSS-driven components (ShinyText, GradientText,
+   StarBorder, SpotlightCard, GlareHover). JS-driven components ship inline.
+   ========================================================================== */
+
+/* ShinyText — a specular highlight sweeping across the text */
+.rb-shiny {
+  color: rgba(210, 214, 219, 0.55);
+  background: linear-gradient(
+    120deg,
+    rgba(210, 214, 219, 0) 38%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(210, 214, 219, 0) 62%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rb-shine linear infinite;
+  animation-duration: var(--rb-shiny-speed, 4s);
+}
+.rb-shiny--off {
+  animation: none;
+}
+@keyframes rb-shine {
+  0% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -120% 0;
+  }
+}
+
+/* GradientText — animated gradient clipped to the glyphs, optional border */
+.rb-gradient {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  border-radius: 2px;
+}
+.rb-gradient__text {
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: rb-gradient-move linear infinite;
+}
+.rb-gradient--border {
+  padding: 1px;
+}
+.rb-gradient__overlay {
+  position: absolute;
+  inset: 0;
+  background-size: 300% 100%;
+  animation: rb-gradient-move linear infinite;
+  z-index: 0;
+  border-radius: inherit;
+}
+.rb-gradient--border .rb-gradient__text {
+  position: relative;
+  z-index: 1;
+  background-color: var(--ink);
+  padding: 0.35em 0.9em;
+  border-radius: 1px;
+}
+@keyframes rb-gradient-move {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
+  }
+}
+
+/* StarBorder — two glints of light orbiting a pill's edges */
+.rb-star {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  border-radius: 2px;
+  isolation: isolate;
+}
+.rb-star__glow {
+  position: absolute;
+  width: 300%;
+  height: 50%;
+  opacity: 0.7;
+  filter: blur(1px);
+  z-index: 0;
+  pointer-events: none;
+}
+.rb-star__glow--bottom {
+  bottom: -12px;
+  right: -250%;
+  border-radius: 50%;
+  animation: rb-star-bottom var(--rb-star-speed, 5s) linear infinite alternate;
+}
+.rb-star__glow--top {
+  top: -12px;
+  left: -250%;
+  border-radius: 50%;
+  animation: rb-star-top var(--rb-star-speed, 5s) linear infinite alternate;
+}
+.rb-star__content {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@keyframes rb-star-bottom {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+@keyframes rb-star-top {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* SpotlightCard — a radial spotlight that tracks the cursor */
+.rb-spotlight {
+  position: relative;
+  overflow: hidden;
+}
+.rb-spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--rb-spot-opacity, 0);
+  background: radial-gradient(
+    circle at var(--rb-spot-x, 50%) var(--rb-spot-y, 50%),
+    var(--rb-spot-color, rgba(229, 53, 43, 0.18)),
+    transparent 42%
+  );
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+.rb-spotlight > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* GlareHover — a soft radial glare that fades in from the cursor on hover */
+.rb-glare {
+  position: relative;
+  overflow: hidden;
+}
+.rb-glare::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--rb-glare-opacity, 0);
+  background: radial-gradient(
+    var(--rb-glare-size, 260px) circle at var(--rb-glare-x, 50%) var(--rb-glare-y, 50%),
+    var(--rb-glare-color, rgba(255, 255, 255, 0.35)),
+    transparent 60%
+  );
+  transition: opacity var(--rb-glare-duration, 700ms) ease;
+  mix-blend-mode: overlay;
+  z-index: 3;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -217,5 +390,12 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+  .rb-shiny,
+  .rb-gradient__text,
+  .rb-gradient__overlay,
+  .rb-star__glow--bottom,
+  .rb-star__glow--top {
+    animation: none !important;
   }
 }

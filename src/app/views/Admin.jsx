@@ -5,6 +5,7 @@ import { formatBytes } from '@utils/files.js';
 import { CONTAINER, UPLOAD_STATUS_STYLE } from '@constants/ui.js';
 import CountUp from '@components/CountUp.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
+import { SplitText, LetterGlitch } from '@reactbits';
 
 function AdminTile({ upload, onStatus, onRemove }) {
   return (
@@ -103,14 +104,21 @@ export default function Admin() {
 
   return (
     <>
-      <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
-        <div className={`${CONTAINER} pb-10 pt-14 sm:pt-20`}>
+      <section className="cropmarks relative overflow-hidden border-b border-paper-100/10 text-paper-100/40">
+        {/* react-bits LetterGlitch — back-of-house terminal backdrop */}
+        <div className="pointer-events-none absolute inset-0 opacity-[0.16]">
+          <LetterGlitch glitchSpeed={65} fontSize={16} />
+        </div>
+        <div className={`relative ${CONTAINER} pb-10 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-flare">Back of House</span>
             <span className="kicker text-paper-100/50">Restricted</span>
           </div>
           <h1 className="display mt-8 text-[15vw] leading-[0.8] text-paper-100 sm:text-8xl">
-            Admin <span className="text-flare">Panel</span>
+            <SplitText text="Admin " splitType="chars" delay={28} />
+            <span className="text-flare">
+              <SplitText text="Panel" splitType="chars" delay={28} />
+            </span>
           </h1>
           <p className="mt-4 text-paper-100/55">
             Every file customers have dropped, all in one place.

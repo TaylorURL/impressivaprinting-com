@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { ROUTES } from '@constants/routes.js';
 import { pad2 } from '@utils/format.js';
+import { SpotlightCard } from '@reactbits';
 
 // Editorial product plate: oversized index, SKU chip, Anton name, mono spec row.
 // Monochrome by default; flare + swatch reveal on hover. Tone-aware.
+// A react-bits SpotlightCard tracks the cursor with a restrained flare glow.
 export default function ProductPlate({ product, index, tone = 'ink' }) {
   const paper = tone === 'paper';
   const base = paper
@@ -15,10 +17,14 @@ export default function ProductPlate({ product, index, tone = 'ink' }) {
     : 'text-paper-100/50 group-hover:text-white/70';
 
   return (
-    <Link
-      to={ROUTES.products}
-      className={`pressable group relative flex flex-col border p-6 transition-[background-color,border-color,transform] duration-300 ease-editorial hover:-translate-y-1 ${base}`}
+    <SpotlightCard
+      className="h-full"
+      spotlightColor={paper ? 'rgba(7, 8, 10, 0.14)' : 'rgba(229, 53, 43, 0.22)'}
     >
+      <Link
+        to={ROUTES.products}
+        className={`pressable group relative flex h-full flex-col border p-6 transition-[background-color,border-color,transform] duration-300 ease-editorial hover:-translate-y-1 ${base}`}
+      >
       <div className="flex items-start justify-between">
         <span className="spec text-xs tracking-[0.2em]">{product.code}</span>
         <span className="flex items-center gap-2">
@@ -50,6 +56,7 @@ export default function ProductPlate({ product, index, tone = 'ink' }) {
         </span>
         <span className="spec text-xs tracking-[0.2em]">{product.stock}</span>
       </div>
-    </Link>
+      </Link>
+    </SpotlightCard>
   );
 }

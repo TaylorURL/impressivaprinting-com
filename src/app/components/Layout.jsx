@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Nav from '@components/Nav.jsx';
 import Footer from '@components/Footer.jsx';
 import ScrollProgressBar from '@components/ScrollProgressBar.jsx';
+import { ClickSpark } from '@reactbits';
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -12,18 +13,20 @@ export default function Layout() {
   }, [pathname]);
 
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-ink-950">
-      {/* Fixed paper-grain veil for a printed-surface feel */}
-      <div
-        aria-hidden
-        className="grain pointer-events-none fixed inset-0 -z-10 opacity-[0.04] mix-blend-screen"
-      />
-      <ScrollProgressBar />
-      <Nav />
-      <main className="pt-[88px]">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
+    <ClickSpark sparkColor="#e5352b" sparkCount={9} sparkRadius={26} sparkSize={13} duration={460}>
+      <div className="relative min-h-screen overflow-x-clip bg-ink-950">
+        {/* Fixed paper-grain veil for a printed-surface feel */}
+        <div
+          aria-hidden
+          className="grain pointer-events-none fixed inset-0 -z-10 opacity-[0.04] mix-blend-screen"
+        />
+        <ScrollProgressBar />
+        <Nav />
+        <main className="pt-[88px]">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+    </ClickSpark>
   );
 }
