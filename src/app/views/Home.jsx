@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Mail, Phone } from 'lucide-react';
 import { FEATURED_PRODUCTS, PRODUCTS } from '@constants/products.js';
 import { PORTFOLIO } from '@constants/content.js';
 import { SITE } from '@constants/site.js';
@@ -56,11 +56,11 @@ function Hero() {
             />
             <p className="mt-8 max-w-lg text-lg leading-relaxed text-paper-100/70">{SITE.blurb}</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button to={ROUTES.products} variant="flare" size="lg">
-                Shop Products <ArrowRight className="h-4 w-4" />
+              <Button to={ROUTES.contact} variant="flare" size="lg">
+                Get a Quote <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button to={ROUTES.contact} variant="outline" size="lg">
-                Get a Quote
+              <Button to={ROUTES.products} variant="outline" size="lg">
+                View Products
               </Button>
             </div>
             <div className="mt-8 flex items-center gap-4">
@@ -127,7 +127,7 @@ function Categories() {
     <section className="border-y border-paper-100/10 bg-ink-950">
       <div className={`${CONTAINER} py-20 sm:py-24`}>
         <Reveal>
-          <SectionHeading index="02" kicker="Shop by" title="Categories" tone="ink">
+          <SectionHeading index="02" kicker="Browse by" title="Categories" tone="ink">
             04 Departments
           </SectionHeading>
         </Reveal>
@@ -240,8 +240,8 @@ function CTA() {
             Let&apos;s Print It.
           </h2>
           <p className="mx-auto mt-6 max-w-md text-ink-950/60">
-            Send us your files or a rough idea. We&apos;ll send a proof back the same day and get it
-            on press.
+            Every job is quoted to spec — no fixed prices, no online cart. Send your files or a
+            rough idea and we&apos;ll get a proof and a quote back the same day.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Button to={ROUTES.contact} variant="flare" size="lg">
@@ -250,6 +250,20 @@ function CTA() {
             <Button to={ROUTES.signup} variant="outline-ink" size="lg">
               Create Account
             </Button>
+          </div>
+          <div className="spec mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-ink-950/70">
+            <a
+              href={`tel:${SITE.phone.replace(/[^0-9+]/g, '')}`}
+              className="inline-flex items-center gap-2 transition-colors hover:text-flare"
+            >
+              <Phone className="h-4 w-4" strokeWidth={1.8} /> {SITE.phone}
+            </a>
+            <a
+              href={`mailto:${SITE.email}`}
+              className="inline-flex items-center gap-2 break-all transition-colors hover:text-flare"
+            >
+              <Mail className="h-4 w-4" strokeWidth={1.8} /> {SITE.email}
+            </a>
           </div>
         </Reveal>
       </div>

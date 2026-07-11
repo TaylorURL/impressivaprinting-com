@@ -45,8 +45,8 @@ export default function ProductPlate({ product, index, tone = 'ink' }) {
         className={`mt-6 flex items-center justify-between border-t pt-4 ${paper ? 'border-ink-950/15 group-hover:border-paper-100/20' : 'border-paper-100/12 group-hover:border-white/25'}`}
       >
         <span className="spec text-xs">
-          FROM ${product.price}
-          <span className={dim}> · {product.unit}</span>
+          {product.tag}
+          <span className={dim}> · Quote on request</span>
         </span>
         <span className="spec text-xs tracking-[0.2em]">{product.stock}</span>
       </div>
