@@ -143,34 +143,16 @@ export const FAQS = [
   },
   {
     q: 'Is there a minimum order?',
-    a: 'Most products start at low quantities — 50 stickers, 100 cards, a single banner. Larger runs unlock better per-unit pricing.',
+    a: 'Most products start at low quantities — 50 stickers, 100 cards, a single banner. Tell us the run size and we\'ll quote it.',
+  },
+  {
+    q: 'How do I get a quote?',
+    a: 'Call or email us with your specs, quantities, and deadline. We quote every job by hand and reply the same business day — nothing is sold at a fixed price online.',
   },
   {
     q: 'Can I get it shipped?',
-    a: 'Shop pickup and local courier are available same-week; we also ship nationwide. Shipping is quoted per job at checkout.',
+    a: 'Shop pickup and local courier are available same-week; we also ship nationwide. Shipping is quoted per job along with your estimate.',
   },
-];
-
-// Instant-quote engine (placeholder math — indicative only, not a real cart).
-export const QUOTE_PRODUCTS = [
-  { id: 'cards', name: 'Business Cards', base: 0.28, unit: 'card' },
-  { id: 'banners', name: 'Vinyl Banners', base: 42, unit: 'banner' },
-  { id: 'apparel', name: 'Custom Apparel', base: 16, unit: 'piece' },
-  { id: 'stickers', name: 'Stickers', base: 0.42, unit: 'sticker' },
-  { id: 'flyers', name: 'Flyers', base: 0.14, unit: 'flyer' },
-];
-
-export const QUOTE_QUANTITIES = [50, 100, 250, 500, 1000];
-
-export const QUOTE_FINISHES = [
-  { id: 'standard', name: 'Standard', mult: 1 },
-  { id: 'matte', name: 'Soft-Touch Matte', mult: 1.25 },
-  { id: 'foil', name: 'Foil / Spot UV', mult: 1.6 },
-];
-
-export const QUOTE_TURNAROUND = [
-  { id: 'standard', name: 'Standard · 3–5 days', mult: 1 },
-  { id: 'rush', name: 'Rush · Same day', mult: 1.4 },
 ];
 
 export const TIMELINE = [
