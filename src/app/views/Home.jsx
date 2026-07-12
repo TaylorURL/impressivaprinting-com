@@ -9,19 +9,9 @@ import Reveal from '@components/Reveal.jsx';
 import ProductPlate from '@components/ProductPlate.jsx';
 import SectionHeading from '@components/SectionHeading.jsx';
 import WorkTile from '@components/WorkTile.jsx';
-import SocialIcons from '@components/SocialIcons.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
 import { CONTAINER } from '@constants/ui.js';
-import {
-  BlurText,
-  RotatingText,
-  CountUp,
-  SplitText,
-  Threads,
-  DotGrid,
-  Squares,
-  SpotlightCard,
-} from '@reactbits';
+import { SplitText, DotGrid, Squares, SpotlightCard } from '@reactbits';
 
 const CATEGORIES = [
   {
@@ -50,83 +40,29 @@ const CATEGORIES = [
   },
 ];
 
-const HERO_STATS = [
-  { k: 'Turnaround', to: 24, suffix: 'hr', tail: 'Rush' },
-  { k: 'Presses', to: 12, suffix: '', tail: 'On-Site' },
-  { k: 'Jobs Shipped', to: 18, suffix: 'K+', tail: '' },
-  { k: 'Repeat Clients', to: 99, suffix: '%', tail: '' },
-];
-
 function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-paper-100/10 bg-ink-950">
       <div className="blueprint pointer-events-none absolute inset-0 opacity-40" />
-      {/* react-bits Threads — flowing WebGL line accent behind the hero */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.55]">
-        <Threads color="#e5352b" amplitude={1.1} distance={0.5} />
-      </div>
-      <div className={`relative ${CONTAINER} pb-16 pt-12 sm:pb-24 sm:pt-16`}>
-        <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
-          <Reveal>
-            <img
-              src="/logo.svg"
-              alt="Impressiva Printing"
-              className="w-full max-w-[640px]"
-              width="600"
-              height="260"
-            />
-            <BlurText
-              as="p"
-              text={SITE.blurb}
-              className="mt-8 max-w-lg text-lg leading-relaxed text-paper-100/70"
-              delay={40}
-            />
-            <div className="mt-6 flex items-center gap-3">
-              <span className="kicker text-flare">We Print</span>
-              <RotatingText
-                texts={['Business Cards', 'Vinyl Banners', 'Custom Apparel', 'Stickers', 'Signage']}
-                mainClassName="font-head text-lg font-800 uppercase tracking-tight text-paper-100"
-                rotationInterval={2000}
-              />
-            </div>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
-                Get a Quote <ArrowRight className="h-4 w-4" />
-              </Button>
-              <Button to={ROUTES.products} variant="outline" size="lg" magnetic>
-                View Products
-              </Button>
-            </div>
-            <div className="mt-8 flex items-center gap-4">
-              <span className="spec text-xs uppercase tracking-[0.2em] text-paper-100/40">
-                Follow
-              </span>
-              <SocialIcons
-                className="gap-4"
-                itemClassName="text-paper-100/60 hover:text-flare"
-                iconClassName="h-5 w-5"
-              />
-            </div>
-          </Reveal>
 
-          <Reveal delay={120}>
-            <div className="grid grid-cols-2 gap-px border border-paper-100/12 bg-paper-100/12">
-              {HERO_STATS.map((s) => (
-                <div key={s.k} className="bg-ink-900 p-6">
-                  <div className="kicker text-paper-100/45">{s.k}</div>
-                  <div className="display mt-3 text-4xl text-paper-100 sm:text-5xl">
-                    <CountUp to={s.to} suffix={s.suffix} separator="" />
-                    {s.tail ? (
-                      <span className="ml-2 align-middle text-lg text-paper-100/55 sm:text-xl">
-                        {s.tail}
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Reveal>
-        </div>
+      <div className={`relative ${CONTAINER} pb-14 pt-28 text-center sm:pt-32`}>
+        <Reveal>
+          <span className="kicker text-paper-100/50">Custom Printing Studio</span>
+          <h1 className="display mx-auto mt-5 text-[16vw] leading-[0.85] text-paper-100 sm:text-7xl lg:text-8xl">
+            Custom Print, <span className="text-flare">Done Right.</span>
+          </h1>
+          <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-paper-100/70">
+            {SITE.blurb}
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
+              Get a Quote <ArrowRight className="h-4 w-4" />
+            </Button>
+            <Button to={ROUTES.products} variant="outline" size="lg" magnetic>
+              View Products
+            </Button>
+          </div>
+        </Reveal>
       </div>
       <ColorBar className="h-2" />
     </section>
