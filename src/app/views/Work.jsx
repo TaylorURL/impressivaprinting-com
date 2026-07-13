@@ -25,8 +25,8 @@ export default function Work() {
             Our <span className="text-flare">Work</span>
           </h1>
           <p className="mt-6 max-w-xl text-paper-100/60">
-            A selection of recent projects — banners, apparel, cards, and signage produced for
-            clients across the city. Printed boldly, built to last.
+            A selection of recent apparel and custom print work produced for clients across the
+            city. Printed boldly, built to last.
           </p>
         </div>
         <ColorBar className="h-2" />

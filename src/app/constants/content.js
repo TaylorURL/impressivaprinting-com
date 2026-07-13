@@ -1,5 +1,4 @@
-// Placeholder marketing content — portfolio, social proof, FAQ, quote engine.
-// Front-end only; no real client data.
+// Marketing content — portfolio, social proof, FAQ. Front-end only.
 
 export const PORTFOLIO = [
   {
@@ -56,33 +55,9 @@ export const PORTFOLIO = [
     accent: '#e5352b',
     image: '/work/flaming-v8.jpg',
   },
-  {
-    id: 'w7',
-    title: 'Neon District Banners',
-    client: 'Riot Coffee',
-    category: 'Wide Format',
-    year: '2026',
-    accent: '#e5352b',
-  },
-  {
-    id: 'w8',
-    title: 'Foil Business Suite',
-    client: 'Vault Barbers',
-    category: 'Business Cards',
-    year: '2025',
-    accent: '#b81f16',
-  },
-  {
-    id: 'w9',
-    title: 'Holographic Sticker Pack',
-    client: 'Static Skate',
-    category: 'Stickers',
-    year: '2025',
-    accent: '#6b7683',
-  },
 ];
 
-export const CATEGORIES = ['All', 'Apparel', 'Wide Format', 'Business Cards', 'Stickers'];
+export const CATEGORIES = ['All', 'Apparel'];
 
 export const TESTIMONIALS = [
   {
@@ -141,34 +116,12 @@ export const FAQS = [
   },
   {
     q: 'Is there a minimum order?',
-    a: 'Most products start at low quantities — 50 stickers, 100 cards, a single banner. Larger runs unlock better per-unit pricing.',
+    a: 'Most products start at low quantities — 50 stickers, 100 cards, a single banner. Larger runs are welcome; request a quote and we will scope it.',
   },
   {
     q: 'Can I get it shipped?',
     a: 'Shop pickup and local courier are available same-week; we also ship nationwide. Shipping is quoted per job at checkout.',
   },
-];
-
-// Instant-quote engine (placeholder math — indicative only, not a real cart).
-export const QUOTE_PRODUCTS = [
-  { id: 'cards', name: 'Business Cards', base: 0.28, unit: 'card' },
-  { id: 'banners', name: 'Vinyl Banners', base: 42, unit: 'banner' },
-  { id: 'apparel', name: 'Custom Apparel', base: 16, unit: 'piece' },
-  { id: 'stickers', name: 'Stickers', base: 0.42, unit: 'sticker' },
-  { id: 'flyers', name: 'Flyers', base: 0.14, unit: 'flyer' },
-];
-
-export const QUOTE_QUANTITIES = [50, 100, 250, 500, 1000];
-
-export const QUOTE_FINISHES = [
-  { id: 'standard', name: 'Standard', mult: 1 },
-  { id: 'matte', name: 'Soft-Touch Matte', mult: 1.25 },
-  { id: 'foil', name: 'Foil / Spot UV', mult: 1.6 },
-];
-
-export const QUOTE_TURNAROUND = [
-  { id: 'standard', name: 'Standard · 3–5 days', mult: 1 },
-  { id: 'rush', name: 'Rush · Same day', mult: 1.4 },
 ];
 
 export const TIMELINE = [

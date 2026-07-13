@@ -25,7 +25,7 @@
 
 ## Why Impressiva Printing
 
-A print shop needs a storefront that looks as loud as its work — but not every marketing site needs a server behind it. Impressiva is a fully interactive single-page app that ships as static files: customers browse the catalog, price a job, sign up, and upload print-ready art, while staff review every file from an admin view. Everything runs in the browser via `localStorage`, so there is nothing to host but the build.
+A print shop needs a storefront that looks as loud as its work — but not every marketing site needs a server behind it. Impressiva is a fully interactive single-page app that ships as static files: customers browse the catalog, request a quote, sign up, and upload print-ready art, while staff review every file from an admin view. Everything runs in the browser via `localStorage`, so there is nothing to host but the build.
 
 <table width="100%">
   <tr>
@@ -112,7 +112,7 @@ Customers create their own accounts via **Sign up**.
 
 ```
 src/app/
-  components/    reusable UI (Nav, Marquee, QuoteCalculator, JobTracker, …)
+  components/    reusable UI (Nav, Marquee, ProductPlate, JobTracker, …)
   views/         pages (Home, Products, Work, Account, Admin, …)
   context/       auth context + provider
   hooks/         useAuth, useScrollProgress
