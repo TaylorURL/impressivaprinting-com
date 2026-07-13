@@ -43,9 +43,7 @@ export default function ProductPlate({ product, index, tone = 'ink' }) {
       <div
         className={`mt-6 flex items-center justify-between border-t pt-4 ${paper ? 'border-ink-950/15 group-hover:border-paper-100/20' : 'border-paper-100/12 group-hover:border-white/25'}`}
       >
-        <span className="spec text-xs uppercase tracking-[0.15em]">
-          {product.tag}
-        </span>
+        <span className="spec text-xs uppercase tracking-[0.15em]">{product.tag}</span>
         <span className="spec text-xs tracking-[0.2em]">{product.stock}</span>
       </div>
     </Link>
