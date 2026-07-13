@@ -3,10 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@hooks/useAuth.js';
 import { ROUTES } from '@constants/routes.js';
-import { FORM_LABEL as LABEL, FORM_INPUT as INPUT } from '@constants/ui.js';
 import Button from '@components/Button.jsx';
 import AuthShell from '@components/AuthShell.jsx';
-import { SplitText, DecryptedText } from '@reactbits';
+
+const LABEL = 'kicker mb-2 block text-paper-100/45';
+const INPUT =
+  'w-full border-b border-paper-100/20 bg-transparent py-3 text-paper-100 placeholder:text-paper-100/30 outline-none transition-colors focus:border-flare';
 
 export default function Login() {
   const { login } = useAuth();
@@ -40,9 +42,7 @@ export default function Login() {
       }
     >
       <span className="kicker text-flare">Log In</span>
-      <h1 className="display mt-4 text-5xl text-paper-100">
-        <SplitText text="Your Account" splitType="chars" delay={28} />
-      </h1>
+      <h1 className="display mt-4 text-5xl text-paper-100">Your Account</h1>
       <p className="mt-3 text-sm text-paper-100/55">Manage your orders and upload new artwork.</p>
 
       <form onSubmit={handleSubmit} className="mt-9 space-y-7">
@@ -75,7 +75,7 @@ export default function Login() {
           </p>
         ) : null}
 
-        <Button as="button" type="submit" variant="flare" size="lg" full magnetic>
+        <Button as="button" type="submit" variant="flare" size="lg" full>
           Log In <ArrowRight className="h-4 w-4" />
         </Button>
       </form>
@@ -91,14 +91,7 @@ export default function Login() {
         <span className="kicker text-paper-100/40">Demo Access</span>
         <div className="spec mt-3 space-y-1 text-xs text-paper-100/50">
           <div>
-            Admin —{' '}
-            <DecryptedText
-              text="admin@impressivaprinting.com"
-              className="text-proc-c"
-              encryptedClassName="text-flare/70"
-              speed={28}
-            />{' '}
-            / admin123
+            Admin — <span className="text-proc-c">admin@impressivaprinting.com</span> / admin123
           </div>
           <div>Customer — sign up to create your own.</div>
         </div>

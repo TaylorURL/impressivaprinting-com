@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight, Mail, Phone } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { FEATURED_PRODUCTS, PRODUCTS } from '@constants/products.js';
 import { PORTFOLIO } from '@constants/content.js';
 import { SITE } from '@constants/site.js';
@@ -9,58 +9,71 @@ import Reveal from '@components/Reveal.jsx';
 import ProductPlate from '@components/ProductPlate.jsx';
 import SectionHeading from '@components/SectionHeading.jsx';
 import WorkTile from '@components/WorkTile.jsx';
+import SocialIcons from '@components/SocialIcons.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
-import { CONTAINER } from '@constants/ui.js';
-import { SplitText, DotGrid, Squares, SpotlightCard } from '@reactbits';
+
+const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 
 const CATEGORIES = [
-  {
-    id: 'business',
-    name: 'Business Cards',
-    blurb: 'Soft-touch, foil, spot UV.',
-    accent: '#e5352b',
-  },
   {
     id: 'apparel',
     name: 'Apparel',
     blurb: 'DTF, screen, embroidery.',
-    accent: '#2f6bff',
+    image: '/work/impressiva-merch.jpg',
+  },
+  {
+    id: 'business',
+    name: 'Business Cards',
+    blurb: 'Soft-touch, foil, spot UV.',
+    image: '/categories/cat-business-cards.jpg',
   },
   {
     id: 'wide-format',
     name: 'Wide Format',
     blurb: 'Banners, signs, decals.',
-    accent: '#1E7A85',
+    image: '/categories/cat-wide-format.jpg',
   },
   {
     id: 'stickers',
     name: 'Stickers',
     blurb: 'Die-cut, holographic, sheets.',
-    accent: '#b81f16',
+    image: '/categories/cat-stickers.jpg',
   },
 ];
 
 function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-paper-100/10 bg-ink-950">
-      <div className="blueprint pointer-events-none absolute inset-0 opacity-40" />
-
-      <div className={`relative ${CONTAINER} pb-14 pt-28 text-center sm:pt-32`}>
+      <div className="blueprint pointer-events-none absolute inset-0 opacity-30" />
+      <div
+        className={`relative ${WRAP} flex flex-col items-center pb-20 pt-16 text-center sm:pb-28 sm:pt-24`}
+      >
         <Reveal>
-          <span className="kicker text-paper-100/50">Custom Printing Studio</span>
-          <h1 className="display mx-auto mt-5 text-[16vw] leading-[0.85] text-paper-100 sm:text-7xl lg:text-8xl">
-            Custom Print, <span className="text-flare">Done Right.</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-paper-100/70">
+          <img
+            src="/logo.svg"
+            alt="Impressiva Printing"
+            className="mx-auto w-full max-w-[560px]"
+            width="600"
+            height="260"
+          />
+          <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-paper-100/70">
             {SITE.blurb}
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
-              Get a Quote <ArrowRight className="h-4 w-4" />
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
+            <Button to={ROUTES.products} variant="flare" size="lg">
+              Shop Products <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button to={ROUTES.products} variant="outline" size="lg" magnetic>
-              View Products
+            <Button to={ROUTES.contact} variant="outline" size="lg">
+              Get a Quote
             </Button>
+          </div>
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <span className="spec text-xs uppercase tracking-[0.2em] text-paper-100/40">Follow</span>
+            <SocialIcons
+              className="gap-4"
+              itemClassName="text-paper-100/60 hover:text-flare"
+              iconClassName="h-5 w-5"
+            />
           </div>
         </Reveal>
       </div>
@@ -73,10 +86,13 @@ function Featured() {
   return (
     <section className="grain relative bg-paper-100 text-ink-950">
       <div className="halftone-ink pointer-events-none absolute inset-0 opacity-[0.05]" />
-      <div className={`relative ${CONTAINER} py-20 sm:py-24`}>
+      <div className={`relative ${WRAP} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="01" kicker="Featured" title="Best Sellers" tone="paper">
-            <Link to={ROUTES.products} className="inline-flex items-center gap-1 hover:text-flare">
+            <Link
+              to={ROUTES.products}
+              className="inline-flex items-center gap-1 hover:text-flare"
+            >
               View all <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </SectionHeading>
@@ -96,14 +112,10 @@ function Featured() {
 
 function Categories() {
   return (
-    <section className="relative overflow-hidden border-y border-paper-100/10 bg-ink-950">
-      {/* react-bits Squares — drifting blueprint grid behind the departments */}
-      <div className="pointer-events-none absolute inset-0 opacity-60">
-        <Squares direction="diagonal" speed={0.3} squareSize={46} />
-      </div>
-      <div className={`relative ${CONTAINER} py-20 sm:py-24`}>
+    <section className="border-y border-paper-100/10 bg-ink-950">
+      <div className={`${WRAP} py-20 sm:py-24`}>
         <Reveal>
-          <SectionHeading index="02" kicker="Browse by" title="Categories" tone="ink">
+          <SectionHeading index="02" kicker="Shop by" title="Categories" tone="ink">
             04 Departments
           </SectionHeading>
         </Reveal>
@@ -111,24 +123,19 @@ function Categories() {
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {CATEGORIES.map((cat, i) => (
             <Reveal key={cat.id} delay={i * 70}>
-              <SpotlightCard className="h-full" spotlightColor="rgba(229, 53, 43, 0.2)">
-                <Link
-                  to={ROUTES.products}
-                  className="pressable group relative flex h-full flex-col overflow-hidden border border-paper-100/12 bg-ink-900 transition-colors duration-300 hover:border-flare"
-                >
-                <div className="relative aspect-[4/3] w-full overflow-hidden">
-                  <div
-                    className="absolute inset-0 transition-transform duration-700 ease-editorial group-hover:scale-105"
-                    style={{ backgroundColor: cat.accent }}
+              <Link
+                to={ROUTES.products}
+                className="pressable group relative flex h-full flex-col overflow-hidden border border-paper-100/12 bg-ink-900 transition-colors duration-300 hover:border-flare"
+              >
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink-950">
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-105"
                   />
-                  <div className="halftone-ink pointer-events-none absolute inset-0 opacity-[0.15]" />
-                  <div
-                    className="absolute inset-0 opacity-90"
-                    style={{
-                      backgroundImage: `repeating-linear-gradient(-45deg, rgba(7,8,10,0) 0, rgba(7,8,10,0) 22px, rgba(7,8,10,0.16) 22px, rgba(7,8,10,0.16) 24px)`,
-                    }}
-                  />
-                  <span className="absolute left-4 top-4 spec text-[11px] uppercase tracking-[0.2em] text-ink-950/70">
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-ink-950/70 to-transparent" />
+                  <span className="absolute left-4 top-4 z-10 spec text-[11px] uppercase tracking-[0.2em] text-paper-100/80">
                     0{i + 1}
                   </span>
                 </div>
@@ -144,8 +151,7 @@ function Categories() {
                     strokeWidth={2}
                   />
                 </div>
-                </Link>
-              </SpotlightCard>
+              </Link>
             </Reveal>
           ))}
         </div>
@@ -158,10 +164,13 @@ function Catalog() {
   const rest = PRODUCTS.filter((p) => !p.featured);
   return (
     <section className="grain relative bg-paper-100 text-ink-950">
-      <div className={`relative ${CONTAINER} py-20 sm:py-24`}>
+      <div className={`relative ${WRAP} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="03" kicker="Also Available" title="More Products" tone="paper">
-            <Link to={ROUTES.products} className="inline-flex items-center gap-1 hover:text-flare">
+            <Link
+              to={ROUTES.products}
+              className="inline-flex items-center gap-1 hover:text-flare"
+            >
               Full catalog <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </SectionHeading>
@@ -187,7 +196,7 @@ function RecentWork() {
   const items = PORTFOLIO.slice(0, 3);
   return (
     <section className="bg-ink-950">
-      <div className={`${CONTAINER} py-20 sm:py-24`}>
+      <div className={`${WRAP} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="04" kicker="Portfolio" title="Recent Work" tone="ink">
             <Link to={ROUTES.work} className="inline-flex items-center gap-1 hover:text-flare">
@@ -210,48 +219,24 @@ function RecentWork() {
 
 function CTA() {
   return (
-    <section className="grain relative overflow-hidden bg-paper-100 text-ink-950">
-      {/* react-bits DotGrid — dots scatter from the cursor across the CTA */}
-      <div className="pointer-events-none absolute inset-0 opacity-70">
-        <DotGrid
-          dotSize={3}
-          gap={34}
-          baseColor="rgba(14, 16, 19, 0.14)"
-          activeColor="#e5352b"
-          proximity={120}
-        />
-      </div>
-      <div className={`relative ${CONTAINER} py-20 text-center sm:py-24`}>
+    <section className="grain relative bg-paper-100 text-ink-950">
+      <div className={`${WRAP} py-20 text-center sm:py-24`}>
         <Reveal>
           <span className="kicker text-flare">Ready to Start?</span>
           <h2 className="display mx-auto mt-6 max-w-4xl text-[14vw] leading-[0.85] sm:text-7xl">
-            <SplitText text="Let's Print It." splitType="chars" delay={34} duration={0.7} />
+            Let&apos;s Print It.
           </h2>
           <p className="mx-auto mt-6 max-w-md text-ink-950/60">
-            Every job is quoted to spec — no fixed prices, no online cart. Send your files or a
-            rough idea and we&apos;ll get a proof and a quote back the same day.
+            Send us your files or a rough idea. We&apos;ll send a proof back the same day and get
+            it on press.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <Button to={ROUTES.contact} variant="flare" size="lg" magnetic>
+            <Button to={ROUTES.contact} variant="flare" size="lg">
               Get a Quote <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button to={ROUTES.signup} variant="outline-ink" size="lg" magnetic>
+            <Button to={ROUTES.signup} variant="outline-ink" size="lg">
               Create Account
             </Button>
-          </div>
-          <div className="spec mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-ink-950/70">
-            <a
-              href={`tel:${SITE.phone.replace(/[^0-9+]/g, '')}`}
-              className="inline-flex items-center gap-2 transition-colors hover:text-flare"
-            >
-              <Phone className="h-4 w-4" strokeWidth={1.8} /> {SITE.phone}
-            </a>
-            <a
-              href={`mailto:${SITE.email}`}
-              className="inline-flex items-center gap-2 break-all transition-colors hover:text-flare"
-            >
-              <Mail className="h-4 w-4" strokeWidth={1.8} /> {SITE.email}
-            </a>
           </div>
         </Reveal>
       </div>

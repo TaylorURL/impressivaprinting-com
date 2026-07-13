@@ -94,6 +94,35 @@
     border-right: 1px solid currentColor;
   }
 
+  /* CMYK registration target */
+  .registration {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+  }
+  .registration::before,
+  .registration::after {
+    content: '';
+    position: absolute;
+    background: currentColor;
+  }
+  .registration::before {
+    left: 50%;
+    top: -6px;
+    bottom: -6px;
+    width: 1px;
+    transform: translateX(-50%);
+  }
+  .registration::after {
+    top: 50%;
+    left: -6px;
+    right: -6px;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
   /* CMYK ink color bar */
   .colorbar {
     display: flex;
@@ -106,6 +135,13 @@
   }
 
   /* ---- Surfaces ---- */
+  .rule {
+    border-color: rgba(244, 239, 227, 0.14);
+  }
+  .rule-ink {
+    border-color: rgba(24, 21, 16, 0.16);
+  }
+
   /* Restrained liquid-glass — only for floating chrome (nav) */
   .glass {
     background: rgba(13, 13, 16, 0.6);
@@ -124,6 +160,12 @@
   }
   .pressable:active {
     transform: translateY(1px);
+  }
+
+  /* Word-reveal wrapper: child slides up from a clipped baseline */
+  .reveal-line {
+    overflow: hidden;
+    display: block;
   }
 
   /* Underline that wipes in on hover */
@@ -184,6 +226,10 @@
   .text-flare {
     color: var(--flare);
   }
+  .outline-type {
+    color: transparent;
+    -webkit-text-stroke: 1.4px currentColor;
+  }
 
   /* Halftone dot field */
   .halftone {
@@ -195,7 +241,7 @@
     background-size: 7px 7px;
   }
 
-  /* Fine engineering grid */
+  /* Fine engineering grid — animatable via animate-drift */
   .blueprint {
     background-image:
       linear-gradient(rgba(210, 214, 219, 0.05) 1px, transparent 1px),
@@ -203,183 +249,27 @@
     background-size: 40px 40px;
   }
 
+  /* Diagonal hazard hatch */
+  .hazard {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--flare) 0,
+      var(--flare) 10px,
+      #0c0e11 10px,
+      #0c0e11 20px
+    );
+  }
+
+  /* Scanline sweep overlay */
+  .scanlines {
+    background: linear-gradient(rgba(229, 53, 43, 0.08), transparent);
+    height: 40vh;
+  }
+
   /* Paper grain */
   .grain {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   }
-}
-
-/* ==========================================================================
-   react-bits — styles for the CSS-driven components (ShinyText, GradientText,
-   StarBorder, SpotlightCard, GlareHover). JS-driven components ship inline.
-   ========================================================================== */
-
-/* ShinyText — a specular highlight sweeping across the text */
-.rb-shiny {
-  color: rgba(210, 214, 219, 0.55);
-  background: linear-gradient(
-    120deg,
-    rgba(210, 214, 219, 0) 38%,
-    rgba(255, 255, 255, 0.9) 50%,
-    rgba(210, 214, 219, 0) 62%
-  );
-  background-size: 220% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: rb-shine linear infinite;
-  animation-duration: var(--rb-shiny-speed, 4s);
-}
-.rb-shiny--off {
-  animation: none;
-}
-@keyframes rb-shine {
-  0% {
-    background-position: 120% 0;
-  }
-  100% {
-    background-position: -120% 0;
-  }
-}
-
-/* GradientText — animated gradient clipped to the glyphs, optional border */
-.rb-gradient {
-  position: relative;
-  display: inline-flex;
-  overflow: hidden;
-  border-radius: 2px;
-}
-.rb-gradient__text {
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: rb-gradient-move linear infinite;
-}
-.rb-gradient--border {
-  padding: 1px;
-}
-.rb-gradient__overlay {
-  position: absolute;
-  inset: 0;
-  background-size: 300% 100%;
-  animation: rb-gradient-move linear infinite;
-  z-index: 0;
-  border-radius: inherit;
-}
-.rb-gradient--border .rb-gradient__text {
-  position: relative;
-  z-index: 1;
-  background-color: var(--ink);
-  padding: 0.35em 0.9em;
-  border-radius: 1px;
-}
-@keyframes rb-gradient-move {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 300% 50%;
-  }
-}
-
-/* StarBorder — two glints of light orbiting a pill's edges */
-.rb-star {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  border-radius: 2px;
-  isolation: isolate;
-}
-.rb-star__glow {
-  position: absolute;
-  width: 300%;
-  height: 50%;
-  opacity: 0.7;
-  filter: blur(1px);
-  z-index: 0;
-  pointer-events: none;
-}
-.rb-star__glow--bottom {
-  bottom: -12px;
-  right: -250%;
-  border-radius: 50%;
-  animation: rb-star-bottom var(--rb-star-speed, 5s) linear infinite alternate;
-}
-.rb-star__glow--top {
-  top: -12px;
-  left: -250%;
-  border-radius: 50%;
-  animation: rb-star-top var(--rb-star-speed, 5s) linear infinite alternate;
-}
-.rb-star__content {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-@keyframes rb-star-bottom {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
-@keyframes rb-star-top {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-/* SpotlightCard — a radial spotlight that tracks the cursor */
-.rb-spotlight {
-  position: relative;
-  overflow: hidden;
-}
-.rb-spotlight::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: var(--rb-spot-opacity, 0);
-  background: radial-gradient(
-    circle at var(--rb-spot-x, 50%) var(--rb-spot-y, 50%),
-    var(--rb-spot-color, rgba(229, 53, 43, 0.18)),
-    transparent 42%
-  );
-  transition: opacity 0.4s ease;
-  z-index: 1;
-}
-.rb-spotlight > * {
-  position: relative;
-  z-index: 2;
-}
-
-/* GlareHover — a soft radial glare that fades in from the cursor on hover */
-.rb-glare {
-  position: relative;
-  overflow: hidden;
-}
-.rb-glare::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: var(--rb-glare-opacity, 0);
-  background: radial-gradient(
-    var(--rb-glare-size, 260px) circle at var(--rb-glare-x, 50%) var(--rb-glare-y, 50%),
-    var(--rb-glare-color, rgba(255, 255, 255, 0.35)),
-    transparent 60%
-  );
-  transition: opacity var(--rb-glare-duration, 700ms) ease;
-  mix-blend-mode: overlay;
-  z-index: 3;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -390,12 +280,5 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
-  }
-  .rb-shiny,
-  .rb-gradient__text,
-  .rb-gradient__overlay,
-  .rb-star__glow--bottom,
-  .rb-star__glow--top {
-    animation: none !important;
   }
 }
