@@ -1,90 +1,63 @@
-// Placeholder marketing content — portfolio, social proof, FAQ, quote engine.
-// Front-end only; no real client data.
+// Marketing content — portfolio, social proof, FAQ. Front-end only.
 
 export const PORTFOLIO = [
   {
     id: 'w1',
-    title: 'Neon District Banners',
-    client: 'Riot Coffee',
-    category: 'Wide Format',
+    title: 'Custom Suspension Tee',
+    client: 'ZYKOTIC Concepts',
+    category: 'Apparel',
     year: '2026',
-    accent: '#e5352b',
-    kind: 'banner',
+    accent: '#1E7A85',
+    image: '/work/zykotic-miami.jpg',
   },
   {
     id: 'w2',
-    title: 'Team Apparel Drop',
-    client: 'Southside FC',
+    title: 'Shop Merch Drop',
+    client: 'Impressiva Printing',
     category: 'Apparel',
     year: '2026',
-    accent: '#2f6bff',
-    kind: 'apparel',
+    accent: '#e5352b',
+    image: '/work/impressiva-merch.jpg',
   },
   {
     id: 'w3',
-    title: 'Foil Business Suite',
-    client: 'Vault Barbers',
-    category: 'Business Cards',
-    year: '2025',
+    title: 'Classic Lineup Tee',
+    client: 'Lone Star Muffler & Brake',
+    category: 'Apparel',
+    year: '2026',
     accent: '#b81f16',
-    kind: 'cards',
+    image: '/work/lone-star-muffler.jpg',
   },
   {
     id: 'w4',
-    title: 'Holographic Sticker Pack',
-    client: 'Static Skate',
-    category: 'Stickers',
+    title: 'OBS Build Tee',
+    client: 'LG Autoworks & Customs',
+    category: 'Apparel',
     year: '2025',
     accent: '#6b7683',
-    kind: 'sticker',
+    image: '/work/lg-autoworks.jpg',
   },
   {
     id: 'w5',
-    title: 'Storefront Signage',
-    client: 'Golden Wok',
-    category: 'Signage',
+    title: 'Dropped Truck Series',
+    client: 'ZYKOTIC Concepts',
+    category: 'Apparel',
     year: '2025',
-    accent: '#e5352b',
-    kind: 'sign',
+    accent: '#2f6bff',
+    image: '/work/zykotic-dropped-trucks.jpg',
   },
   {
     id: 'w6',
-    title: 'Gig Poster Series',
-    client: 'Basement Shows',
-    category: 'Posters',
-    year: '2024',
-    accent: '#2f6bff',
-    kind: 'poster',
-  },
-  {
-    id: 'w7',
-    title: 'Bespoke Mailer Boxes',
-    client: 'Ember Candle Co.',
-    category: 'Packaging',
-    year: '2024',
-    accent: '#b81f16',
-    kind: 'box',
-  },
-  {
-    id: 'w8',
-    title: 'Laminated Menu System',
-    client: 'Taquería Luz',
-    category: 'Menus',
-    year: '2024',
-    accent: '#6b7683',
-    kind: 'menu',
+    title: 'Hot Rod Flames Graphic',
+    client: 'Impressiva Printing',
+    category: 'Apparel',
+    year: '2025',
+    accent: '#e5352b',
+    image: '/work/flaming-v8.jpg',
   },
 ];
 
-export const CATEGORIES = [
-  'All',
-  'Wide Format',
-  'Apparel',
-  'Business Cards',
-  'Stickers',
-  'Signage',
-  'Posters',
-];
+export const CATEGORIES = ['All', 'Apparel'];
 
 export const TESTIMONIALS = [
   {
@@ -143,34 +116,12 @@ export const FAQS = [
   },
   {
     q: 'Is there a minimum order?',
-    a: 'Most products start at low quantities — 50 stickers, 100 cards, a single banner. Larger runs unlock better per-unit pricing.',
+    a: 'Most products start at low quantities — 50 stickers, 100 cards, a single banner. Larger runs are welcome; request a quote and we will scope it.',
   },
   {
     q: 'Can I get it shipped?',
     a: 'Shop pickup and local courier are available same-week; we also ship nationwide. Shipping is quoted per job at checkout.',
   },
-];
-
-// Instant-quote engine (placeholder math — indicative only, not a real cart).
-export const QUOTE_PRODUCTS = [
-  { id: 'cards', name: 'Business Cards', base: 0.28, unit: 'card' },
-  { id: 'banners', name: 'Vinyl Banners', base: 42, unit: 'banner' },
-  { id: 'apparel', name: 'Custom Apparel', base: 16, unit: 'piece' },
-  { id: 'stickers', name: 'Stickers', base: 0.42, unit: 'sticker' },
-  { id: 'flyers', name: 'Flyers', base: 0.14, unit: 'flyer' },
-];
-
-export const QUOTE_QUANTITIES = [50, 100, 250, 500, 1000];
-
-export const QUOTE_FINISHES = [
-  { id: 'standard', name: 'Standard', mult: 1 },
-  { id: 'matte', name: 'Soft-Touch Matte', mult: 1.25 },
-  { id: 'foil', name: 'Foil / Spot UV', mult: 1.6 },
-];
-
-export const QUOTE_TURNAROUND = [
-  { id: 'standard', name: 'Standard · 3–5 days', mult: 1 },
-  { id: 'rush', name: 'Rush · Same day', mult: 1.4 },
 ];
 
 export const TIMELINE = [
