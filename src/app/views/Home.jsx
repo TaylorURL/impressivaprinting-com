@@ -16,82 +16,66 @@ const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 
 const CATEGORIES = [
   {
-    id: 'business',
-    name: 'Business Cards',
-    blurb: 'Soft-touch, foil, spot UV.',
-    accent: '#e5352b',
-  },
-  {
     id: 'apparel',
     name: 'Apparel',
     blurb: 'DTF, screen, embroidery.',
-    accent: '#2f6bff',
+    image: '/work/impressiva-merch.jpg',
+  },
+  {
+    id: 'business',
+    name: 'Business Cards',
+    blurb: 'Soft-touch, foil, spot UV.',
+    image: '/categories/cat-business-cards.jpg',
   },
   {
     id: 'wide-format',
     name: 'Wide Format',
     blurb: 'Banners, signs, decals.',
-    accent: '#1E7A85',
+    image: '/categories/cat-wide-format.jpg',
   },
   {
     id: 'stickers',
     name: 'Stickers',
     blurb: 'Die-cut, holographic, sheets.',
-    accent: '#b81f16',
+    image: '/categories/cat-stickers.jpg',
   },
 ];
 
 function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-paper-100/10 bg-ink-950">
-      <div className="blueprint pointer-events-none absolute inset-0 opacity-40" />
-      <div className={`relative ${WRAP} pb-16 pt-12 sm:pb-24 sm:pt-16`}>
-        <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
-          <Reveal>
-            <img
-              src="/logo.svg"
-              alt="Impressiva Printing"
-              className="w-full max-w-[640px]"
-              width="600"
-              height="260"
+      <div className="blueprint pointer-events-none absolute inset-0 opacity-30" />
+      <div
+        className={`relative ${WRAP} flex flex-col items-center pb-20 pt-16 text-center sm:pb-28 sm:pt-24`}
+      >
+        <Reveal>
+          <img
+            src="/logo.svg"
+            alt="Impressiva Printing"
+            className="mx-auto w-full max-w-[560px]"
+            width="600"
+            height="260"
+          />
+          <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-paper-100/70">
+            {SITE.blurb}
+          </p>
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
+            <Button to={ROUTES.products} variant="flare" size="lg">
+              Shop Products <ArrowRight className="h-4 w-4" />
+            </Button>
+            <Button to={ROUTES.contact} variant="outline" size="lg">
+              Get a Quote
+            </Button>
+          </div>
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <span className="spec text-xs uppercase tracking-[0.2em] text-paper-100/40">Follow</span>
+            <SocialIcons
+              className="gap-4"
+              itemClassName="text-paper-100/60 hover:text-flare"
+              iconClassName="h-5 w-5"
             />
-            <p className="mt-8 max-w-lg text-lg leading-relaxed text-paper-100/70">{SITE.blurb}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button to={ROUTES.products} variant="flare" size="lg">
-                Shop Products <ArrowRight className="h-4 w-4" />
-              </Button>
-              <Button to={ROUTES.contact} variant="outline" size="lg">
-                Get a Quote
-              </Button>
-            </div>
-            <div className="mt-8 flex items-center gap-4">
-              <span className="spec text-xs uppercase tracking-[0.2em] text-paper-100/40">
-                Follow
-              </span>
-              <SocialIcons
-                className="gap-4"
-                itemClassName="text-paper-100/60 hover:text-flare"
-                iconClassName="h-5 w-5"
-              />
-            </div>
-          </Reveal>
-
-          <Reveal delay={120}>
-            <div className="grid grid-cols-2 gap-px border border-paper-100/12 bg-paper-100/12">
-              {[
-                { k: 'Turnaround', v: '24hr Rush' },
-                { k: 'Presses', v: '12 On-Site' },
-                { k: 'Jobs Shipped', v: '18K+' },
-                { k: 'Repeat Clients', v: '99%' },
-              ].map((s) => (
-                <div key={s.k} className="bg-ink-900 p-6">
-                  <div className="kicker text-paper-100/45">{s.k}</div>
-                  <div className="display mt-3 text-4xl text-paper-100 sm:text-5xl">{s.v}</div>
-                </div>
-              ))}
-            </div>
-          </Reveal>
-        </div>
+          </div>
+        </Reveal>
       </div>
       <ColorBar className="h-2" />
     </section>
@@ -143,19 +127,15 @@ function Categories() {
                 to={ROUTES.products}
                 className="pressable group relative flex h-full flex-col overflow-hidden border border-paper-100/12 bg-ink-900 transition-colors duration-300 hover:border-flare"
               >
-                <div className="relative aspect-[4/3] w-full overflow-hidden">
-                  <div
-                    className="absolute inset-0 transition-transform duration-700 ease-editorial group-hover:scale-105"
-                    style={{ backgroundColor: cat.accent }}
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink-950">
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-105"
                   />
-                  <div className="halftone-ink pointer-events-none absolute inset-0 opacity-[0.15]" />
-                  <div
-                    className="absolute inset-0 opacity-90"
-                    style={{
-                      backgroundImage: `repeating-linear-gradient(-45deg, rgba(7,8,10,0) 0, rgba(7,8,10,0) 22px, rgba(7,8,10,0.16) 22px, rgba(7,8,10,0.16) 24px)`,
-                    }}
-                  />
-                  <span className="absolute left-4 top-4 spec text-[11px] uppercase tracking-[0.2em] text-ink-950/70">
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-ink-950/70 to-transparent" />
+                  <span className="absolute left-4 top-4 z-10 spec text-[11px] uppercase tracking-[0.2em] text-paper-100/80">
                     0{i + 1}
                   </span>
                 </div>

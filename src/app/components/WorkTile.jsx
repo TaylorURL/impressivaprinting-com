@@ -1,35 +1,55 @@
-// CSS "poster" placeholder for portfolio work — no photography needed.
-// Builds a distinct printed-piece look per item from its accent + kind.
+// Portfolio tile. Renders a real print/apparel photo when `item.image` is set,
+// otherwise falls back to a CSS "poster" built from the item's accent.
 export default function WorkTile({ item, className = '' }) {
   return (
     <article
       className={`group relative flex flex-col overflow-hidden border border-paper-100/12 bg-ink-900 ${className}`}
     >
-      {/* Poster face */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden">
-        <div className="halftone pointer-events-none absolute inset-0 z-10 opacity-[0.06]" />
-        <div
-          className="absolute inset-0 transition-transform duration-700 ease-editorial group-hover:scale-105"
-          style={{ backgroundColor: item.accent }}
-        >
-          <div
-            className="absolute inset-0 opacity-90"
-            style={{
-              backgroundImage: `repeating-linear-gradient(-45deg, rgba(7,8,10,0) 0, rgba(7,8,10,0) 22px, rgba(7,8,10,0.14) 22px, rgba(7,8,10,0.14) 24px)`,
-            }}
-          />
-          <div className="absolute inset-0 flex flex-col justify-between p-5">
-            <div className="flex items-center justify-between">
-              <span className="spec text-[10px] font-700 uppercase tracking-[0.2em] text-ink-950/70">
+      {/* Face */}
+      <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink-950">
+        <div className="halftone pointer-events-none absolute inset-0 z-20 opacity-[0.06]" />
+
+        {item.image ? (
+          <>
+            <img
+              src={item.image}
+              alt={`${item.title} — ${item.client}`}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-editorial group-hover:scale-105"
+            />
+            {/* Scrim keeps the corner chips legible over any artwork */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-24 bg-gradient-to-b from-ink-950/75 to-transparent" />
+            <div className="absolute inset-x-0 top-0 z-30 flex items-center justify-between p-5">
+              <span className="spec text-[10px] font-700 uppercase tracking-[0.2em] text-paper-100/80">
                 {item.category}
               </span>
-              <span className="spec text-[10px] text-ink-950/60">{item.year}</span>
+              <span className="spec text-[10px] text-paper-100/70">{item.year}</span>
             </div>
-            <div className="display text-[2.6rem] leading-[0.82] text-ink-950 mix-blend-overlay">
-              {item.title}
+          </>
+        ) : (
+          <div
+            className="absolute inset-0 transition-transform duration-700 ease-editorial group-hover:scale-105"
+            style={{ backgroundColor: item.accent }}
+          >
+            <div
+              className="absolute inset-0 opacity-90"
+              style={{
+                backgroundImage: `repeating-linear-gradient(-45deg, rgba(7,8,10,0) 0, rgba(7,8,10,0) 22px, rgba(7,8,10,0.14) 22px, rgba(7,8,10,0.14) 24px)`,
+              }}
+            />
+            <div className="absolute inset-0 flex flex-col justify-between p-5">
+              <div className="flex items-center justify-between">
+                <span className="spec text-[10px] font-700 uppercase tracking-[0.2em] text-ink-950/70">
+                  {item.category}
+                </span>
+                <span className="spec text-[10px] text-ink-950/60">{item.year}</span>
+              </div>
+              <div className="display text-[2.6rem] leading-[0.82] text-ink-950 mix-blend-overlay">
+                {item.title}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Caption */}
