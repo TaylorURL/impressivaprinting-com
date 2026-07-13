@@ -4,7 +4,6 @@ import { PRODUCTS } from '@constants/products.js';
 import { ROUTES } from '@constants/routes.js';
 import Button from '@components/Button.jsx';
 import Reveal from '@components/Reveal.jsx';
-import QuoteCalculator from '@components/QuoteCalculator.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
@@ -19,7 +18,7 @@ function CatalogRow({ product, index }) {
     <div className="wipe-flare group relative border-b border-paper-100/12">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 py-6 pl-3 text-left transition-colors duration-300 hover:bg-ink-900 sm:grid-cols-[70px_1fr_180px_140px_auto] sm:gap-6 sm:px-4"
+        className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 py-6 pl-3 text-left transition-colors duration-300 hover:bg-ink-900 sm:grid-cols-[70px_1fr_180px_auto] sm:gap-6 sm:px-4"
       >
         <span className="spec text-xs tracking-[0.2em] text-paper-100/35">
           {String(index).padStart(2, '0')}
@@ -35,9 +34,6 @@ function CatalogRow({ product, index }) {
         </span>
         <span className="spec hidden text-xs uppercase tracking-[0.15em] text-paper-100/45 sm:block">
           {product.tag}
-        </span>
-        <span className="spec hidden text-xs text-paper-100/70 sm:block">
-          From ${product.price}
         </span>
         <Plus
           className={`h-5 w-5 text-paper-100/40 transition-transform duration-300 ease-editorial ${
@@ -91,8 +87,8 @@ export default function Products() {
             Everything <span className="text-flare">We Print</span>
           </h1>
           <p className="mt-6 max-w-xl text-paper-100/60">
-            Real stocks, real inks, tight color. Every job proofed before it runs. Figures are
-            starting points — tap a line for specs, or request a quote on your exact job.
+            Real stocks, real inks, tight color. Every job proofed before it runs. Tap a line for
+            specs, or request a quote on your exact job.
           </p>
         </div>
         <ColorBar className="h-2" />
@@ -136,8 +132,6 @@ export default function Products() {
           </div>
         </Reveal>
       </section>
-
-      <QuoteCalculator />
     </>
   );
 }
