@@ -4,15 +4,21 @@ import { useAuth } from '@hooks/useAuth.js';
 import { store } from '@data/store.js';
 import { PRODUCTS } from '@constants/products.js';
 import { formatBytes, readFileAsDataUrl, validateFile } from '@utils/files.js';
-import { pad2 } from '@utils/format.js';
-import { CONTAINER, FORM_LABEL as LABEL, UPLOAD_STATUS_STYLE } from '@constants/ui.js';
 import Reveal from '@components/Reveal.jsx';
 import JobTracker from '@components/JobTracker.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
-import { SplitText, DecryptedText, Squares } from '@reactbits';
 
+const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
+const LABEL = 'kicker mb-2 block text-paper-100/45';
 const FIELD =
   'w-full border-b border-paper-100/20 bg-transparent py-2.5 text-sm text-paper-100 placeholder:text-paper-100/30 outline-none transition-colors focus:border-flare';
+
+const STATUS_STYLE = {
+  new: 'text-proc-c',
+  'in-production': 'text-proc-y',
+  ready: 'text-flare',
+  archived: 'text-paper-100/40',
+};
 
 function UploadTile({ upload, onRemove }) {
   return (
@@ -25,7 +31,7 @@ function UploadTile({ upload, onRemove }) {
           className="relative h-full w-full object-contain p-4 transition-transform duration-500 ease-editorial group-hover:scale-[1.03]"
         />
         <span
-          className={`spec absolute left-3 top-3 text-[10px] uppercase tracking-[0.2em] ${UPLOAD_STATUS_STYLE[upload.status]}`}
+          className={`spec absolute left-3 top-3 text-[10px] uppercase tracking-[0.2em] ${STATUS_STYLE[upload.status]}`}
         >
           <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-current align-middle" />
           {upload.status}
@@ -109,33 +115,21 @@ export default function Account() {
 
   return (
     <>
-      <section className="cropmarks relative overflow-hidden border-b border-paper-100/10 text-paper-100/40">
-        {/* react-bits Squares — drifting grid behind the client dashboard header */}
-        <div className="pointer-events-none absolute inset-0 opacity-40">
-          <Squares direction="diagonal" speed={0.22} squareSize={48} />
-        </div>
-        <div className={`relative ${CONTAINER} pb-10 pt-14 sm:pt-20`}>
+      <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
+        <div className={`${WRAP} pb-10 pt-14 sm:pt-20`}>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
             <span className="kicker text-paper-100/50">Client Dashboard</span>
             <span className="spec text-xs text-paper-100/50">{uploads.length} FILES ON FILE</span>
           </div>
           <h1 className="display mt-8 text-[15vw] leading-[0.8] text-paper-100 sm:text-8xl">
-            <SplitText text="Welcome, " splitType="chars" delay={26} />
-            <span className="text-flare">
-              <SplitText text={user.name.split(' ')[0]} splitType="chars" delay={26} />
-            </span>
+            Welcome, <span className="text-flare">{user.name.split(' ')[0]}</span>
           </h1>
-          <DecryptedText
-            text={user.email}
-            className="spec mt-4 block text-xs text-paper-100/50"
-            encryptedClassName="text-flare/70"
-            speed={26}
-          />
+          <p className="spec mt-4 text-xs text-paper-100/50">{user.email}</p>
         </div>
         <ColorBar className="h-2" />
       </section>
 
-      <section className={`${CONTAINER} grid gap-8 py-14 lg:grid-cols-[0.9fr_1.4fr]`}>
+      <section className={`${WRAP} grid gap-8 py-14 lg:grid-cols-[0.9fr_1.4fr]`}>
         {/* Uploader */}
         <div className="self-start border border-paper-100/12 p-7">
           <span className="kicker text-flare">Upload</span>
@@ -208,7 +202,9 @@ export default function Account() {
         <div>
           <div className="flex items-center justify-between border-b border-paper-100/12 pb-3">
             <span className="kicker text-paper-100/50">Your Uploads</span>
-            <span className="spec text-xs text-paper-100/40">{pad2(uploads.length)}</span>
+            <span className="spec text-xs text-paper-100/40">
+              {String(uploads.length).padStart(2, '0')}
+            </span>
           </div>
 
           {uploads.length === 0 ? (
@@ -234,7 +230,7 @@ export default function Account() {
         </div>
       </section>
 
-      <section className={`${CONTAINER} pb-16`}>
+      <section className={`${WRAP} pb-16`}>
         <JobTracker />
       </section>
     </>

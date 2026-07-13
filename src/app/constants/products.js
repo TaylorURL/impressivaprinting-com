@@ -1,4 +1,4 @@
-// Front-end only catalog. No cart or pricing — every job is quoted by phone or email.
+// Front-end only catalog. Prices are "starting at" figures, not a real cart.
 // `code` is a shop SKU used as a print-spec accent throughout the UI.
 // `swatch` is a single restrained ink chip (CMYK + flare), never a full-card color.
 export const PRODUCTS = [
@@ -8,6 +8,8 @@ export const PRODUCTS = [
     name: 'Business Cards',
     tag: 'Best Seller',
     swatch: '#e5352b',
+    price: 29,
+    unit: 'per 100',
     stock: '16–32PT',
     blurb:
       'Thick soft-touch and spot-gloss stocks in 16 and 32pt weights, with optional foil and spot UV.',
@@ -20,6 +22,8 @@ export const PRODUCTS = [
     name: 'Vinyl Banners',
     tag: 'Wide Format',
     swatch: '#2f6bff',
+    price: 45,
+    unit: 'per unit',
     stock: '13–18OZ',
     blurb: 'Weatherproof 13oz vinyl, hemmed and grommeted, in sizes up to 10 feet wide.',
     featured: true,
@@ -31,6 +35,8 @@ export const PRODUCTS = [
     name: 'Custom Apparel',
     tag: 'DTF · Screen',
     swatch: '#6b7683',
+    price: 18,
+    unit: 'per piece',
     stock: 'DTF/SCR',
     blurb: 'DTF and screen-printed tees, hoodies, and team apparel in full color.',
     featured: true,
@@ -42,6 +48,8 @@ export const PRODUCTS = [
     name: 'Stickers & Decals',
     tag: 'Die-Cut',
     swatch: '#b81f16',
+    price: 22,
+    unit: 'per 50',
     stock: 'VINYL',
     blurb: 'Die-cut, holographic, and weatherproof vinyl, in sheets or rolls.',
     featured: true,
@@ -53,6 +61,8 @@ export const PRODUCTS = [
     name: 'Flyers & Posters',
     tag: 'Promo',
     swatch: '#e5352b',
+    price: 34,
+    unit: 'per 250',
     stock: '100LB',
     blurb: 'Full-bleed flyers and posters on 100lb gloss or matte stock, printed both sides.',
     featured: false,
@@ -64,6 +74,8 @@ export const PRODUCTS = [
     name: 'Signs & Boards',
     tag: 'Rigid',
     swatch: '#2f6bff',
+    price: 59,
+    unit: 'per unit',
     stock: 'ALUM',
     blurb: 'Coroplast, aluminum, and foam board for indoor and outdoor signage.',
     featured: false,
@@ -75,6 +87,8 @@ export const PRODUCTS = [
     name: 'Packaging',
     tag: 'Bespoke',
     swatch: '#6b7683',
+    price: 89,
+    unit: 'per run',
     stock: 'SBS',
     blurb: 'Custom boxes, mailers, and labels, available in small batches.',
     featured: false,
@@ -86,6 +100,8 @@ export const PRODUCTS = [
     name: 'Menus & Prints',
     tag: 'Hospitality',
     swatch: '#b81f16',
+    price: 39,
+    unit: 'per 100',
     stock: 'LAM',
     blurb: 'Laminated menus, table tents, and waterproof prints for hospitality.',
     featured: false,

@@ -2,18 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { NAV_ITEMS, ROUTES } from '@constants/routes.js';
-import { pad2 } from '@utils/format.js';
 import { useAuth } from '@hooks/useAuth.js';
 import SocialIcons from '@components/SocialIcons.jsx';
-import { Magnet } from '@reactbits';
 
 function Brand() {
   return (
-    <Link
-      to={ROUTES.home}
-      className="group flex items-center"
-      aria-label="Impressiva Printing home"
-    >
+    <Link to={ROUTES.home} className="group flex items-center" aria-label="Impressiva Printing home">
       <img
         src="/logo.svg"
         alt="Impressiva Printing"
@@ -71,7 +65,7 @@ export default function Nav() {
                   }`
                 }
               >
-                <span className="text-paper-100/25">{pad2(i + 1)} </span>
+                <span className="text-paper-100/25">{String(i + 1).padStart(2, '0')} </span>
                 {item.label}
               </NavLink>
             ))}
@@ -114,14 +108,12 @@ export default function Nav() {
                 >
                   Log In
                 </Link>
-                <Magnet padding={60} magnetStrength={5}>
-                  <Link
-                    to={ROUTES.signup}
-                    className="spec pressable inline-block bg-flare px-5 py-2.5 text-xs font-700 uppercase tracking-[0.2em] text-white hover:bg-flare-deep"
-                  >
-                    Start a Job
-                  </Link>
-                </Magnet>
+                <Link
+                  to={ROUTES.signup}
+                  className="spec pressable bg-flare px-5 py-2.5 text-xs font-700 uppercase tracking-[0.2em] text-white hover:bg-flare-deep"
+                >
+                  Start a Job
+                </Link>
               </>
             )}
           </div>
@@ -158,7 +150,7 @@ export default function Nav() {
                   }`
                 }
               >
-                <span className="text-paper-100/25">{pad2(i + 1)}</span>
+                <span className="text-paper-100/25">{String(i + 1).padStart(2, '0')}</span>
                 {item.label}
               </NavLink>
             ))}

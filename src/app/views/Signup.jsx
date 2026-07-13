@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@hooks/useAuth.js';
 import { ROUTES } from '@constants/routes.js';
-import { FORM_LABEL as LABEL, FORM_INPUT as INPUT } from '@constants/ui.js';
 import Button from '@components/Button.jsx';
 import AuthShell from '@components/AuthShell.jsx';
-import { SplitText } from '@reactbits';
+
+const LABEL = 'kicker mb-2 block text-paper-100/45';
+const INPUT =
+  'w-full border-b border-paper-100/20 bg-transparent py-3 text-paper-100 placeholder:text-paper-100/30 outline-none transition-colors focus:border-flare';
 
 export default function Signup() {
   const { signup } = useAuth();
@@ -40,9 +42,7 @@ export default function Signup() {
       }
     >
       <span className="kicker text-flare">Create Account</span>
-      <h1 className="display mt-4 text-5xl text-paper-100">
-        <SplitText text="Get Started" splitType="chars" delay={28} />
-      </h1>
+      <h1 className="display mt-4 text-5xl text-paper-100">Get Started</h1>
       <p className="mt-3 text-sm text-paper-100/55">Upload artwork and track your orders.</p>
 
       <form onSubmit={handleSubmit} className="mt-9 space-y-7">
@@ -98,7 +98,7 @@ export default function Signup() {
           </p>
         ) : null}
 
-        <Button as="button" type="submit" variant="flare" size="lg" full magnetic>
+        <Button as="button" type="submit" variant="flare" size="lg" full>
           Create Account <ArrowRight className="h-4 w-4" />
         </Button>
       </form>

@@ -1,16 +1,11 @@
 import { ColorBar } from '@components/PrintMarks.jsx';
-import { LetterGlitch } from '@reactbits';
 
 // Split editorial auth layout: oversized display panel on the left, form on the right.
 export default function AuthShell({ index, kicker, headline, children }) {
   return (
     <section className="mx-auto grid min-h-[calc(100vh-68px)] max-w-[1400px] grid-cols-1 lg:grid-cols-2">
       {/* Left — display panel */}
-      <div className="relative hidden flex-col justify-between overflow-hidden border-r border-paper-100/10 p-10 lg:flex">
-        {/* react-bits LetterGlitch — flickering access-terminal backdrop */}
-        <div className="pointer-events-none absolute inset-0 opacity-[0.18]">
-          <LetterGlitch glitchSpeed={70} fontSize={15} />
-        </div>
+      <div className="relative hidden flex-col justify-between border-r border-paper-100/10 p-10 lg:flex">
         <div className="blueprint pointer-events-none absolute inset-0 opacity-60" />
         <div className="relative flex items-center justify-between">
           <span className="kicker text-paper-100/50">{index}</span>

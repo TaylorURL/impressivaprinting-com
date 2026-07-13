@@ -9,7 +9,6 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@app': fileURLToPath(new URL('./src/app', import.meta.url)),
       '@components': fileURLToPath(new URL('./src/app/components', import.meta.url)),
-      '@reactbits': fileURLToPath(new URL('./src/app/components/reactbits', import.meta.url)),
       '@views': fileURLToPath(new URL('./src/app/views', import.meta.url)),
       '@constants': fileURLToPath(new URL('./src/app/constants', import.meta.url)),
       '@context': fileURLToPath(new URL('./src/app/context', import.meta.url)),
