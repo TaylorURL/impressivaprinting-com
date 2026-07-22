@@ -10,6 +10,7 @@ import ProductPlate from '@components/ProductPlate.jsx';
 import SectionHeading from '@components/SectionHeading.jsx';
 import WorkTile from '@components/WorkTile.jsx';
 import SocialIcons from '@components/SocialIcons.jsx';
+import SocialSection from '@components/SocialSection.jsx';
 import { ColorBar } from '@components/PrintMarks.jsx';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
@@ -50,11 +51,11 @@ function Hero() {
       >
         <Reveal>
           <img
-            src="/logo.svg"
+            src="/logo.png"
             alt="Impressiva Printing"
             className="mx-auto w-full max-w-[560px]"
-            width="600"
-            height="260"
+            width="1200"
+            height="410"
           />
           <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-paper-100/70">
             {SITE.blurb}
@@ -219,14 +220,15 @@ function RecentWork() {
 
 function CTA() {
   return (
-    <section className="grain relative bg-paper-50 text-ink-950">
-      <div className={`${WRAP} py-20 text-center sm:py-24`}>
+    <section className="relative overflow-hidden border-t border-paper-100/10 bg-ink-950 text-paper-100">
+      <div className="blueprint pointer-events-none absolute inset-0 opacity-30" />
+      <div className={`relative ${WRAP} py-20 text-center sm:py-24`}>
         <Reveal>
           <span className="kicker text-flare">Ready to Start?</span>
-          <h2 className="display mx-auto mt-6 max-w-4xl text-[14vw] leading-[0.85] sm:text-7xl">
+          <h2 className="display mx-auto mt-6 max-w-4xl text-[14vw] leading-[0.85] text-paper-100 sm:text-7xl">
             Let&apos;s Print It.
           </h2>
-          <p className="mx-auto mt-6 max-w-md text-ink-950/60">
+          <p className="mx-auto mt-6 max-w-md text-paper-100/60">
             Send us your files or a rough idea. We&apos;ll send a proof back the same day and get
             it on press.
           </p>
@@ -234,7 +236,7 @@ function CTA() {
             <Button to={ROUTES.contact} variant="flare" size="lg">
               Get a Quote <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button to={ROUTES.signup} variant="outline-ink" size="lg">
+            <Button to={ROUTES.signup} variant="outline" size="lg">
               Create Account
             </Button>
           </div>
@@ -252,6 +254,7 @@ export default function Home() {
       <Categories />
       <Catalog />
       <RecentWork />
+      <SocialSection />
       <CTA />
     </>
   );
