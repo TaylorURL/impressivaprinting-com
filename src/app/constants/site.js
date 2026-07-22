@@ -7,7 +7,7 @@ export const SITE = {
     'Custom printing for businesses and brands — from business cards to building-size banners, produced quickly and finished to a high standard.',
   phone: '(555) 018-7746',
   email: 'hello@impressivaprinting.com',
-  address: '2200 Warehouse District, Bay City',
+  address: '2200 Warehouse District, Pasadena',
   hours: 'Mon–Fri 8a–6p · Sat 10a–3p',
   handle: '@impressivaprinting',
   socials: [
