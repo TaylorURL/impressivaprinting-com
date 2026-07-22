@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/logo.svg" width="210" alt="Impressiva Printing" />
+  <img src="public/logo.png" width="320" alt="Impressiva Printing" />
 </p>
 
 <h1 align="center">Impressiva Printing</h1>
@@ -119,7 +119,7 @@ src/app/
   constants/     site config, product catalog, routes, content
   data/store.js  localStorage persistence layer
   utils/files.js upload validation (type + 4 MB cap)
-public/          favicon, release.json
+public/          logo, favicon, brand imagery, release.json
 ```
 
 ## License
