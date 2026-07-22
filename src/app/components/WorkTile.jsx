@@ -1,8 +1,16 @@
 // Portfolio tile — a real print/apparel photo, captioned with project + client.
-export default function WorkTile({ item, className = '' }) {
+// Tone-aware: the photo face is identical in both tones; only the frame and
+// caption bar flip for dark vs. light (paper) sections.
+export default function WorkTile({ item, tone = 'ink', className = '' }) {
+  const paper = tone === 'paper';
+  const frame = paper ? 'border-ink-950/12 bg-white' : 'border-paper-100/12 bg-ink-900';
+  const captionRule = paper ? 'border-ink-950/10' : 'border-paper-100/12';
+  const titleText = paper ? 'text-ink-950' : 'text-paper-100';
+  const subText = paper ? 'text-ink-950/45' : 'text-paper-100/45';
+
   return (
     <article
-      className={`group relative flex flex-col overflow-hidden border border-paper-100/12 bg-ink-900 ${className}`}
+      className={`group relative flex flex-col overflow-hidden border ${frame} ${className}`}
     >
       {/* Face */}
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink-950">
@@ -24,10 +32,10 @@ export default function WorkTile({ item, className = '' }) {
       </div>
 
       {/* Caption */}
-      <div className="flex items-center justify-between border-t border-paper-100/12 p-4">
+      <div className={`flex items-center justify-between border-t ${captionRule} p-4`}>
         <div>
-          <p className="font-head text-sm font-700 text-paper-100">{item.title}</p>
-          <p className="spec mt-0.5 text-[11px] text-paper-100/45">{item.client}</p>
+          <p className={`font-head text-sm font-700 ${titleText}`}>{item.title}</p>
+          <p className={`spec mt-0.5 text-[11px] ${subText}`}>{item.client}</p>
         </div>
         <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.accent }} />
       </div>

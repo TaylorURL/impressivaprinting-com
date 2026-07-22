@@ -20,7 +20,7 @@ export default function Footer() {
             distance={140}
             className="display whitespace-nowrap px-5 text-[18vw] leading-[0.8] text-paper-100/[0.07] sm:px-8"
           >
-            IMPRESSIVA · PRINT LOUD · IMPRESSIVA
+            IMPRESSIVA PRINTING · IMPRESSIVA PRINTING
           </Parallax>
         </div>
       ) : null}
@@ -94,7 +94,7 @@ export default function Footer() {
             © 2026 {SITE.name} — All Rights Reserved
           </span>
           <span className="spec text-[11px] uppercase tracking-[0.2em] text-paper-100/40">
-            Print Loud <span className="text-flare">/</span> Print Proud
+            Custom Print Studio <span className="text-flare">/</span> {SITE.address.split(',').pop().trim()}
           </span>
         </div>
       </div>
