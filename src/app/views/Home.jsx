@@ -84,7 +84,7 @@ function Hero() {
 
 function Featured() {
   return (
-    <section className="grain relative bg-paper-100 text-ink-950">
+    <section className="grain relative bg-paper-50 text-ink-950">
       <div className="halftone-ink pointer-events-none absolute inset-0 opacity-[0.05]" />
       <div className={`relative ${WRAP} py-20 sm:py-24`}>
         <Reveal>
@@ -163,7 +163,7 @@ function Categories() {
 function Catalog() {
   const rest = PRODUCTS.filter((p) => !p.featured);
   return (
-    <section className="grain relative bg-paper-100 text-ink-950">
+    <section className="grain relative bg-paper-50 text-ink-950">
       <div className={`relative ${WRAP} py-20 sm:py-24`}>
         <Reveal>
           <SectionHeading index="03" kicker="Also Available" title="More Products" tone="paper">
@@ -219,7 +219,7 @@ function RecentWork() {
 
 function CTA() {
   return (
-    <section className="grain relative bg-paper-100 text-ink-950">
+    <section className="grain relative bg-paper-50 text-ink-950">
       <div className={`${WRAP} py-20 text-center sm:py-24`}>
         <Reveal>
           <span className="kicker text-flare">Ready to Start?</span>

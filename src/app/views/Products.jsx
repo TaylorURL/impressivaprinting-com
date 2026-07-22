@@ -12,15 +12,16 @@ const FILTERS = [
   { key: 'featured', label: 'Best Sellers' },
 ];
 
+// Light catalog row on the white spec sheet.
 function CatalogRow({ product, index }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="wipe-flare group relative border-b border-paper-100/12">
+    <div className="wipe-flare group relative border-b border-ink-950/12">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 py-6 pl-3 text-left transition-colors duration-300 hover:bg-ink-900 sm:grid-cols-[70px_1fr_180px_auto] sm:gap-6 sm:px-4"
+        className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 py-6 pl-3 text-left transition-colors duration-300 hover:bg-ink-950/[0.04] sm:grid-cols-[70px_1fr_180px_auto] sm:gap-6 sm:px-4"
       >
-        <span className="spec text-xs tracking-[0.2em] text-paper-100/35">
+        <span className="spec text-xs tracking-[0.2em] text-ink-950/35">
           {String(index).padStart(2, '0')}
         </span>
         <span className="flex items-center gap-3">
@@ -28,15 +29,15 @@ function CatalogRow({ product, index }) {
             className="h-3 w-3 shrink-0 rounded-full"
             style={{ backgroundColor: product.swatch }}
           />
-          <span className="display text-2xl text-paper-100 transition-colors group-hover:text-flare sm:text-3xl">
+          <span className="display text-2xl text-ink-950 transition-colors group-hover:text-flare sm:text-3xl">
             {product.name}
           </span>
         </span>
-        <span className="spec hidden text-xs uppercase tracking-[0.15em] text-paper-100/45 sm:block">
+        <span className="spec hidden text-xs uppercase tracking-[0.15em] text-ink-950/45 sm:block">
           {product.tag}
         </span>
         <Plus
-          className={`h-5 w-5 text-paper-100/40 transition-transform duration-300 ease-editorial ${
+          className={`h-5 w-5 text-ink-950/40 transition-transform duration-300 ease-editorial ${
             open ? 'rotate-45 text-flare' : ''
           }`}
           strokeWidth={1.6}
@@ -50,18 +51,18 @@ function CatalogRow({ product, index }) {
       >
         <div className="min-h-0">
           <div className="grid gap-6 pb-8 sm:grid-cols-[70px_1fr] sm:px-4 lg:grid-cols-[70px_1fr_360px]">
-            <span className="spec hidden text-xs text-paper-100/30 sm:block">{product.code}</span>
-            <p className="max-w-xl text-sm leading-relaxed text-paper-100/65">{product.blurb}</p>
+            <span className="spec hidden text-xs text-ink-950/30 sm:block">{product.code}</span>
+            <p className="max-w-xl text-sm leading-relaxed text-ink-950/65">{product.blurb}</p>
             <ul className="grid grid-cols-2 gap-x-6 gap-y-2">
               {product.details.map((d) => (
-                <li key={d} className="spec flex items-center gap-2 text-xs text-paper-100/55">
+                <li key={d} className="spec flex items-center gap-2 text-xs text-ink-950/60">
                   <span className="h-px w-3 bg-flare" /> {d}
                 </li>
               ))}
             </ul>
           </div>
           <div className="pb-8 sm:px-4">
-            <Button to={ROUTES.contact} variant="outline" size="sm">
+            <Button to={ROUTES.contact} variant="outline-ink" size="sm">
               Request Quote <ArrowUpRight className="h-4 w-4" />
             </Button>
           </div>
@@ -77,9 +78,10 @@ export default function Products() {
 
   return (
     <>
-      <section className="cropmarks border-b border-paper-100/10 text-paper-100/40">
+      {/* Dark masthead */}
+      <section className="cropmarks border-b border-paper-100/10 bg-ink-950 text-paper-100/40">
         <div className={`${WRAP} pb-12 pt-14 sm:pt-20`}>
-          <div className="flex items-center justify-between border-b border-paper-100/12 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-paper-100/12 pb-4">
             <span className="kicker text-paper-100/50">No. 002 — Catalog</span>
             <span className="kicker text-paper-100/50">{PRODUCTS.length} Services</span>
           </div>
@@ -87,50 +89,57 @@ export default function Products() {
             Everything <span className="text-flare">We Print</span>
           </h1>
           <p className="mt-6 max-w-xl text-paper-100/60">
-            Real stocks, real inks, tight color. Every job proofed before it runs. Tap a line for
+            Real stocks, real inks, tight color — every job proofed before it runs. Open a line for
             specs, or request a quote on your exact job.
           </p>
         </div>
         <ColorBar className="h-2" />
       </section>
 
-      <section className={`${WRAP} py-12`}>
-        <div className="mb-4 flex gap-6">
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setFilter(f.key)}
-              className={`spec pressable pb-1 text-xs uppercase tracking-[0.2em] transition-colors ${
-                filter === f.key
-                  ? 'border-b border-flare text-flare'
-                  : 'text-paper-100/50 hover:text-paper-100'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="border-t border-paper-100/12">
-          {list.map((product, i) => (
-            <CatalogRow key={product.id} product={product} index={i + 1} />
-          ))}
-        </div>
-
-        <Reveal className="mt-16 grain relative bg-paper-100 p-8 text-ink-950 sm:p-12">
-          <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
-            <div>
-              <span className="kicker text-flare">Off-Menu</span>
-              <h3 className="display mt-3 text-4xl sm:text-5xl">Don&apos;t see your thing?</h3>
-              <p className="mt-3 max-w-md text-ink-950/60">
-                If it can be printed, we can print it. Send the spec and we&apos;ll quote it.
-              </p>
-            </div>
-            <Button to={ROUTES.contact} variant="flare" size="lg">
-              Custom Quote <ArrowUpRight className="h-4 w-4" />
-            </Button>
+      {/* White spec sheet */}
+      <section className="grain relative bg-paper-50 text-ink-950">
+        <div className={`relative ${WRAP} py-12 sm:py-16`}>
+          <div className="mb-4 flex gap-6">
+            {FILTERS.map((f) => (
+              <button
+                key={f.key}
+                onClick={() => setFilter(f.key)}
+                className={`spec pressable pb-1 text-xs uppercase tracking-[0.2em] transition-colors ${
+                  filter === f.key
+                    ? 'border-b border-flare text-flare'
+                    : 'text-ink-950/50 hover:text-ink-950'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
           </div>
-        </Reveal>
+
+          <div className="border-t border-ink-950/12">
+            {list.map((product, i) => (
+              <CatalogRow key={product.id} product={product} index={i + 1} />
+            ))}
+          </div>
+
+          {/* Dark inset card breaks up the white sheet */}
+          <Reveal className="mt-16 relative overflow-hidden border border-ink-950/10 bg-ink-950 p-8 text-paper-100 sm:p-12">
+            <div className="blueprint pointer-events-none absolute inset-0 opacity-30" />
+            <div className="relative flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+              <div>
+                <span className="kicker text-flare">Off-Menu</span>
+                <h3 className="display mt-3 text-4xl text-paper-100 sm:text-5xl">
+                  Need something not listed?
+                </h3>
+                <p className="mt-3 max-w-md text-paper-100/60">
+                  If it can be printed, we can print it. Send the spec and we&apos;ll quote it.
+                </p>
+              </div>
+              <Button to={ROUTES.contact} variant="flare" size="lg">
+                Custom Quote <ArrowUpRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </Reveal>
+        </div>
       </section>
     </>
   );
