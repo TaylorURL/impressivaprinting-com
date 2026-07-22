@@ -13,7 +13,10 @@ export default {
           600: '#3a424b',
         },
         // Cool concrete "paper" — industrial, not warm cream.
+        // `50` is a true near-white sheet used for full light sections;
+        // `100` stays the softer on-dark text tone.
         paper: {
+          50: '#f6f7f8',
           100: '#d2d6db',
           200: '#c0c5cc',
           300: '#a6adb5',

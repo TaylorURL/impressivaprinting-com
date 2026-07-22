@@ -7,7 +7,7 @@ import { ROUTES } from '@constants/routes.js';
 export default function ProductPlate({ product, index, tone = 'ink' }) {
   const paper = tone === 'paper';
   const base = paper
-    ? 'bg-paper-100 text-ink-950 border-ink-950/15 hover:bg-ink-950 hover:text-paper-100 hover:border-ink-950'
+    ? 'bg-paper-50 text-ink-950 border-ink-950/12 hover:bg-ink-950 hover:text-paper-100 hover:border-ink-950'
     : 'bg-ink-900 text-paper-100 border-paper-100/12 hover:bg-flare hover:border-flare hover:text-white';
   const dim = paper
     ? 'text-ink-950/50 group-hover:text-paper-100/60'
