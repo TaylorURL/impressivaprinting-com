@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Nav from '@components/Nav.jsx';
 import Footer from '@components/Footer.jsx';
 import ScrollProgressBar from '@components/ScrollProgressBar.jsx';
+import SocialRail from '@components/SocialRail.jsx';
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -19,6 +20,7 @@ export default function Layout() {
         className="grain pointer-events-none fixed inset-0 -z-10 opacity-[0.04] mix-blend-screen"
       />
       <ScrollProgressBar />
+      <SocialRail />
       <Nav />
       <main className="pt-[88px]">
         <Outlet />
