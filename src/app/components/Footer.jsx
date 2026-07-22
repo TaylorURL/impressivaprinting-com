@@ -3,7 +3,7 @@ import { NAV_ITEMS, ROUTES } from '@constants/routes.js';
 import { SITE } from '@constants/site.js';
 import { ColorBar } from '@components/PrintMarks.jsx';
 import Parallax from '@components/Parallax.jsx';
-import SocialIcons from '@components/SocialIcons.jsx';
+import { SOCIAL_ICONS } from '@components/socialIconMap.jsx';
 
 export default function Footer() {
   const isHome = useLocation().pathname === ROUTES.home;
@@ -28,22 +28,35 @@ export default function Footer() {
       <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.6fr_1fr_1fr]">
         <div>
           <img
-            src="/logo.svg"
+            src="/logo.png"
             alt="Impressiva Printing"
             className="h-14 w-auto"
-            width="600"
-            height="260"
+            width="1200"
+            height="410"
           />
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-paper-100/55">{SITE.blurb}</p>
-          <div className="mt-6 flex items-center gap-5">
-            <span className="spec text-xs uppercase tracking-[0.2em] text-paper-100/40">
-              Follow
-            </span>
-            <SocialIcons
-              className="gap-4"
-              itemClassName="text-paper-100/60 hover:text-flare"
-              iconClassName="h-5 w-5"
-            />
+          <div className="mt-8">
+            <span className="kicker text-paper-100/40">Follow {SITE.handle}</span>
+            <div className="mt-4 flex flex-col gap-2.5">
+              {SITE.socials.map((s) => {
+                const Icon = SOCIAL_ICONS[s.icon];
+                return (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex items-center gap-3 text-paper-100/70 transition-colors hover:text-paper-100"
+                  >
+                    <span className="grid h-9 w-9 place-items-center border border-paper-100/15 transition-colors duration-300 group-hover:border-flare group-hover:text-flare">
+                      <Icon className="h-4 w-4" strokeWidth={1.7} />
+                    </span>
+                    <span className="spec text-xs uppercase tracking-[0.15em]">{s.label}</span>
+                    <span className="spec ml-auto text-[11px] text-paper-100/40">{s.handle}</span>
+                  </a>
+                );
+              })}
+            </div>
           </div>
         </div>
 

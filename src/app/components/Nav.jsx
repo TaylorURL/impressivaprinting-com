@@ -9,11 +9,11 @@ function Brand() {
   return (
     <Link to={ROUTES.home} className="group flex items-center" aria-label="Impressiva Printing home">
       <img
-        src="/logo.svg"
+        src="/logo.png"
         alt="Impressiva Printing"
         className="h-11 w-auto sm:h-12"
-        width="600"
-        height="260"
+        width="1200"
+        height="410"
       />
     </Link>
   );
@@ -74,8 +74,8 @@ export default function Nav() {
           <div className="hidden items-center gap-5 md:flex">
             <SocialIcons
               className="mr-2 gap-4 border-r border-paper-100/12 pr-5"
-              itemClassName="text-paper-100/55 hover:text-flare"
-              iconClassName="h-4 w-4"
+              itemClassName="text-paper-100/60 transition-transform hover:scale-110 hover:text-flare"
+              iconClassName="h-[18px] w-[18px]"
             />
             {isAuthed ? (
               <>
