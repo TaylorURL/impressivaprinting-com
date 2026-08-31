@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .mark {
+      fill: #12141a;
+    }
+    @media (prefers-color-scheme: dark) {
+      .mark {
+        fill: #f6f7f8;
+      }
+    }
+  </style>
+  <line x1="12" y1="3" x2="52" y2="3" stroke="#e5352b" stroke-width="6" />
+  <text
+    class="mark"
+    x="32"
+    y="46"
+    font-family="Anton, Impact, sans-serif"
+    font-size="42"
+    text-anchor="middle"
+    letter-spacing="-2"
+  >
+    IP
+  </text>
+</svg>

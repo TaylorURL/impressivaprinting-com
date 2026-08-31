@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07080a" />
+
+    <link rel="preconnect" href="https://auzwqbakalnsxqwwklrh.supabase.co" crossorigin />
+    <link rel="preconnect" href="https://gujgtjqqurildqurpffh.supabase.co" crossorigin />
+
+    <!-- The two faces the first screen sets. The rest load with the stylesheet. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/inter-variable.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/anton-400-normal.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      href="/logo-560.avif"
+      imagesrcset="/logo-560.avif 560w, /logo-1200.avif 1200w"
+      imagesizes="(min-width: 640px) 560px, 100vw"
+      fetchpriority="high"
+    />
+
+    <!-- The home page head, served without script. Every other route rewrites
+         it on navigation from src/app/components/RouteHead.jsx. -->
+    <title>Impressiva Printing | Custom Print Shop in Pasadena</title>
+    <meta
+      name="description"
+      content="Custom printing in Pasadena: business cards, vinyl banners, apparel, stickers and signage, proofed before press and finished by hand."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://www.impressivaprinting.com/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Impressiva Printing" />
+    <meta property="og:title" content="Impressiva Printing | Custom Print Shop in Pasadena" />
+    <meta
+      property="og:description"
+      content="Custom printing in Pasadena: business cards, vinyl banners, apparel, stickers and signage, proofed before press and finished by hand."
+    />
+    <meta property="og:url" content="https://www.impressivaprinting.com/" />
+    <meta property="og:image" content="https://www.impressivaprinting.com/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="The Impressiva Printing wordmark on a press-black ground"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Impressiva Printing | Custom Print Shop in Pasadena" />
+    <meta
+      name="twitter:description"
+      content="Custom printing in Pasadena: business cards, vinyl banners, apparel, stickers and signage, proofed before press and finished by hand."
+    />
+    <meta name="twitter:image" content="https://www.impressivaprinting.com/og-card.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "@id": "https://www.impressivaprinting.com/#business",
+        "name": "Impressiva Printing",
+        "url": "https://www.impressivaprinting.com/",
+        "description": "Custom printing for businesses and brands, from business cards to building-size banners, produced quickly and finished to a high standard.",
+        "logo": "https://www.impressivaprinting.com/logo.png",
+        "image": "https://www.impressivaprinting.com/og-card.png",
+        "telephone": "(555) 018-7746",
+        "email": "hello@impressivaprinting.com",
+        "priceRange": "$$",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "2200 Warehouse District",
+          "addressLocality": "Pasadena"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            "opens": "08:00",
+            "closes": "18:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Saturday",
+            "opens": "10:00",
+            "closes": "15:00"
+          }
+        ],
+        "sameAs": [
+          "https://www.instagram.com/impressivaprinting/",
+          "https://www.tiktok.com/@impressivaprinting",
+          "https://www.facebook.com/impressivaprinting/"
+        ]
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": "https://www.impressivaprinting.com/#website",
+        "url": "https://www.impressivaprinting.com/",
+        "name": "Impressiva Printing",
+        "inLanguage": "en",
+        "publisher": { "@id": "https://www.impressivaprinting.com/#business" }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "@id": "https://www.impressivaprinting.com/products#catalog",
+        "name": "Print Products and Services",
+        "url": "https://www.impressivaprinting.com/products",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "item": {
+              "@type": "Product",
+              "name": "Business Cards",
+              "sku": "BC-16",
+              "url": "https://www.impressivaprinting.com/products",
+              "description": "Thick soft-touch and spot-gloss stocks in 16 and 32pt weights, with optional foil and spot UV.",
+              "brand": { "@id": "https://www.impressivaprinting.com/#business" },
+              "offers": {
+                "@type": "Offer",
+                "availability": "https://schema.org/InStock",
+                "priceCurrency": "USD",
+                "priceSpecification": {
+                  "@type": "PriceSpecification",
+                  "priceCurrency": "USD",
+                  "valueAddedTaxIncluded": false
+                },
+                "seller": { "@id": "https://www.impressivaprinting.com/#business" }
+              }
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "item": {
+              "@type": "Product",
+              "name": "Vinyl Banners",
+              "sku": "VB-13",
+              "url": "https://www.impressivaprinting.com/products",
+              "description": "Weatherproof 13oz vinyl, hemmed and grommeted, in sizes up to 10 feet wide.",
+              "brand": { "@id": "https://www.impressivaprinting.com/#business" },
+              "offers": {
+                "@type": "Offer",
+                "availability": "https://schema.org/InStock",
+                "priceCurrency": "USD",
+                "seller": { "@id": "https://www.impressivaprinting.com/#business" }
+              }
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "item": {
+              "@type": "Product",
+              "name": "Custom Apparel",
+              "sku": "AP-DTF",
+              "url": "https://www.impressivaprinting.com/products",
+              "description": "DTF and screen-printed tees, hoodies, and team apparel in full color.",
+              "brand": { "@id": "https://www.impressivaprinting.com/#business" },
+              "offers": {
+                "@type": "Offer",
+                "availability": "https://schema.org/InStock",
+                "priceCurrency": "USD",
+                "seller": { "@id": "https://www.impressivaprinting.com/#business" }
+              }
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "item": {
+              "@type": "Product",
+              "name": "Stickers and Decals",
+              "sku": "ST-DC",
+              "url": "https://www.impressivaprinting.com/products",
+              "description": "Die-cut, holographic, and weatherproof vinyl, in sheets or rolls.",
+              "brand": { "@id": "https://www.impressivaprinting.com/#business" },
+              "offers": {
+                "@type": "Offer",
+                "availability": "https://schema.org/InStock",
+                "priceCurrency": "USD",
+                "seller": { "@id": "https://www.impressivaprinting.com/#business" }
+              }
+            }
+          }
+        ]
+      }
+    </script>
+    <script>
+      (function () {
+        var endpoint = 'https://sunday.tail1f78d7.ts.net/report';
+        var site = 'Impressiva Printing';
+        var sent = 0;
+        function report(kind, message, stack) {
+          if (sent >= 10) return;
+          sent += 1;
+          try {
+            var body = JSON.stringify({
+              site: site,
+              kind: kind,
+              message: String(message || 'Unknown error').slice(0, 1500),
+              stack: String(stack || '').slice(0, 4000),
+              url: location.href,
+              userAgent: navigator.userAgent,
+            });
+            if (navigator.sendBeacon) {
+              navigator.sendBeacon(endpoint, body);
+            } else {
+              fetch(endpoint, { method: 'POST', body: body, keepalive: true }).catch(
+                function () {},
+              );
+            }
+          } catch (ignored) {}
+        }
+        // A tab open across a deploy asks for a chunk filename the host has
+        // replaced, and the browser fails the preload link before the import
+        // rejects. That first failure arrives here with nothing attached to say
+        // the page is about to reload and fix itself, so asset failures wait
+        // instead of reporting at once. chunk-recovery.js fires the refresh
+        // event on its way out, which drops them; anything still held when the
+        // wait elapses was a real failure and goes.
+        var HOLD_MS = 1500;
+        var heldAssets = [];
+        function flushHeldAssets() {
+          var pending = heldAssets.splice(0, heldAssets.length);
+          for (var i = 0; i < pending.length; i += 1) report('resource', pending[i]);
+        }
+        window.addEventListener('impressiva:build-refresh', function () {
+          heldAssets.length = 0;
+        });
+        // Leaving for any other reason ends the wait, so a page closed on a
+        // real failure still reports it.
+        window.addEventListener('pagehide', flushHeldAssets);
+
+        // Capture phase, because element load failures fire error events that do not bubble.
+        window.addEventListener(
+          'error',
+          function (event) {
+            if (event.target && event.target !== window && event.target.tagName) {
+              heldAssets.push(
+                'Failed to load ' +
+                  event.target.tagName.toLowerCase() +
+                  ': ' +
+                  (event.target.src || event.target.href || ''),
+              );
+              setTimeout(flushHeldAssets, HOLD_MS);
+            } else {
+              report('uncaught', event.message, event.error && event.error.stack);
+            }
+          },
+          true,
+        );
+        window.addEventListener('unhandledrejection', function (event) {
+          var reason = event.reason;
+          report(
+            'rejection',
+            reason && reason.message ? reason.message : reason,
+            reason && reason.stack,
+          );
+        });
+        var consoleError = console.error;
+        console.error = function () {
+          var parts = [];
+          for (var i = 0; i < arguments.length; i += 1) {
+            var piece = arguments[i];
+            if (piece && piece.stack) {
+              parts.push(piece.stack);
+            } else if (typeof piece === 'object') {
+              try {
+                parts.push(JSON.stringify(piece));
+              } catch (ignored) {
+                parts.push(String(piece));
+              }
+            } else {
+              parts.push(String(piece));
+            }
+          }
+          report('console', parts.join(' '));
+          return consoleError.apply(console, arguments);
+        };
+        if (window.fetch) {
+          var originalFetch = window.fetch;
+          window.fetch = function (input) {
+            var target = typeof input === 'string' ? input : (input && input.url) || '';
+            if (target.indexOf(endpoint) === 0) return originalFetch.apply(window, arguments);
+            return originalFetch.apply(window, arguments).then(
+              function (response) {
+                if (response.status >= 500)
+                  report('http', 'HTTP ' + response.status + ' from ' + target.split('?')[0]);
+                return response;
+              },
+              function (error) {
+                report(
+                  'network',
+                  (error && error.message ? error.message : String(error)) +
+                    ' fetching ' +
+                    target.split('?')[0],
+                );
+                throw error;
+              },
+            );
+          };
+        }
+      })();
+    </script>
+    <!-- Traffic analytics. The site key is public by design: it says which
+         site a hit belongs to, and the collector accepts it only from this
+         site's own origins. Deferred, so nothing on the page waits for it. -->
+    <script>
+      addEventListener('load', function () {
+        var tracker = document.createElement('script');
+        tracker.src = 'https://gujgtjqqurildqurpffh.supabase.co/functions/v1/analytics-tracker';
+        tracker.dataset.site = 'sa_06f1feeee5081dea82c6dd8f1d0f178a';
+        tracker.crossOrigin = 'anonymous';
+        tracker.async = true;
+        document.head.appendChild(tracker);
+      });
+    </script>
+  </head>
+  <body>
+    <!-- The first screen, in the document. It paints before the bundle has
+         downloaded and the app replaces it on mount, so a reader on a slow
+         connection and a crawler with no JavaScript both get the page. -->
+    <div id="root">
+      <main class="mx-auto max-w-[1400px] px-5 pb-20 pt-16 text-center sm:px-8 sm:pb-28 sm:pt-24">
+        <picture>
+          <source
+            type="image/avif"
+            srcset="/logo-560.avif 560w, /logo-1200.avif 1200w"
+            sizes="(min-width: 640px) 560px, 100vw"
+          />
+          <img
+            src="/logo-1200.webp"
+            srcset="/logo-560.webp 560w, /logo-1200.webp 1200w"
+            sizes="(min-width: 640px) 560px, 100vw"
+            alt="Impressiva Printing"
+            class="mx-auto w-full max-w-[560px]"
+            width="1200"
+            height="410"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </picture>
+        <h1 class="sr-only">Impressiva Printing, custom print shop in Pasadena</h1>
+        <p class="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-paper-100/70">
+          Custom printing for businesses and brands, from business cards to building-size banners,
+          produced quickly and finished to a high standard.
+        </p>
+        <p class="mx-auto mt-4 max-w-xl text-base leading-relaxed text-paper-100/55">
+          Every job is proofed before it runs and checked by hand before it leaves the studio.
+        </p>
+
+        <h2 class="display mt-16 text-3xl text-paper-100">What The Studio Prints</h2>
+
+        <h3 class="kicker mt-8 text-paper-100/50">Press And Paper</h3>
+        <ul class="mx-auto mt-4 grid max-w-3xl gap-4 text-left sm:grid-cols-3">
+          <li class="border border-paper-100/12 p-5">
+            <h4 class="font-head text-lg font-800 uppercase text-paper-100">Business Cards</h4>
+            <p class="mt-2 text-sm text-paper-100/60">
+              Soft-touch and spot-gloss stocks in 16 and 32pt, with optional foil and spot UV.
+            </p>
+          </li>
+          <li class="border border-paper-100/12 p-5">
+            <h4 class="font-head text-lg font-800 uppercase text-paper-100">Flyers and Posters</h4>
+            <p class="mt-2 text-sm text-paper-100/60">
+              Full-bleed flyers and posters on 100lb gloss or matte stock, printed both sides.
+            </p>
+          </li>
+          <li class="border border-paper-100/12 p-5">
+            <h4 class="font-head text-lg font-800 uppercase text-paper-100">Packaging</h4>
+            <p class="mt-2 text-sm text-paper-100/60">
+              Custom boxes, mailers and labels on SBS board, produced in small batches.
+            </p>
+          </li>
+        </ul>
+
+        <h3 class="kicker mt-10 text-paper-100/50">Wide Format And Apply</h3>
+        <ul class="mx-auto mt-4 grid max-w-3xl gap-4 text-left sm:grid-cols-3">
+          <li class="border border-paper-100/12 p-5">
+            <h4 class="font-head text-lg font-800 uppercase text-paper-100">Vinyl Banners</h4>
+            <p class="mt-2 text-sm text-paper-100/60">
+              Weatherproof 13oz vinyl, hemmed and grommeted, in sizes up to ten feet wide.
+            </p>
+          </li>
+          <li class="border border-paper-100/12 p-5">
+            <h4 class="font-head text-lg font-800 uppercase text-paper-100">Custom Apparel</h4>
+            <p class="mt-2 text-sm text-paper-100/60">
+              DTF and screen-printed tees, hoodies, caps and team apparel, printed in full color.
+            </p>
+          </li>
+          <li class="border border-paper-100/12 p-5">
+            <h4 class="font-head text-lg font-800 uppercase text-paper-100">Stickers and Signs</h4>
+            <p class="mt-2 text-sm text-paper-100/60">
+              Die-cut vinyl, plus coroplast, aluminum and foam board for storefront signage.
+            </p>
+          </li>
+        </ul>
+
+        <h2 class="display mt-16 text-3xl text-paper-100">How A Job Runs</h2>
+        <p class="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-paper-100/60">
+          Send artwork as a print-ready PDF, PNG, SVG or 300dpi JPG with a 0.125 inch bleed.
+        </p>
+        <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-paper-100/60">
+          The studio preflights the file, returns a proof for approval, and only then puts the job
+          on press.
+        </p>
+        <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-paper-100/60">
+          Standard runs ship in three to five business days. Rush work goes same-day when files
+          arrive approved before noon.
+        </p>
+        <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-paper-100/60">
+          Small quantities are welcome: fifty stickers, one hundred cards, or a single banner.
+        </p>
+
+        <h2 class="display mt-16 text-3xl text-paper-100">Stocks And Finishes</h2>
+        <p class="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-paper-100/60">
+          Stocks run from 14pt card through 32pt board, 13oz and 18oz vinyl, cotton apparel and SBS
+          packaging board.
+        </p>
+        <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-paper-100/60">
+          Finishes include soft-touch lamination, spot UV, foil, die-cutting and rounded corners.
+        </p>
+        <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-paper-100/60">
+          The floor runs offset, digital, screen, direct-to-film and wide-format presses under one
+          roof.
+        </p>
+        <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-paper-100/60">
+          Color is CMYK plus spot inks, calibrated to G7 and proofed by hand before every run.
+        </p>
+
+        <h2 class="display mt-16 text-3xl text-paper-100">Where To Find The Studio</h2>
+        <p class="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-paper-100/60">
+          Impressiva Printing, 2200 Warehouse District, Pasadena. Open Monday to Friday, 8a to 6p,
+          and Saturday 10a to 3p.
+        </p>
+        <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-paper-100/60">
+          Call (555) 018-7746 or email hello@impressivaprinting.com to open a job or ask for a
+          quote.
+        </p>
+        <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-paper-100/60">
+          Studio pickup, local courier and nationwide shipping are all available on finished work.
+        </p>
+
+        <p class="mt-10">
+          <a
+            class="spec inline-block bg-flare px-6 py-3 text-xs uppercase tracking-[0.2em] text-white"
+            href="/products"
+            >Shop Products</a
+          >
+          <a
+            class="spec ml-3 inline-block border border-paper-100/25 px-6 py-3 text-xs uppercase tracking-[0.2em] text-paper-100"
+            href="/contact"
+            >Get a Quote</a
+          >
+        </p>
+      </main>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

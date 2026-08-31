@@ -1,0 +1,905 @@
+/* The four faces the site sets, self-hosted and cut to the Latin subset so
+   nothing on the critical path waits on an origin the site does not own.
+   Archivo and Inter ship as variable files, which is why one file answers for
+   every weight the design uses. */
+@font-face {
+  font-family: 'Anton';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/anton-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/archivo-variable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/archivo-variable-italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-variable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/space-mono-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/space-mono-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/space-mono-400-italic.woff2') format('woff2');
+}
+
+/* Fallback faces, overridden onto each real face's metrics so the swap moves
+   no line of text. Each is the local system face the stack would reach for
+   anyway, wearing the ascent, descent and width of the file it stands in for. */
+@font-face {
+  font-family: 'Anton Fallback';
+  src: local('Impact'), local('Haettenschweiler'), local('Arial Narrow Bold');
+  font-display: swap;
+  size-adjust: 100%;
+  ascent-override: 102%;
+  descent-override: 21%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Archivo Fallback';
+  src: local('Arial'), local('Helvetica Neue');
+  font-display: swap;
+  size-adjust: 103%;
+  ascent-override: 92%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Helvetica Neue'), local('Arial');
+  font-display: swap;
+  size-adjust: 107%;
+  ascent-override: 90%;
+  descent-override: 22.4%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Space Mono Fallback';
+  src: local('Menlo'), local('Consolas'), local('Courier New');
+  font-display: swap;
+  size-adjust: 103%;
+  ascent-override: 101%;
+  descent-override: 29%;
+  line-gap-override: 0%;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Every colour in the project resolves from this block. Values are
+   space-separated RGB channels so Tailwind's alpha modifiers (bg-ink-950/70)
+   still compose. :root is the dark theme; [data-theme] restates the same set
+   for light and gray, so a token that resolves here resolves in all three. */
+:root {
+  --ink-950: 7 8 10;
+  --ink-900: 12 14 17;
+  --ink-850: 19 22 25;
+  --ink-800: 27 31 36;
+  --ink-700: 39 44 51;
+  --ink-600: 58 66 75;
+
+  --paper-50: 246 247 248;
+  --paper-100: 210 214 219;
+  --paper-200: 192 197 204;
+  --paper-300: 166 173 181;
+  --paper-ink: 14 16 19;
+
+  --flare: 229 53 43;
+  --flare-deep: 184 31 22;
+  --volt: 47 107 255;
+
+  --proc-c: 75 159 224;
+  --proc-m: 107 118 131;
+  --proc-y: 52 199 123;
+
+  --white: 255 255 255;
+  --black: 0 0 0;
+
+  /* Hairlines and chrome: ink at low alpha rather than a grey of its own. */
+  --rule: 244 239 227;
+  --rule-ink: 24 21 16;
+  --hairline: rgb(244 239 227 / 0.14);
+  --hairline-ink: rgb(24 21 16 / 0.16);
+  --glass: 13 13 16;
+  --scroll-thumb: 42 42 49;
+
+  /* The ground a field sits on, a step off the page behind it so the box
+     reads as somewhere to type rather than as a bordered label. */
+  --field: 19 22 25;
+
+  /* Ink chips on product plates and portfolio tiles, and the platform marks
+     on the social cards. These are set straight onto a style property rather
+     than composed with an alpha, so they carry the whole colour. */
+  --swatch-red: rgb(229 53 43);
+  --swatch-deep: rgb(184 31 22);
+  --swatch-blue: rgb(47 107 255);
+  --swatch-steel: rgb(107 118 131);
+  --swatch-teal: rgb(30 122 133);
+
+  --brand-instagram: rgb(225 48 108);
+  --brand-tiktok: rgb(37 244 238);
+  --brand-facebook: rgb(24 119 242);
+
+  --shadow-card: inset 0 1px 0 rgb(var(--paper-100) / 0.04), 0 1px 3px rgb(var(--black) / 0.4);
+  --shadow-card-flare: inset 0 1px 0 rgb(var(--flare) / 0.06), 0 1px 3px rgb(var(--black) / 0.4);
+  --shadow-drawer: 0 8px 24px rgb(var(--black) / 0.5);
+  --shadow-palette: inset 0 1px 0 rgb(var(--paper-100) / 0.05), 0 24px 64px rgb(var(--black) / 0.7);
+  --shadow-nav-active: inset 0 0 0 1px rgb(var(--flare) / 0.25);
+  --shadow-tab-active: inset 0 0 0 1px rgb(var(--flare) / 0.35);
+  --shadow-field-focus: 0 0 0 3px rgb(var(--flare) / 0.15);
+  --shadow-autofill: inset 0 0 0 100px rgb(var(--field));
+
+  /* Spacing: one 4px scale, matching Tailwind's own steps, for the rules
+     written here in CSS rather than as utilities. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* Layer scale. Nothing sets a raw z-index; the nav sits above every
+     in-page sticky, and a modal sits above the nav. */
+  --z-base: 0;
+  --z-raised: 1;
+  --z-scrim: 10;
+  --z-media: 20;
+  --z-caption: 30;
+  --z-dropdown: 35;
+  --z-sticky: 40;
+  --z-nav: 50;
+  --z-overlay: 60;
+  --z-modal: 70;
+  --z-toast: 80;
+
+  /* The fixed bar's height, so sticky offsets, anchor margins and scroll
+     padding all read the same number. */
+  --header-height: 4.5rem;
+
+  /* One height for every control, so an input and the button beside it line up
+     on the same baseline. --control-h-sm is the dense variant the panel
+     toolbars use. */
+  --control-h: 3rem;
+  --control-h-sm: 2.125rem;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* A finger needs a larger target than a pointer does, so both heights meet the
+   44px floor wherever the primary input is touch. */
+@media (pointer: coarse) {
+  :root {
+    --control-h: 2.75rem;
+    --control-h-sm: 2.75rem;
+  }
+}
+
+/* Light: the ink and paper roles swap, so a section that was a dark ground
+   becomes the sheet and the sheet becomes the ink block. */
+[data-theme='light'] {
+  --ink-950: 246 247 248;
+  --ink-900: 236 238 241;
+  --ink-850: 226 229 233;
+  --ink-800: 213 218 223;
+  --ink-700: 188 195 202;
+  --ink-600: 146 155 164;
+
+  --paper-50: 18 20 24;
+  --paper-100: 22 25 29;
+  --paper-200: 38 42 48;
+  --paper-300: 74 81 89;
+  --paper-ink: 246 247 248;
+
+  --flare: 190 32 23;
+  --flare-deep: 143 22 15;
+  --volt: 29 78 216;
+
+  --proc-c: 21 101 163;
+  --proc-m: 71 81 92;
+  --proc-y: 15 122 68;
+
+  --rule: 24 21 16;
+  --rule-ink: 244 239 227;
+  --hairline: rgb(24 21 16 / 0.14);
+  --hairline-ink: rgb(244 239 227 / 0.16);
+  --field: 255 255 255;
+  --glass: 246 247 248;
+  --scroll-thumb: 178 184 191;
+
+  --shadow-card: inset 0 1px 0 rgb(var(--white) / 0.7), 0 1px 3px rgb(var(--black) / 0.14);
+  --shadow-card-flare: inset 0 1px 0 rgb(var(--flare) / 0.08), 0 1px 3px rgb(var(--black) / 0.14);
+  --shadow-drawer: 0 8px 24px rgb(var(--black) / 0.16);
+  --shadow-palette: inset 0 1px 0 rgb(var(--white) / 0.8), 0 24px 64px rgb(var(--black) / 0.24);
+  --shadow-nav-active: inset 0 0 0 1px rgb(var(--flare) / 0.3);
+  --shadow-tab-active: inset 0 0 0 1px rgb(var(--flare) / 0.4);
+  --shadow-field-focus: 0 0 0 3px rgb(var(--flare) / 0.2);
+  --shadow-autofill: inset 0 0 0 100px rgb(var(--field));
+}
+
+/* Gray: a mid neutral ground, for reading in a lit room without the contrast
+   of either extreme. */
+[data-theme='gray'] {
+  --ink-950: 32 34 38;
+  --ink-900: 42 45 50;
+  --ink-850: 52 56 61;
+  --ink-800: 64 69 75;
+  --ink-700: 84 90 98;
+  --ink-600: 112 120 129;
+
+  --paper-50: 226 229 233;
+  --paper-100: 226 229 233;
+  --paper-200: 205 209 214;
+  --paper-300: 160 167 175;
+  --paper-ink: 32 34 38;
+
+  --flare: 233 76 66;
+  --flare-deep: 190 38 29;
+  --volt: 92 141 255;
+
+  --proc-c: 108 179 233;
+  --proc-m: 141 150 160;
+  --proc-y: 70 205 134;
+
+  --rule: 236 238 241;
+  --rule-ink: 32 34 38;
+  --hairline: rgb(236 238 241 / 0.14);
+  --hairline-ink: rgb(32 34 38 / 0.16);
+  --field: 52 56 61;
+  --glass: 42 45 50;
+  --scroll-thumb: 88 94 102;
+
+  --shadow-card: inset 0 1px 0 rgb(var(--paper-100) / 0.06), 0 1px 3px rgb(var(--black) / 0.28);
+  --shadow-card-flare: inset 0 1px 0 rgb(var(--flare) / 0.08), 0 1px 3px rgb(var(--black) / 0.28);
+  --shadow-drawer: 0 8px 24px rgb(var(--black) / 0.34);
+  --shadow-palette:
+    inset 0 1px 0 rgb(var(--paper-100) / 0.08), 0 24px 64px rgb(var(--black) / 0.48);
+  --shadow-nav-active: inset 0 0 0 1px rgb(var(--flare) / 0.3);
+  --shadow-tab-active: inset 0 0 0 1px rgb(var(--flare) / 0.4);
+  --shadow-field-focus: 0 0 0 3px rgb(var(--flare) / 0.2);
+  --shadow-autofill: inset 0 0 0 100px rgb(var(--field));
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: var(--header-height);
+  }
+
+  /* clip rather than hidden, so the fixed bar and the pinned work strip keep
+     working while a stray wide child stops pushing the page sideways. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  body {
+    @apply bg-ink-950 font-body text-paper-100/80;
+    font-feature-settings: 'ss01', 'cv01';
+  }
+
+  /* The affordances every control shares, declared once. Tailwind's utilities
+     sit in a later layer, so a control that states its own hover or press
+     still wins; anything that states nothing inherits these. */
+  button,
+  a,
+  summary,
+  label[for],
+  [role='button'],
+  .pressable {
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  summary,
+  [role='button'] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  button:hover,
+  a:hover,
+  summary:hover,
+  [role='button']:hover,
+  .pressable:hover {
+    color: rgb(var(--flare));
+  }
+
+  button:active,
+  a:active,
+  summary:active,
+  [role='button']:active {
+    transform: scale(0.97);
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  summary:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role='button']:focus-visible,
+  .pressable:focus-visible {
+    outline: 2px solid rgb(var(--flare));
+    outline-offset: 2px;
+  }
+
+  /* A field carries its own ground in every theme. */
+  input,
+  select,
+  textarea {
+    background-color: rgb(var(--field));
+  }
+
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='file'],
+  input[type='range'] {
+    background-color: transparent;
+  }
+
+  /* The native controls take the brand accent rather than the browser's blue,
+     which keeps their focus ring, hit area and semantics for free. */
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='range'],
+  progress {
+    accent-color: rgb(var(--flare));
+  }
+
+  /* Autofill paints its own yellow straight over the field's surface and
+     survives a plain background rule, so the ground is covered with an inset
+     shadow and the text colour is set outright. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    box-shadow: var(--shadow-autofill);
+    -webkit-text-fill-color: rgb(var(--paper-100));
+    caret-color: rgb(var(--paper-100));
+    transition: background-color 220ms var(--ease) 600000s;
+  }
+
+  ::selection {
+    background: rgb(var(--flare));
+    color: rgb(var(--white));
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(var(--ink-950));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--scroll-thumb));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--flare));
+  }
+}
+
+@layer components {
+  .display {
+    font-family: 'Anton', 'Anton Fallback', Impact, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 0.82;
+    /* Poster type runs long uppercase compounds at viewport sizes, which reach
+       past the edge on a narrow screen unless the word itself may break. */
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .kicker {
+    display: block;
+    font-family: 'Space Mono', 'Space Mono Fallback', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    font-size: 0.7rem;
+    line-height: 1;
+  }
+  .spec {
+    font-family: 'Space Mono', 'Space Mono Fallback', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Every input, select and button reads its height from the same token, so a
+     control never sits a few pixels off the one beside it. */
+  .control {
+    min-height: var(--control-h);
+  }
+  .control-sm {
+    min-height: var(--control-h-sm);
+  }
+
+  .cropmarks {
+    position: relative;
+  }
+  .cropmarks::before,
+  .cropmarks::after {
+    content: '';
+    position: absolute;
+    width: var(--space-4);
+    height: var(--space-4);
+    pointer-events: none;
+  }
+  .cropmarks::before {
+    top: var(--space-3);
+    left: var(--space-3);
+    border-top: 1px solid currentColor;
+    border-left: 1px solid currentColor;
+  }
+  .cropmarks::after {
+    bottom: var(--space-3);
+    right: var(--space-3);
+    border-bottom: 1px solid currentColor;
+    border-right: 1px solid currentColor;
+  }
+
+  .registration {
+    @apply rounded-full;
+    position: relative;
+    width: var(--space-8);
+    height: var(--space-8);
+    border: 1px solid currentColor;
+  }
+  .registration::before,
+  .registration::after {
+    content: '';
+    position: absolute;
+    background: currentColor;
+  }
+  .registration::before {
+    left: 50%;
+    top: calc(var(--space-2) * -1);
+    bottom: calc(var(--space-2) * -1);
+    width: 1px;
+    transform: translateX(-50%);
+  }
+  .registration::after {
+    top: 50%;
+    left: calc(var(--space-2) * -1);
+    right: calc(var(--space-2) * -1);
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
+  .colorbar {
+    display: flex;
+    height: var(--space-2);
+    width: 100%;
+    overflow: hidden;
+  }
+  .colorbar > span {
+    flex: 1;
+  }
+
+  .rule {
+    border-color: var(--hairline);
+  }
+  .rule-ink {
+    border-color: var(--hairline-ink);
+  }
+
+  /* Reserved for floating chrome; blur over page content reads as mush. */
+  .glass {
+    background: rgb(var(--glass) / 0.6);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid rgb(var(--rule) / 0.1);
+  }
+
+  .pressable {
+    transition:
+      transform 220ms var(--ease),
+      background-color 220ms var(--ease),
+      color 220ms var(--ease),
+      border-color 220ms var(--ease);
+  }
+  .pressable:active {
+    transform: translateY(1px);
+  }
+
+  .skip-offscreen {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 640px;
+  }
+
+  /* The panel behind the bar's Products word, on the wide bar only. It is
+     absent rather than hidden while closed: a panel that merely hides still
+     holds a row in the header it hangs off, and stays in the tab order. */
+  .nav-mega-panel {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .nav-mega-panel.is-open {
+      display: block;
+      animation: mega-open 220ms var(--ease) both;
+    }
+  }
+
+  /* The mark a click leaves where the pointer landed. */
+  .click-spark-layer {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-toast);
+    pointer-events: none;
+  }
+  .click-spark {
+    position: absolute;
+    width: var(--space-8);
+    height: var(--space-8);
+    margin: calc(var(--space-8) / -2) 0 0 calc(var(--space-8) / -2);
+    @apply rounded-full;
+    border: 1px solid rgb(var(--flare));
+    pointer-events: none;
+    animation: click-spark 300ms var(--ease) forwards;
+  }
+
+  /* A scroll that reaches the end of a panel stops there rather than carrying
+     the page behind it along with it. */
+  .scroll-contain {
+    overscroll-behavior: contain;
+  }
+
+  /* The reading rail across the top of the page. The scroll timeline drives it
+     off the document itself, so nothing listens and nothing re-renders. Where
+     scroll-driven animation is unavailable the rail does not render at all. */
+  .scroll-progress {
+    display: none;
+  }
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      display: block;
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: scroll-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+
+  /* Depth on scroll. The travel is a view timeline on the element itself, so
+     nothing measures a rectangle per frame and nothing re-renders. */
+  .parallax {
+    will-change: transform;
+  }
+  @supports (animation-timeline: view()) {
+    .parallax {
+      animation: parallax-y linear both;
+      animation-timeline: view();
+    }
+    .parallax-x {
+      animation-name: parallax-x;
+    }
+  }
+
+  /* The milestone rail: the fill grows as the list crosses the viewport and
+     each entry lifts to full strength as it arrives. */
+  .timeline-fill {
+    transform-origin: top;
+  }
+  @supports (animation-timeline: view()) {
+    .timeline {
+      view-timeline-name: --timeline;
+    }
+    .timeline-fill {
+      transform: scaleY(0);
+      animation: rail-fill linear both;
+      animation-timeline: --timeline;
+    }
+    .timeline-body,
+    .timeline-dot {
+      animation: milestone-arrive linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 30%;
+    }
+  }
+
+  /* The pinned portfolio pan. The section is the timeline; the track inside
+     the sticky child reads it. */
+  .work-strip-progress {
+    transform-origin: left;
+  }
+  @supports (animation-timeline: view()) {
+    .work-strip {
+      view-timeline-name: --work-strip;
+    }
+    .work-strip-track {
+      animation: work-strip-pan linear both;
+      animation-timeline: --work-strip;
+      animation-range: contain 0% contain 100%;
+    }
+    .work-strip-progress {
+      transform: scaleX(0);
+      animation: rail-fill-x linear both;
+      animation-timeline: --work-strip;
+      animation-range: contain 0% contain 100%;
+    }
+  }
+
+  /* The overflow clip is what gives the child a baseline to slide up from. */
+  .reveal-line {
+    overflow: hidden;
+    display: block;
+  }
+
+  .link-wipe {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0 1px;
+    transition: background-size 220ms var(--ease);
+  }
+  .link-wipe:hover {
+    background-size: 100% 1px;
+  }
+
+  .shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgb(var(--white) / 0.28), transparent);
+    transform: translateX(-160%) skewX(-18deg);
+    pointer-events: none;
+  }
+  .shine:hover::after {
+    animation: shine 900ms var(--ease);
+  }
+
+  .wipe-flare {
+    position: relative;
+  }
+  .wipe-flare::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: rgb(var(--flare));
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 220ms var(--ease);
+  }
+  .wipe-flare:hover::before,
+  .group:hover .wipe-flare::before {
+    transform: scaleY(1);
+  }
+}
+
+@layer utilities {
+  .text-flare {
+    color: rgb(var(--flare));
+  }
+  .outline-type {
+    color: transparent;
+    -webkit-text-stroke: 1.4px currentColor;
+  }
+
+  .halftone {
+    background-image: radial-gradient(rgb(var(--paper-100) / 0.5) 1px, transparent 1.4px);
+    background-size: 7px 7px;
+  }
+  .halftone-ink {
+    background-image: radial-gradient(rgb(var(--paper-ink) / 0.6) 1px, transparent 1.4px);
+    background-size: 7px 7px;
+  }
+
+  /* The blueprint ground, painted by the panel itself rather than by an empty
+     child sitting in the grid beside the content. */
+  .blueprint-ground {
+    position: relative;
+  }
+  .blueprint-ground::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.6;
+    background-image:
+      linear-gradient(rgb(var(--paper-100) / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--paper-100) / 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Pair with animate-drift to make the grid crawl. */
+  .blueprint {
+    background-image:
+      linear-gradient(rgb(var(--paper-100) / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--paper-100) / 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .hazard {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      rgb(var(--flare)) 0,
+      rgb(var(--flare)) 10px,
+      rgb(var(--ink-900)) 10px,
+      rgb(var(--ink-900)) 20px
+    );
+  }
+
+  .scanlines {
+    background: linear-gradient(rgb(var(--flare) / 0.08), transparent);
+    height: 40dvh;
+  }
+
+  .grain-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Scroll-driven animations take their progress from the timeline rather than
+     from a duration, so they have to be turned off by name. */
+  .parallax,
+  .timeline-fill,
+  .timeline-body,
+  .timeline-dot,
+  .work-strip-track,
+  .work-strip-progress,
+  .scroll-progress {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .scroll-progress {
+    display: none;
+  }
+
+  .work-strip {
+    height: auto;
+  }
+  .work-strip-pin {
+    position: static;
+    height: auto;
+    padding-block: var(--space-16);
+  }
+  .work-strip-scroll {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+}
+
+@keyframes click-spark {
+  from {
+    transform: scale(0.3);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes scroll-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes parallax-y {
+  from {
+    transform: translate3d(0, calc(var(--parallax-distance) * 0.5), 0);
+  }
+  to {
+    transform: translate3d(0, calc(var(--parallax-distance) * -0.5), 0);
+  }
+}
+
+@keyframes parallax-x {
+  from {
+    transform: translate3d(calc(var(--parallax-distance) * 0.5), 0, 0);
+  }
+  to {
+    transform: translate3d(calc(var(--parallax-distance) * -0.5), 0, 0);
+  }
+}
+
+@keyframes rail-fill {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes milestone-arrive {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes work-strip-pan {
+  to {
+    /* The track is wider than the viewport, so a full shift would run the
+       last tiles off the edge. */
+    transform: translate3d(-55%, 0, 0);
+  }
+}
+
+@keyframes rail-fill-x {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes mega-open {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

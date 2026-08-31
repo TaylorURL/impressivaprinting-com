@@ -1,0 +1,35 @@
+# Impressiva Printing
+
+> Custom print studio at 2200 Warehouse District, Pasadena. Business cards,
+> vinyl banners, apparel, stickers and signage, produced on offset, digital,
+> DTF, screen and wide-format equipment.
+
+Every job is quoted on request, proofed digitally before it reaches the press,
+and hand-checked against a G7-calibrated colour standard. Standard turnaround
+is three to five working days; rush work goes out the same day. Collection is
+at the studio, by local courier, or shipped nationwide.
+
+- Phone: (555) 018-7746
+- Email: hello@impressivaprinting.com
+- Hours: Monday to Friday 8am to 6pm, Saturday 10am to 3pm
+
+## Pages
+
+- [Home](https://www.impressivaprinting.com/): studio overview, product
+  categories, recent work and how an order moves.
+- [Products](https://www.impressivaprinting.com/products): the full catalogue
+  with stocks, finishes and shop codes for each service.
+- [Work](https://www.impressivaprinting.com/work): recent apparel and custom
+  print projects, filterable by category.
+- [About](https://www.impressivaprinting.com/about): how the studio was built,
+  its production standards and the equipment on the floor.
+- [Contact](https://www.impressivaprinting.com/contact): quote requests, studio
+  address, phone number and opening hours.
+- [Privacy](https://www.impressivaprinting.com/privacy): what the shop stores,
+  why, and for how long.
+- [Terms](https://www.impressivaprinting.com/terms): quoting, proofing, colour,
+  turnaround, payment and reprint terms.
+
+## Not for crawling
+
+- /portal, /admin and /account are account areas behind a sign-in.

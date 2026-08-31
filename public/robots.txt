@@ -1,0 +1,59 @@
+User-agent: *
+Allow: /
+Disallow: /portal
+Disallow: /admin
+Disallow: /account
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+
+User-agent: GPTBot
+Allow: /
+Disallow: /portal
+Disallow: /admin
+Disallow: /account
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /portal
+Disallow: /admin
+Disallow: /account
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /portal
+Disallow: /admin
+Disallow: /account
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /portal
+Disallow: /admin
+Disallow: /account
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /portal
+Disallow: /admin
+Disallow: /account
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /portal
+Disallow: /admin
+Disallow: /account
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /portal
+Disallow: /admin
+Disallow: /account
+
+User-agent: CCBot
+Allow: /
+Disallow: /portal
+Disallow: /admin
+Disallow: /account
+
+Sitemap: https://www.impressivaprinting.com/sitemap.xml
