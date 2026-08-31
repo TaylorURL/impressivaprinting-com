@@ -1,5 +1,16 @@
 import { useEffect } from 'react';
 
+// The modifier as this keyboard carries it. A Mac shown Ctrl and a PC shown
+// Command are each being told to press a key they do not have. `navigator.platform`
+// is deprecated and reads empty in some browsers, so `userAgent` answers there.
+//
+// The trailing space is part of the value: `Ctrl` needs one before the letter
+// and the command glyph does not, so every place a key is drawn writes
+// `{MODIFIER}K` and one shortcut cannot be spelled two ways.
+export const MODIFIER = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
+  ? '\u2318'
+  : 'Ctrl ';
+
 function isTyping(el) {
   return (
     el &&
