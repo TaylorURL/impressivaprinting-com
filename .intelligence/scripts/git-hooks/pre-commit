@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Runs the repository's own hook of this name.
+#
+# core.hooksPath replaces a repo's hook directory rather than adding to it, so a
+# shared hook silently disables every local one. Each shared hook that has no
+# behaviour of its own is this file under that hook's name, which keeps the
+# repo's version running.
+set -uo pipefail
+_ai_tool="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../tools" && pwd)/ai-attribution-guard.py"
+python3 "$_ai_tool" hook-pre-commit "$@" || exit $?
+own="$(git rev-parse --git-dir 2>/dev/null)/hooks/$(basename "$0")"
+[ -x "$own" ] && ! [ "$own" -ef "$0" ] && exec "$own" "$@"
+exit 0

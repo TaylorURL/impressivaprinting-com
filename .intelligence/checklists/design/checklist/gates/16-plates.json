@@ -1,0 +1,96 @@
+{
+  "group": "Drawn Plates",
+  "prefix": "PLT",
+  "description": "Art a project drew for its own subject, as opposed to the photography and library glyphs every site has. A plate is the one visual thing on a page that could not have come from anywhere else, it weighs a kilobyte, and it scales to any width. These rules hold what separates a plate from a sticker: what it draws, where its ground lives, how big it is allowed to be, and what it must never be used as.",
+  "defaults": {
+    "kinds": [
+      "web-ui"
+    ],
+    "when": "image",
+    "severity": "required",
+    "source": "references/icon-design.md",
+    "check": {
+      "type": "manual"
+    }
+  },
+  "gates": [
+    {
+      "id": "PLT-01",
+      "title": "The Page Draws Something Of Its Own",
+      "rule": "A surface with a subject draws it. Photography shows what a place looked like on one afternoon and a library glyph shows a generic shape; neither shows what this business actually moves, builds, sells, or repairs. Flat vector plates in the project's own palette do, they weigh a kilobyte, they scale to any width, and they are the one visual thing on a site that cannot have come from anywhere else. Keep them as files under public/art and reference them, so one plate can serve a menu panel and a section without being drawn twice.",
+      "source": "references/icon-design.md",
+      "kinds": [
+        "web-ui"
+      ],
+      "when": "marketing",
+      "severity": "required",
+      "check": {
+        "type": "drawn_plates"
+      },
+      "fix": "Draw three to six plates of the subject on one viewBox and one palette taken from the token block, save them under public/art, and render them through a single component."
+    },
+    {
+      "id": "PLT-02",
+      "title": "A Plate Is Imagery For A Block, Not A Mark Per Row",
+      "rule": "One plate belongs to a panel, a section, or a card; it does not belong to each link inside one. A mark against every menu option stops reading as a drawing and starts reading as a bullet, and every row's mark then has to be invented to fill the slot rather than because there was something to draw. In a mega-menu the plate sits in the promoted half beside a heading and a sentence, with the destinations listed plainly beside it.",
+      "source": "references/hallmark/references/components/mm2-two-column-split.md",
+      "kinds": [
+        "web-ui"
+      ],
+      "when": "image",
+      "severity": "required",
+      "check": {
+        "type": "plate_per_row"
+      },
+      "fix": "Move the plate out of the row loop and into the block that owns it: one per panel or section, keyed on the block rather than on a destination."
+    },
+    {
+      "id": "PLT-03",
+      "title": "The Plates Are One Set",
+      "rule": "Every plate in a project shares one viewBox, one ground, and one handful of inks taken from the token block. Two grids and two palettes read as clip art collected rather than art commissioned, and the difference is visible the moment two of them sit on the same page.",
+      "source": "references/icon-design.md",
+      "kinds": [
+        "web-ui"
+      ],
+      "when": "image",
+      "severity": "required",
+      "check": {
+        "type": "plate_cohesion"
+      },
+      "fix": "Redraw the outliers on the shared viewBox and restrict every plate to the same four to six inks."
+    },
+    {
+      "id": "PLT-04",
+      "title": "A Plate Is Drawn, Not Silhouetted",
+      "rule": "The difference between a drawing and a sticker is countable. A silhouette is one outline in one fill: the subject's edge and nothing inside it. A drawing has the parts the subject actually has - the wheelhouse, the stacks, the coaming, the rake of the bow - and it carries a second tone wherever a face turns away from the light. Twelve shapes and five inks is not a standard of taste; it is the floor a first pass falls through.",
+      "severity": "required",
+      "check": {
+        "type": "plate_depth",
+        "min_shapes": 12,
+        "min_inks": 5
+      },
+      "fix": "Draw the subject's own parts rather than its outline, and give every material a lit face and a turned one from the same token ramp."
+    },
+    {
+      "id": "PLT-05",
+      "title": "The Ground Is Drawn Once",
+      "rule": "A plate either carries its own ground or takes the surface it lands on, and the placement agrees with the file. The sharp fault is a card behind transparent art: the shadow and the border trace a rectangle the drawing does not fill, so the page shows a frame with nothing in it. The reverse - a plate that already draws its card, wrapped in a second - is the same fault costing less. Which way round is a real decision: a map without a ground is a set of lines in the air, and a scene with one is a block on every surface it meets.",
+      "severity": "required",
+      "check": {
+        "type": "plate_frame"
+      },
+      "fix": "Decide the ground against the surface the plate lands on: draw it in the file where the placement needs a card, and drop the card classes everywhere the file draws none."
+    },
+    {
+      "id": "PLT-06",
+      "title": "A Page Plate Is Sized Off Its Column",
+      "rule": "A drawing pinned to the height of a heading reads as a mark above it, and the eye skips it on the way to the words. Imagery for a block is as wide as the block will let it be: a width off the column with a max-width, not a fixed height. Chrome is the exception and always was, because a panel has the room it has.",
+      "severity": "required",
+      "source": "references/hallmark/references/components/mm2-two-column-split.md",
+      "check": {
+        "type": "plate_scale"
+      },
+      "fix": "Replace the fixed height with w-full and a max-width, and let the column decide how big the plate is."
+    }
+  ]
+}
