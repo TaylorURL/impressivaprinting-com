@@ -1,0 +1,310 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/scripts/git-develop-base-guard.sh session",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/scripts/prune-worktrees.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/scripts/github-no-attribution.py strip",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/scripts/github-no-attribution.py strip",
+            "timeout": 30
+          }
+        ],
+        "matcher": "mcp__github__.*"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/design/bin/design-pass.py hook-skill",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Skill"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/design/bin/design-pass.py hook-read",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Read|Bash|NotebookRead"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/seo/bin/seo-pass.py hook-skill",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Skill"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/seo/bin/seo-pass.py hook-read",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Read|Bash|NotebookRead"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/perf/bin/perf-pass.py hook-skill",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Skill"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/perf/bin/perf-pass.py hook-read",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Read|Bash|NotebookRead"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/perf/bin/perf-pass.py hook-edit",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Write|Edit|MultiEdit"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/stack/bin/stack-pass.py hook-skill",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Skill"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/stack/bin/stack-pass.py hook-read",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Read|Bash|NotebookRead"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/stack/bin/stack-pass.py hook-edit",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Write|Edit|MultiEdit"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/design/bin/design-pass.py guard-stop",
+            "timeout": 30
+          }
+        ],
+        "matcher": "*"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/seo/bin/seo-pass.py guard-stop",
+            "timeout": 30
+          }
+        ],
+        "matcher": "*"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/perf/bin/perf-pass.py guard-stop",
+            "timeout": 30
+          }
+        ],
+        "matcher": "*"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/stack/bin/stack-pass.py guard-stop",
+            "timeout": 30
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/scripts/git-develop-base-guard.sh guard-pr",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/scripts/git-develop-base-guard.sh guard-worktree",
+            "timeout": 30
+          }
+        ],
+        "matcher": "EnterWorktree"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/tools/version-badge.py guard",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/tools/writing-pass.py guard",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/scripts/github-no-attribution.py guard",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/scripts/github-no-attribution.py guard",
+            "timeout": 30
+          }
+        ],
+        "matcher": "mcp__github__.*"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/scripts/version-bump-guard.sh guard-pr",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/design/bin/design-pass.py guard-land",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/seo/bin/seo-pass.py guard-land",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/perf/bin/perf-pass.py guard-land",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/stack/bin/stack-pass.py guard-land",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.intelligence/checklists/perf/bin/perf-pass.py guard-edit",
+            "timeout": 30
+          }
+        ],
+        "matcher": "Write|Edit|NotebookEdit"
+      }
+    ]
+  }
+}
