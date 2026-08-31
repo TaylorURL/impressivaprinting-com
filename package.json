@@ -1,7 +1,7 @@
 {
   "name": "impressivaprinting-com",
   "private": true,
-  "version": "2026.35.30",
+  "version": "2026.36.31",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
-    "@taylorurl/split-rail": "github:TaylorURL/split-rail#v2026.35.4",
+    "@taylorurl/split-rail": "github:TaylorURL/split-rail#v2026.36.0",
     "lucide-react": "^0.454.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
