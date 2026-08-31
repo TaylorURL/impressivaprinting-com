@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowUpLeft, LogOut, Menu, Plus, Search, X } from 'lucide-react';
 import { useAuth } from '@hooks/useAuth.js';
-import { useHotkeys } from '@hooks/useHotkeys.js';
+import { MODIFIER, useHotkeys } from '@hooks/useHotkeys.js';
 import { ROUTES } from '@constants/routes.js';
 import { initials } from '@utils/format.js';
 import SplitRail from '@taylorurl/split-rail';
@@ -116,7 +116,7 @@ export default function PanelShell({ label, scope, navItems, newOrderTo, childre
       <Search className="h-3.5 w-3.5" />
       Search
       <kbd className="spec ml-auto rounded border border-paper-100/15 px-2 py-px text-[9px] text-paper-100/40">
-        ⌘K
+        {MODIFIER}K
       </kbd>
     </button>
   );
