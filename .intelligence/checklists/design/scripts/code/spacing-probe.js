@@ -27,10 +27,25 @@ window.spacingProbe = (function () {
   function isPanel(el, style) {
     var hasBorder = px(style.borderTopWidth) + px(style.borderBottomWidth) +
                     px(style.borderLeftWidth) + px(style.borderRightWidth) > 0;
-    var hasSurface = style.backgroundColor && style.backgroundColor !== 'rgba(0, 0, 0, 0)' &&
-                     style.backgroundColor !== 'transparent';
-    var hasShadow = style.boxShadow && style.boxShadow !== 'none';
-    return hasBorder || hasSurface || hasShadow;
+    return hasBorder || surfaced(style) || shadowed(style);
+  }
+
+  function surfaced(style) {
+    return Boolean(style.backgroundColor) &&
+           style.backgroundColor !== 'rgba(0, 0, 0, 0)' &&
+           style.backgroundColor !== 'transparent';
+  }
+
+  function shadowed(style) {
+    return Boolean(style.boxShadow) && style.boxShadow !== 'none';
+  }
+
+  /* Whether the container draws the edge in question at all. A measure wrapper
+     ruled down its two sides has no top or bottom for content to be flush
+     against, and reporting one is reporting a line that is not there. */
+  function hasEdge(style, side) {
+    var width = side === 'top' ? style.borderTopWidth : style.borderBottomWidth;
+    return px(width) > 0 || surfaced(style) || shadowed(style);
   }
 
   function visible(el) {
@@ -97,10 +112,16 @@ window.spacingProbe = (function () {
 
           var sa = getComputedStyle(a), sb = getComputedStyle(b);
           if (gap <= 0.5 && isPanel(a, sa) && isPanel(b, sb)) {
-            var bothBordered = px(sa.borderBottomWidth) > 0 && px(sb.borderTopWidth) > 0;
-            (bothBordered ? doubleBorder : adjacent).push({
-              a: describe(a), b: describe(b), gap: gap, parent: describe(parent)
-            });
+            // Two rules stacked read as a double edge; one rule between two
+            // blocks is a seam, which is what a stack of bands is made of.
+            // Neither, at zero gap, is the defect this counts.
+            var above = px(sa.borderBottomWidth) > 0;
+            var below = px(sb.borderTopWidth) > 0;
+            if (above && below) {
+              doubleBorder.push({ a: describe(a), b: describe(b), gap: gap, parent: describe(parent) });
+            } else if (!above && !below) {
+              adjacent.push({ a: describe(a), b: describe(b), gap: gap, parent: describe(parent) });
+            }
           }
         }
 
@@ -117,11 +138,10 @@ window.spacingProbe = (function () {
         var pr = parent.getBoundingClientRect();
         var first = kids[0].getBoundingClientRect();
         var last = kids[kids.length - 1].getBoundingClientRect();
-        var panelParent = isPanel(parent, parentStyle);
-        if (panelParent && first.top - pr.top <= 0.5) {
+        if (hasEdge(parentStyle, 'top') && first.top - pr.top <= 0.5) {
           inset.push({ container: describe(parent), child: describe(kids[0]), edge: 'top' });
         }
-        if (panelParent && pr.bottom - last.bottom <= 0.5) {
+        if (hasEdge(parentStyle, 'bottom') && pr.bottom - last.bottom <= 0.5) {
           tail.push({ container: describe(parent), child: describe(kids[kids.length - 1]) });
         }
       });

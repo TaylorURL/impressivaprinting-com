@@ -117,6 +117,39 @@ def feedback(text):
     return {"type": "user", "message": {"role": "user", "content": text}}
 
 
+def wrote(text):
+    """One reply, which is what a stop hook refuses and what replaces one."""
+    return {"type": "assistant",
+            "message": {"content": [{"type": "text", "text": text}]}}
+
+
+def called(name, given):
+    """One tool call, which is the trace a reading has that work was done."""
+    return {"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "name": name, "input": given}]}}
+
+
+def worked_in(root):
+    """One turn stamped with a working directory, which is how scope is found."""
+    return {"type": "assistant", "cwd": str(root),
+            "message": {"content": [{"type": "text", "text": "Working."}]}}
+
+
+def checkout(root):
+    """A checkout with one commit behind it, holding one changed file."""
+    root.mkdir(parents=True, exist_ok=True)
+    for args in (["init", "-q", "-b", "develop"],
+                 ["config", "user.email", "cases@example.invalid"],
+                 ["config", "user.name", "Cases"]):
+        subprocess.run(["git", "-C", str(root)] + args, capture_output=True)
+    (root / "widget.py").write_text("value = 1\n")
+    subprocess.run(["git", "-C", str(root), "add", "-A"], capture_output=True)
+    subprocess.run(["git", "-C", str(root), "commit", "-qm", "first"],
+                   capture_output=True)
+    (root / "widget.py").write_text("value = 2\n")
+    return root
+
+
 def summary(text):
     return {"type": "system", "subtype": "stop_hook_summary",
             "hookErrors": [text], "hookInfos": []}
@@ -451,6 +484,11 @@ def main():
         bench = tmp / "tools"
         bench.mkdir()
         (bench / "archive.py").write_bytes(TARGET.read_bytes())
+        # The copy loads the shared module beside itself and falls back on the
+        # installed tree, and a checkout is exactly where there is no installed
+        # tree to fall back on. Carrying the sibling is what makes the bench a
+        # bench rather than a reading of this machine.
+        (bench / "_lib.py").write_bytes((TARGET.parent / "_lib.py").read_bytes())
         (bench / "config-sync.py").write_text(
             "#!/usr/bin/env python3\n"
             "print('2 file(s) differ between this machine and the mirror:')\n"
@@ -473,6 +511,7 @@ def main():
         held = tmp / "held"
         held.mkdir()
         (held / "archive.py").write_bytes(TARGET.read_bytes())
+        (held / "_lib.py").write_bytes((TARGET.parent / "_lib.py").read_bytes())
         (held / "config-sync.py").write_text(
             "#!/usr/bin/env python3\n"
             "print('1 file(s) differ between this machine and the mirror:')\n"
@@ -482,7 +521,15 @@ def main():
             "held_mirror", str(held / "archive.py"))
         scoped = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(scoped)
-        mine = str(Path(scoped.CONFIG) / "tools" / "archive.py")
+        # The filter keeps only the names the config tree actually holds, so
+        # the fixture owns that tree rather than reading whichever one the
+        # machine has. A checkout has none, and the filter then keeps nothing
+        # and reports every name the sync gave it.
+        owned = tmp / "config-tree"
+        (owned / "tools").mkdir(parents=True)
+        (owned / "tools" / "archive.py").write_bytes(TARGET.read_bytes())
+        scoped.CONFIG = owned
+        mine = str(owned / "tools" / "archive.py")
         check("a file another chat moved is not answered for here",
               scoped.config_findings([]), [])
         check("a file the chat touched is still reported",
@@ -736,6 +783,268 @@ def main():
             said("run /archive on the other one when it is clean")])
         check("a headless chat nobody told to close stops on its own",
               stopping(quiet).returncode, 0)
+
+        # ------------------------------------------------------ the collision
+        # Two mechanisms refusing one reply on different grounds cannot both be
+        # satisfied, and the run that walks into it decides which side to take
+        # on its own and records nothing. One occurrence is the whole evidence:
+        # both demands are down, and so is every draft that failed to meet them.
+        session = "aaaaaaaa-0000-0000-0000-000000000009"
+        transcript(scripts, session, [
+            wrote("The paths and the values are in the table underneath."),
+            feedback("Stop hook feedback: BLOCKED: the reply answers in the "
+                     "vocabulary of the work."),
+            wrote("Four stages, plain English, nothing named."),
+            feedback("Stop hook feedback: BLOCKED: the opener owes a table of "
+                     "paths and values."),
+            wrote("A third draft between the two."),
+        ])
+        found = mod.candidates(session)
+        collisions = [c for c in found if c["kind"] == "collision"]
+        check("two grounds across a redraft raise a collision",
+              len(collisions), 1)
+        check("a collision wants precedence rather than another gate",
+              collisions and collisions[0]["wants"], "precedence")
+        check("a collision counts the mechanisms rather than the meetings",
+              collisions and collisions[0]["count"], 2)
+
+        # A collision needs the run to have answered the first ground before the
+        # second lands. Refusals stacked with no draft between them are a list
+        # of things wrong with one draft, not two rules pulling against it.
+        session = "aaaaaaaa-0000-0000-0000-000000000010"
+        transcript(scripts, session, [
+            wrote("One draft."),
+            feedback("Stop hook feedback: BLOCKED: the reply is the wrong shape."),
+            feedback("Stop hook feedback: BLOCKED: the reply names a path."),
+        ])
+        check("refusals with no draft between them are not a collision",
+              [c for c in mod.candidates(session) if c["kind"] == "collision"],
+              [])
+
+        # One firing reaches a transcript twice, as feedback on the turn it
+        # stopped and again in the summary of the hooks that ran, cut to
+        # different lengths. Keyed on the whole line it reads as two mechanisms.
+        session = "aaaaaaaa-0000-0000-0000-000000000011"
+        transcript(scripts, session, [
+            wrote("A draft."),
+            feedback("Stop hook feedback: BLOCKED: the reply names a path."),
+            wrote("Another draft."),
+            summary("BLOCKED: the reply names a path.\nHere is the list of "
+                    "every path it named."),
+        ])
+        check("one firing written down twice is one ground",
+              [c for c in mod.candidates(session) if c["kind"] == "collision"],
+              [])
+
+        # ------------------------------------------------------- what is kept
+        # A guard that refuses once, is obeyed and never fires again raises
+        # nothing, and the pair of drafts either side of it says exactly what
+        # the machine wanted. Reading it and dropping it is the loss.
+        session = "aaaaaaaa-0000-0000-0000-000000000012"
+        transcript(scripts, session, [
+            wrote("The draft it turned down."),
+            feedback("Stop hook feedback: BLOCKED: a lone ground nobody repeats."),
+            wrote("The draft that stood in its place."),
+        ])
+        check("a single refusal raises nothing", mod.candidates(session), [])
+        kept = mod.read_evidence()["grounds"]
+        pair = [h for h in kept.values()
+                if "a lone ground" in h.get("ground", "")]
+        check("the pair either side of it is kept anyway", len(pair), 1)
+        check("the draft it refused is kept",
+              pair and list(pair[0]["chats"].values())[0]["refused"],
+              "The draft it turned down.")
+        check("the draft that answered it is kept",
+              pair and list(pair[0]["chats"].values())[0]["accepted"],
+              "The draft that stood in its place.")
+
+        # Held across sittings the same ground is a wall the runs keep meeting,
+        # and no one sitting is where that becomes visible.
+        for tail in ("13", "14"):
+            other = "aaaaaaaa-0000-0000-0000-0000000000" + tail
+            transcript(scripts, other, [
+                wrote("A draft."),
+                feedback("Stop hook feedback: BLOCKED: a lone ground nobody "
+                         "repeats."),
+                wrote("A better draft."),
+            ])
+            mod.candidates(other)
+        found = mod.candidates(session)
+        check("a ground met in enough chats is raised on that alone",
+              [c["kind"] for c in found], ["recurrence"])
+        check("a recurrence counts the chats", found[0]["count"], 3)
+        check("a recurrence wants context", found[0]["wants"], "context")
+
+        # ------------------------------------- what the opening message asked
+        # The shape this catches is a message asking for several things and
+        # getting some of them. Everything absent from a message where nothing
+        # was carried out is a reading that cannot see the work, so the whole
+        # message going unanswered raises nothing and half of it raises the
+        # half.
+        session = "aaaaaaaa-0000-0000-0000-000000000020"
+        transcript(scripts, session, [
+            said("Add a favicon to the marketing site. Also rename the pricing "
+                 "tier from Starter to Basic everywhere it appears."),
+            called("Write", {"file_path": "/tmp/site/favicon.ico"}),
+            wrote("The favicon is in place at the site root."),
+        ])
+        found = mod.candidates(session)
+        check("half a message answered raises the other half",
+              [c["kind"] for c in found], ["omission"])
+        contains("it names the ask that was dropped", found[0]["example"],
+                 "rename the pricing tier")
+        check("an omission wants the work rather than a mechanism",
+              found[0]["wants"], "the work finished")
+
+        session = "aaaaaaaa-0000-0000-0000-000000000021"
+        transcript(scripts, session, [
+            said("Add a favicon to the marketing site. Also rename the pricing "
+                 "tier from Starter to Basic everywhere it appears."),
+            called("Write", {"file_path": "/tmp/site/favicon.ico"}),
+            called("Edit", {"file_path": "/tmp/site/pricing.tsx",
+                            "old_string": "Starter", "new_string": "Basic"}),
+            wrote("The favicon is in place and the tier now reads Basic."),
+        ])
+        check("a message answered whole raises nothing",
+              mod.candidates(session), [])
+
+        # A chat that answered in prose and touched nothing leaves no trace of
+        # what it carried out, so an absence there is the reading failing to see
+        # rather than the run failing to act.
+        session = "aaaaaaaa-0000-0000-0000-000000000022"
+        transcript(scripts, session, [
+            said("Add a favicon to the marketing site. Also rename the pricing "
+                 "tier from Starter to Basic everywhere it appears."),
+            wrote("Both of those are worth doing."),
+        ])
+        check("a chat that did nothing is not read as a chat that dropped "
+              "something", mod.candidates(session), [])
+
+        # Somebody saying it themselves needs none of that machinery, and one
+        # telling is the whole evidence: the cost was already paid by the person
+        # who had to type it twice.
+        session = "aaaaaaaa-0000-0000-0000-000000000023"
+        transcript(scripts, session, [
+            said("Wire up the newsletter form."),
+            called("Write", {"file_path": "/tmp/site/form.js"}),
+            wrote("The newsletter form posts to the endpoint."),
+            said("you forgot the confirmation email"),
+            wrote("Added."),
+        ])
+        found = mod.candidates(session)
+        check("asking a second time is raised on one telling",
+              [c["kind"] for c in found], ["omission"])
+        contains("it carries the words somebody typed", found[0]["example"],
+                 "confirmation email")
+
+        # An omission leads the order. Everything else here is a reading about
+        # how the work was done and this is the only one about whether it was
+        # done at all.
+        session = "aaaaaaaa-0000-0000-0000-000000000024"
+        transcript(scripts, session, [
+            said("Wire up the newsletter form."),
+            called("Write", {"file_path": "/tmp/site/form.js"}),
+            wrote("Done."),
+            said("you forgot the confirmation email"),
+            said("i told you the footer stays on every page"),
+            said("i told you the footer stays on every page"),
+        ])
+        check("an omission outranks a rule with no gate behind it",
+              [c["kind"] for c in mod.candidates(session)],
+              ["omission", "correction"])
+
+        # ------------------------------------------- the pass over what changed
+        root = checkout(tmp / "tree")
+        session = "aaaaaaaa-0000-0000-0000-000000000030"
+        transcript(scripts, session, [worked_in(root)])
+        rows = mod.rows_of(session)
+        found = mod.polish_findings(rows, [root])
+        check("a changed file is owed a pass", bool(found), True)
+        contains("it names the file that changed", " ".join(found), "widget.py")
+
+        done = ran(mod, ["polish", "--files", "--session", session],
+                   state, scripts)
+        contains("--files hands the diff over as paths", done.stdout,
+                 "widget.py")
+
+        done = ran(mod, ["polish", "--mark", "--session", session],
+                   state, scripts)
+        check("marking records the pass", done.returncode, 0)
+        check("a marked file is owed nothing",
+              mod.polish_findings(rows, [root]), [])
+
+        # The mark is recorded against what the file holds rather than against
+        # its name, so a file edited after its pass reopens on its own instead
+        # of carrying a pass that covered work done afterwards.
+        (root / "widget.py").write_text("value = 3\n")
+        check("editing a marked file reopens it",
+              bool(mod.polish_findings(rows, [root])), True)
+
+        # Half the trees on the machine answer to no repository, so there is no
+        # diff to read them out of. A file the transcript names that moved after
+        # the chat opened moved because of the chat.
+        loose = tmp / "loose"
+        loose.mkdir()
+        page = loose / "index.html"
+        page.write_text("<p>one</p>\n")
+        session = "aaaaaaaa-0000-0000-0000-000000000031"
+        transcript(scripts, session, [
+            {"type": "user", "origin": {"kind": "human"},
+             "timestamp": "2000-01-01T00:00:00.000Z",
+             "message": {"role": "user", "content": "Edit the page."}},
+            called("Bash", {"command": "sed -i '' s/one/two/ %s" % page}),
+        ])
+        rows = mod.rows_of(session)
+        check("a file outside any repository is still owed a pass",
+              str(page) in mod.changed(rows, []), True)
+
+        # The other half of the same rule. A file whose last change predates the
+        # first mention of it was somebody else's work, however recent, and the
+        # chat was reading it rather than writing it. Without this the set fills
+        # with whatever a routine rewrote in the same minutes.
+        theirs = loose / "other.html"
+        theirs.write_text("<p>not mine</p>\n")
+        session = "aaaaaaaa-0000-0000-0000-000000000033"
+        transcript(scripts, session, [
+            {"type": "user", "origin": {"kind": "human"},
+             "timestamp": "2099-01-01T00:00:00.000Z",
+             "message": {"role": "user", "content": "Look at the page."}},
+            dict(called("Bash", {"command": "cat %s" % theirs}),
+                 timestamp="2099-01-01T00:00:01.000Z"),
+        ])
+        rows = mod.rows_of(session)
+        check("a file that moved before the chat reached it is not the chat's",
+              str(theirs) in mod.changed(rows, []), False)
+
+        # The diff empties the moment a branch lands or a mirror takes the file,
+        # and neither of those is a pass. What entered the set stays in it.
+        session = "aaaaaaaa-0000-0000-0000-000000000032"
+        transcript(scripts, session, [worked_in(root)])
+        rows = mod.rows_of(session)
+        check("the change set is read once", bool(mod.changed(rows, [root],
+                                                              session)), True)
+        subprocess.run(["git", "-C", str(root), "add", "-A"],
+                       capture_output=True)
+        subprocess.run(["git", "-C", str(root), "commit", "-qm", "landed"],
+                       capture_output=True)
+        check("landing the work does not empty what the pass is owed",
+              any(one.endswith("widget.py")
+                  for one in mod.changed(rows, [root], session)), True)
+
+        # ------------------------------------------------- reading the mirror
+        # An empty answer is a mirror in step and None is a mirror nothing
+        # could read. Reporting a tree that is fine as a tree nobody can see is
+        # the one reading this tool cannot afford to get wrong.
+        mod._SYNC[:] = [[]]
+        check("a mirror in step raises nothing",
+              mod.config_findings(["/nowhere"]), [])
+        check("a mirror in step changes nothing",
+              mod.config_changed(["/nowhere"]), set())
+        mod._SYNC[:] = [None]
+        check("a mirror nothing could read says so",
+              mod.config_findings(["/nowhere"]),
+              ["the mirror could not be read"])
+        mod._SYNC[:] = []
 
         # ------------------------------------------------------------ usage
         for verb in ("", "frobnicate"):

@@ -88,6 +88,11 @@ FAULT_LINE = re.compile(r"^  (?! )(\S.*)$", re.M)
 # A phrase a refusal quoted, which is a fault the reply can answer by removing.
 NAMED = re.compile(r'"([^"\n]{3,})"')
 
+# What the harness injects on its own account. A row carrying only this is
+# nobody taking a turn, and reading one as the person typing would put the
+# refused draft in a turn that is over and stand the guard down on it.
+REMINDER = re.compile(r"<system-reminder>.*?</system-reminder>", re.S)
+
 # A refusal that weighed the whole reply rather than naming a part of it. The
 # forms are the ones a counting gate prints: a tally against a limit, or the
 # headline that stands in for one.
@@ -136,7 +141,7 @@ def turn_rows(rows):
     start = 0
     for i, row in enumerate(rows):
         if row.get("type") == "user" and not row.get("isMeta") \
-                and row_text(row).strip():
+                and REMINDER.sub("", row_text(row)).strip():
             start = i
     return rows[start:]
 
@@ -146,11 +151,17 @@ def reply_before(rows, index):
 
     Mirrors how the final reply is read, so a draft refused mid-session is the
     same thing this guard compares against as the reply it is judging: the text
-    blocks of one contiguous assistant turn, tool calls left out.
+    blocks of one contiguous assistant turn, tool calls left out. A row carrying
+    only harness scaffolding is passed over rather than treated as the boundary,
+    on the same reading `turn_rows` takes: one landing between a draft and the
+    refusal it drew would otherwise hide the draft.
     """
     text = []
     for row in reversed(rows[:index]):
         if row.get("type") == "user":
+            if not row.get("isMeta") \
+                    and not REMINDER.sub("", row_text(row)).strip():
+                continue
             break
         if row.get("type") != "assistant":
             continue

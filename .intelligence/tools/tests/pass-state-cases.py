@@ -941,12 +941,17 @@ ROUND_TRIP_PLAN = {
 }
 
 
-def machine(state, bare, tool, *argv, stdin="", sync=False):
-    """One tool, on one machine, against a bare repo standing in for the mirror."""
+def machine(state, bare, tool, *argv, stdin="", sync=False, remote=None):
+    """One tool, on one machine, against a bare repo standing in for the mirror.
+
+    `remote` overrides the mirror for one run, which is how a trip that cannot
+    land is staged: the gate that carries a closure itself has to be shown
+    holding the session when the carrying is what failed.
+    """
     env = dict(os.environ)
     env["INTELLIGENCE_STATE_DIR"] = str(state)
     env["HOME"] = str(state)
-    env["INTELLIGENCE_PASS_STATE_REMOTE"] = str(bare)
+    env["INTELLIGENCE_PASS_STATE_REMOTE"] = str(remote or bare)
     env.pop("CLAUDE_CODE_REMOTE", None)
     if sync:
         env.pop("INTELLIGENCE_DAYPLAN_NO_SYNC", None)
@@ -1000,20 +1005,36 @@ def plan_round_trip_cases():
               'data-status="done"' in
               (first / "day-plans" / "2026-09-01.html").read_text(), True)
 
-        # A session cannot end on the machine that made a closure until the
-        # mirror has been given it, since the machine may not survive the end.
+        # A closure the mirror has not been given is carried by the gate rather
+        # than refused: the trip it would hand over is one it can make itself,
+        # and a refusal whose whole remedy is a command the gate could run is
+        # worth nobody's attention.
         machine(second, bare, DAY_PLAN, "done", "two")
         machine(second, bare, DAY_PLAN, "published")
-        holding = machine(second, bare, DAY_PLAN, "guard-stop", stdin="{}",
+        carried = machine(second, bare, DAY_PLAN, "guard-stop", stdin="{}",
                           sync=True)
-        check("round trip: an unshared closure holds the session",
+        check("round trip: an unshared closure is carried rather than refused",
+              carried.returncode, 0)
+        check("round trip: the first machine pulls what the gate carried",
+              machine(first, bare, TARGET, "pull").returncode, 0)
+        closed = json.loads((first / "day-plans" / "2026-09-01.json").read_text())
+        check("round trip: the closure the gate carried arrives closed",
+              statuses(closed), {"one": "done", "two": "done"})
+
+        # What the trip cannot settle is what the gate is actually for. A mirror
+        # it cannot reach leaves the closure here, and the session is held with
+        # the day named.
+        machine(second, bare, DAY_PLAN, "amend", "two",
+                "--why", "the scope moved after it closed")
+        holding = machine(second, bare, DAY_PLAN, "guard-stop", stdin="{}",
+                          sync=True, remote=root / "no-such-mirror.git")
+        check("round trip: a trip that cannot land holds the session",
               holding.returncode, 2)
         check("round trip: naming the plan it is holding",
               "2026-09-01" in holding.stderr, True)
-        machine(second, bare, TARGET, "push")
         freed = machine(second, bare, DAY_PLAN, "guard-stop", stdin="{}",
                         sync=True)
-        check("round trip: and a push that lands releases it",
+        check("round trip: and a trip that lands releases it",
               freed.returncode, 0)
 
 

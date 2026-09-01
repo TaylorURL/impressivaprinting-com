@@ -672,9 +672,34 @@ def _css_blocks(text):
     return re.findall(r"([^{}]+)\{([^{}]*)\}", CSS_COMMENT.sub(blank, text))
 
 
+def _forbidden(spec):
+    """The one or many patterns a forbid check is written with.
+
+    Gate files declare either `pattern` or `patterns`; reading only the first
+    made every gate written the plural way raise KeyError and come back
+    inconclusive, which reads on the report as the deliverable not being
+    measurable rather than as the check not having run."""
+    if "pattern" in spec:
+        return spec["pattern"]
+    # A global flag is only legal at the very start of an expression, so any
+    # a pattern carries is lifted to the front of the joined one rather than
+    # left where it would sit in the middle of an alternation.
+    flags, parts = "", []
+    for raw in spec["patterns"]:
+        body = raw
+        while body.startswith("(?") and body[2:3] in "aiLmsux" and ")" in body[:8]:
+            head, _, body = body.partition(")")
+            for flag in head[2:]:
+                if flag not in flags:
+                    flags += flag
+        parts.append("(?:%s)" % body)
+    prefix = "(?%s)" % flags if flags else ""
+    return prefix + "|".join(parts)
+
+
 def check_forbid_regex(gate, sources, run, ctx):
     spec = gate["check"]
-    hits = _hits(sources, spec["pattern"])
+    hits = _hits(sources, _forbidden(spec))
     floor = spec.get("min_count", 1)
     if len(hits) >= floor:
         return FAIL, "%s - %d occurrence(s): %s" % (spec.get("message", "forbidden pattern"), len(hits), ", ".join(hits[:6]))
@@ -5206,16 +5231,59 @@ def check_plate_cohesion(gate, sources, run, ctx):
                   % (len(plates), list(boxes)[0] or "unstated", len(shared)))
 
 
-def _plate_ground(text, box):
-    """Whether the file draws its own ground: a shape covering the whole
-    viewBox, or a clip that rounds one. A plate with a ground is a card and a
-    plate without one takes whatever surface it lands on."""
-    parts = (box or "").split()
-    if len(parts) != 4:
-        return False
-    width, height = parts[2], parts[3]
-    covering = re.search(r'<rect[^>]*width="%s"[^>]*height="%s"' % (re.escape(width), re.escape(height)), text)
-    return bool(covering) or "clipPath" in text
+def _svg_guard():
+    """The tool that decides what a ground is, loaded rather than reimplemented.
+
+    Two readings of the same question drift, and the gate would then pass a file
+    the commit hook refuses. This engine asks the hook's own measure instead, and
+    a tree without it answers nothing rather than answering differently.
+    """
+    global _SVG_GUARD
+    if _SVG_GUARD is not None:
+        return _SVG_GUARD or None
+    for root in (Path.home() / ".intelligence" / "tools",
+                 Path(__file__).resolve().parent.parent.parent.parent / "tools"):
+        target = root / "svg-guard.py"
+        if not target.is_file():
+            continue
+        spec = importlib.util.spec_from_file_location("svg_guard", str(target))
+        module = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(module)
+        except Exception:
+            continue
+        _SVG_GUARD = module
+        return module
+    _SVG_GUARD = False
+    return None
+
+
+_SVG_GUARD = None
+
+
+def _plate_ground(text, box=""):
+    """Every place the file paints behind its own drawing.
+
+    A ground belongs to whatever renders the plate, never to the plate, so this
+    is a list of faults rather than a property. The `box` argument is kept for
+    callers that still pass the viewBox; the measure reads it out of the file.
+    """
+    guard = _svg_guard()
+    if guard is None:
+        return []
+    return guard.background_findings(text, ".svg")
+
+
+def _plate_scene(text):
+    """Whether the drawing is a scene assembled out of boxes and straight lines.
+
+    Returned as the measure itself rather than a verdict, so the gate can say
+    how far past the line a file is instead of only that it is.
+    """
+    guard = _svg_guard()
+    if guard is None:
+        return []
+    return guard.scene_findings(text)
 
 
 def check_plate_depth(gate, sources, run, ctx):
@@ -5248,42 +5316,91 @@ def check_plate_depth(gate, sources, run, ctx):
                          for _, t, _ in plates)))
 
 
-PLATE_CARD = re.compile(r"\bshadow-[a-z]|\bbg-[a-z]|\bborder\b", re.I)
+def check_plate_ground(gate, sources, run, ctx):
+    """The ground belongs to whatever renders the plate, never to the plate.
 
+    A file that paints its own backdrop looks right on the one surface it was
+    drawn against and wrong on every other, and the author never sees it because
+    they were looking at that surface. Moving the ground to the placement costs
+    a class and makes the same drawing usable on a dark band, a light card and a
+    page that changes theme under it.
 
-def check_plate_frame(gate, sources, run, ctx):
-    """The ground is drawn once, in the file or in the placement, never both and
-    never neither-but-framed.
-
-    A plate with no ground rendered inside a card is the sharp case: the shadow
-    and the border trace a rectangle around art that does not fill one, so the
-    page shows a frame with nothing in it. The reverse - a plate that carries its
-    own card, wrapped in a second - is the same fault at lower cost.
+    The measure is the commit hook's own, so a plate this gate passes is a plate
+    the hook will let through.
     """
-    plates = {path.stem: _plate_ground(text, box) for path, text, box in _plates(run)}
+    plates = _plates(run)
     if not plates:
         return PASS, "no plate to place"
-    faults = []
-    for path, text in sources.items():
-        for match in re.finditer(r"[^\n]*(?:/art/|ArtPlate)[^\n]*", text):
-            row = match.group(0)
-            named = [n for n in plates if n in row]
-            line = text.count("\n", 0, match.start()) + 1
-            classes = re.search(r'className\s*=\s*"([^"]*)"', row)
-            if not classes:
-                continue
-            framed = PLATE_CARD.search(classes.group(1))
-            if not framed:
-                continue
-            for name in named:
-                if not plates[name]:
-                    faults.append("%s:%d frames %s, which draws no ground, in %s"
-                                  % (Path(path).name, line, name, framed.group(0)))
-    if faults:
-        return FAIL, ("%s. A card behind transparent art is a rectangle around nothing: either "
-                      "drop the frame, or draw the ground in the file where the placement needs "
-                      "one" % "; ".join(faults[:3]))
-    return PASS, "every plate's ground is drawn once"
+    if _svg_guard() is None:
+        return UNKNOWN, ("svg-guard.py is not installed beside this engine, so the "
+                         "ground could not be measured - check the config tree")
+    painted = []
+    for path, text, _ in plates:
+        for line, kind, excerpt, _, _ in _plate_ground(text):
+            painted.append("%s:%d %s" % (path.name, line, kind))
+    if painted:
+        return FAIL, ("%s. Take the ground out of the file and put it on whatever "
+                      "renders the plate, so the drawing reads on every surface it "
+                      "lands on: ~/.intelligence/tools/svg-guard.py fix <path>"
+                      % "; ".join(painted[:4]))
+    return PASS, "%d plate(s), none painting its own ground" % len(plates)
+
+
+def check_svg_transparent(gate, sources, run, ctx):
+    """Every SVG in the run, not only the drawn plates, is transparent.
+
+    PLT-05 holds the plates. This holds the rest of the tree - marks, icons,
+    favicons, exported artwork - because a backdrop in any of them is the same
+    fault and the export path is where one arrives without anybody drawing it.
+    """
+    files = _svg_files(run)
+    if not files:
+        return PASS, "no SVG in the run"
+    if _svg_guard() is None:
+        return UNKNOWN, ("svg-guard.py is not installed beside this engine, so the "
+                         "exports could not be measured - check the config tree")
+    painted = []
+    for path in files:
+        try:
+            text = path.read_text(errors="ignore")
+        except OSError:
+            continue
+        for line, kind, excerpt, _, _ in _plate_ground(text):
+            painted.append("%s:%d %s" % (path.name, line, kind))
+    if painted:
+        return FAIL, ("%s. An exported graphic carries its drawing and nothing "
+                      "behind it: ~/.intelligence/tools/svg-guard.py fix <path>"
+                      % "; ".join(painted[:4]))
+    return PASS, "%d SVG file(s), none painting its own ground" % len(files)
+
+
+def check_plate_scene(gate, sources, run, ctx):
+    """A drawing too complicated to come out right is the wrong drawing.
+
+    Past a certain size a flat vector stops being a mark and becomes a scene,
+    and a scene assembled out of axis-aligned rectangles and straight segments
+    does not end up looking like the thing it depicts however long it is
+    adjusted. The signature is countable and it is the opposite of exported
+    artwork, which is curves: forty or more drawn elements, most of them boxes
+    and lines. The floor in PLT-04 asks for the subject's own parts; this is the
+    ceiling that stops a first pass answering it by adding more boxes.
+    """
+    plates = _plates(run)
+    if not plates:
+        return PASS, "no plate to measure"
+    if _svg_guard() is None:
+        return UNKNOWN, ("svg-guard.py is not installed beside this engine, so the "
+                         "drawings could not be measured - check the config tree")
+    scenes = []
+    for path, text, _ in plates:
+        for _, count, share in _plate_scene(text):
+            scenes.append("%s draws %d element(s), %d%% of them boxes and straight lines"
+                          % (path.name, count, round(share * 100)))
+    if scenes:
+        return FAIL, ("%s. Reach for a photograph, a real exported asset, or a mark "
+                      "simple enough to be right - a silhouette, a wordmark, a single "
+                      "shape - rather than more rectangles" % "; ".join(scenes[:3]))
+    return PASS, "%d plate(s), none of them a scene built out of boxes" % len(plates)
 
 
 PAGE_PLATE_FLOOR = 40
@@ -6272,7 +6389,9 @@ CHECKS = {
     "plate_per_row": check_plate_per_row,
     "plate_cohesion": check_plate_cohesion,
     "plate_depth": check_plate_depth,
-    "plate_frame": check_plate_frame,
+    "plate_ground": check_plate_ground,
+    "svg_transparent": check_svg_transparent,
+    "plate_scene": check_plate_scene,
     "plate_scale": check_plate_scale,
     "design_read": check_design_read,
     "genre_rotation": check_genre_rotation,
@@ -6432,8 +6551,8 @@ UNCACHEABLE_CHECKS = {
     # These read the run, the machine, or the asset tree rather than the sources,
     # so a source hash is not evidence that their answer still holds.
     "layout_probe", "mobile_probe", "design_read", "genre_rotation", "archetype_rotation",
-    "drawn_plates", "plate_cohesion", "plate_depth", "plate_frame",
-    "plate_scale",
+    "drawn_plates", "plate_cohesion", "plate_depth", "plate_ground",
+    "plate_scene", "plate_scale", "svg_transparent",
     "dependency_verified",
     "design_system_mix", "image_presence", "handrolled_svg", "client_leaf_motion",
 }

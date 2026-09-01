@@ -531,10 +531,39 @@ def a_plate_is_a_drawing_not_a_sticker(engine):
 
     framed = {"/x/Page.jsx": '<ArtPlate name="b" className="mx-auto h-32 rounded-lg shadow-card" />'}
     sized = {"/x/Page.jsx": '<ArtPlate name="b" className="mx-auto w-full max-w-md" />'}
-    check("a card behind transparent art fails PLT-05",
-          _verdict(engine, "plate_frame", framed, {}, [str(drawn)]) == "fail")
-    check("art with no frame passes PLT-05",
-          _verdict(engine, "plate_frame", sized, {}, [str(drawn)]) == "pass")
+
+    # PLT-05 stopped being a question about the placement. The ground is never in
+    # the file, so the same drawing answers the same way under either wrapper and
+    # the fault is read out of the art rather than out of the classes beside it.
+    grounded = P(tempfile.mkdtemp())
+    (grounded / "c.svg").write_text(
+        '<svg viewBox="0 0 320 200"><rect width="320" height="200" fill="#1A1F42"/>'
+        + "".join('<rect x="%d" y="10" width="8" height="8" fill="%s"/>'
+                  % (i * 12, inks[i % len(inks)]) for i in range(16))
+        + "</svg>")
+    check("a plate painting its own ground fails PLT-05",
+          _verdict(engine, "plate_ground", framed, {}, [str(grounded)]) == "fail")
+    check("the same plate fails PLT-05 under a wrapper that frames nothing",
+          _verdict(engine, "plate_ground", sized, {}, [str(grounded)]) == "fail")
+    check("a transparent plate passes PLT-05",
+          _verdict(engine, "plate_ground", framed, {}, [str(drawn)]) == "pass")
+    check("a ground anywhere in the run fails AST-17",
+          _verdict(engine, "svg_transparent", {}, {}, [str(grounded)]) == "fail")
+    check("a transparent run passes AST-17",
+          _verdict(engine, "svg_transparent", {}, {}, [str(drawn)]) == "pass")
+
+    # PLT-07 is the ceiling over PLT-04's floor: the drawing that answers "give the
+    # subject its parts" by adding rectangles until something clears.
+    scene = P(tempfile.mkdtemp())
+    (scene / "d.svg").write_text(
+        '<svg viewBox="0 0 800 350">'
+        + "".join('<rect x="%d" y="20" width="8" height="3" fill="%s"/>'
+                  % (i * 3, inks[i % len(inks)]) for i in range(60))
+        + "</svg>")
+    check("a scene assembled out of boxes fails PLT-07",
+          _verdict(engine, "plate_scene", {}, {}, [str(scene)]) == "fail")
+    check("a drawing under the ceiling passes PLT-07",
+          _verdict(engine, "plate_scene", {}, {}, [str(drawn)]) == "pass")
     check("a page plate at a heading's height fails PLT-06",
           _verdict(engine, "plate_scale", framed, {}, [str(drawn)]) == "fail")
     check("a page plate sized off its column passes PLT-06",

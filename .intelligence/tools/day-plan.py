@@ -324,6 +324,14 @@ FRESH_SECONDS = 90
 FRESH_TIMEOUT = 45
 FIRST_PULL_TIMEOUT = 120
 
+# What the session end gives the push it makes for itself. A write schedules a
+# push that waits out the rest of the burst, so a session reaching its end
+# inside that window is behind the mirror only because the trip has not come
+# round yet. The gate makes the trip rather than reporting it missing, and this
+# is what it waits: long enough for a fetch, a commit and a push on a slow
+# line, short enough that a mirror nobody can reach ends the session anyway.
+CARRY_TIMEOUT = 45
+
 
 def _sync_off():
     return os.environ.get("INTELLIGENCE_DAYPLAN_NO_SYNC") == "1"
@@ -2110,6 +2118,38 @@ def unshared():
     return rows
 
 
+def carry_now(stranded):
+    """Make the trip a session end would otherwise be refused for, then re-read.
+
+    A ledger write schedules a push that waits out the rest of the burst, so a
+    session reaching its end inside that window stands behind the mirror only
+    because the trip has not come round yet. A refusal there hands a person a
+    command whose whole effect is to start the same push a few seconds early,
+    and which reports having nothing to do once the scheduled one has been and
+    gone. Neither reading is worth anybody's attention, and both wear the face
+    of the failure this gate exists for.
+
+    So the gate carries the plans itself and reads the record again. What
+    survives that is behind for a reason no push settles -- a mirror refusing
+    it, a credential holding it back, a carrier that is not installed -- which
+    is the case worth stopping on.
+    """
+    tool = _carrier()
+    if tool is None:
+        return stranded
+    try:
+        subprocess.run([sys.executable, str(tool), "push", "--plans"],
+                       env=_carrier_env(), timeout=CARRY_TIMEOUT,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                       check=False)
+    except (OSError, subprocess.SubprocessError):
+        # A push that did not finish settles nothing, timeout included, so the
+        # reading already taken stands rather than being retaken against a trip
+        # that stopped halfway.
+        return stranded
+    return unshared()
+
+
 def page_behind():
     """The plan whose published page no longer says what its ledger says."""
     try:
@@ -2189,11 +2229,14 @@ def cmd_guard_stop(args):
 
     stranded = [] if _sync_off() else unshared()
     if stranded:
+        stranded = carry_now(stranded)
+    if stranded:
         problems.append(
-            "Plan state on this machine has not reached the mirror:\n"
+            "Plan state on this machine has not reached the mirror, and the "
+            "push made for it settled none of these:\n"
             + "\n".join(f"  {day}: {why}" for day, why in stranded)
-            + "\nUntil it does, the next session works the plan as it stood "
-            "before this one. Share it with:\n"
+            + "\nUntil they land, the next session works the plan as it stood "
+            "before. The carrier prints what stopped it:\n"
             "  ~/.intelligence/tools/pass-state.py push"
         )
     plan = page_behind()

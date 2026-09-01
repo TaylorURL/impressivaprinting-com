@@ -19,7 +19,7 @@ as an open gate.
 | `gates/13-navigation.json` | Navigation Bars | What stripe, apple, anduril, ramp, mercury, saronic, and shield.ai agree on for the top bar |
 | `gates/14-mobile.json` | The Phone | What a phone decides and a desktop review cannot see: a bar reachable from anywhere, a menu measured against the visible viewport, chrome on an edge that clears the device inset and reserves its own height, and a thumb-sized target |
 | `gates/15-production.json` | Production Site Hygiene | What the 2026-08 audit of 13 owned sites found the audited sites do that Stripe, Apple, Linear, Vercel, and Anthropic do not — SPA catch-all 200s, canonical pointing at the deployment host, robots.txt served as HTML, empty entity in the footer, dev routes in the public bundle |
-| `gates/16-plates.json` | Drawn Plates | Art a project drew for its own subject: what it draws, where its ground lives, how big it is allowed to be, and that it is never a mark per menu row |
+| `gates/16-plates.json` | Drawn Plates | Art a project drew for its own subject: what it draws, how much of the subject it must carry and how much it must not, that its ground is never in the file, how big it is allowed to be, and that it is never a mark per menu row |
 | `gates/18-email.json` | Email | What an HTML email owes a client that strips stylesheets, scripts, SVG, and fonts |
 | `gates/20-pointer.json` | Pointer & Press | What the interface does under a cursor and a finger |
 | `gates/22-fields.json` | Fields & Menus | Inputs, selects, and the whole custom-listbox contract |

@@ -24,6 +24,21 @@ window.mobileProbe = (function () {
   var PHONE_MAX = 500;
   var SETTLE_MS = 450;
 
+  function scrollNow(y) {
+
+    var root = document.documentElement;
+
+    var was = root.style.scrollBehavior;
+
+    root.style.scrollBehavior = 'auto';
+
+    window.scrollTo(0, y);
+
+    root.style.scrollBehavior = was;
+
+  }
+
+
   function px(v) { var n = parseFloat(v); return isNaN(n) ? 0 : n; }
 
   function wait(ms) {
@@ -113,14 +128,24 @@ window.mobileProbe = (function () {
 
   /* The deepest thing the document itself lays out, ignoring the fixed chrome
      over it. What a bottom rail can cover. */
+  // The end of the page is the deepest thing that scrolls with it. A row
+  // inside a fixed panel does not, and the menu is open by the time this runs,
+  // so without this the floor is a drawer row and every pinned bar reads as
+  // covering the end of the page.
+  function pinnedAncestor(el) {
+    for (var node = el; node && node !== document.body; node = node.parentElement) {
+      if (getComputedStyle(node).position === 'fixed') return true;
+    }
+    return false;
+  }
+
   function documentFloor() {
     var deepest = null;
     var all = document.body.querySelectorAll('*');
     for (var i = 0; i < all.length; i += 1) {
       var el = all[i];
       if (!visible(el) || el.children.length) continue;
-      var s = getComputedStyle(el);
-      if (s.position === 'fixed') continue;
+      if (pinnedAncestor(el)) continue;
       var r = el.getBoundingClientRect();
       if (r.height < 1) continue;
       if (!deepest || r.bottom > deepest.bottom) deepest = { el: el, bottom: r.bottom };
@@ -135,11 +160,11 @@ window.mobileProbe = (function () {
     var start = box(bar);
     var depth = Math.min(2000, Math.max(0, document.documentElement.scrollHeight - window.innerHeight));
     var was = window.scrollY;
-    window.scrollTo(0, depth);
+    scrollNow(depth);
     var after = box(bar);
     var pinned = getComputedStyle(bar).position;
     var railed = findBottomFixed().length > 0;
-    window.scrollTo(0, was);
+    scrollNow(was);
     return {
       found: true,
       element: name(bar),
@@ -157,7 +182,7 @@ window.mobileProbe = (function () {
     var pinned = findBottomFixed();
     if (!pinned.length) return { found: false };
     var was = window.scrollY;
-    window.scrollTo(0, document.documentElement.scrollHeight);
+    scrollNow(document.documentElement.scrollHeight);
     var floor = documentFloor();
     var bars = pinned.map(function (p) {
       var r = p.el.getBoundingClientRect();
@@ -170,7 +195,7 @@ window.mobileProbe = (function () {
         coveredElement: floor ? name(floor.el) : '',
       };
     });
-    window.scrollTo(0, was);
+    scrollNow(was);
     return { found: true, bars: bars };
   }
 
