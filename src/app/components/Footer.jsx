@@ -5,6 +5,7 @@ import { ColorBar } from '@components/PrintMarks.jsx';
 import Parallax from '@components/Parallax.jsx';
 import Picture from '@components/Picture.jsx';
 import { SOCIAL_ICONS } from '@components/socialIconMap.jsx';
+import { currentYear } from '../utils/format';
 
 export default function Footer({ children }) {
   return (
@@ -73,7 +74,7 @@ export default function Footer({ children }) {
       <div className="border-t border-paper-100/10">
         <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-2 px-5 py-6 sm:flex-row sm:items-center sm:px-8">
           <span className="spec text-[11px] uppercase tracking-[0.2em] text-paper-100/40">
-            © {new Date().getFullYear()} {SITE.name}. All Rights Reserved
+            © {currentYear()} {SITE.name}. All Rights Reserved
           </span>
           <div className="spec flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] uppercase tracking-[0.2em] text-paper-100/40">
             <Link to={ROUTES.privacy} className="hover:text-flare">
