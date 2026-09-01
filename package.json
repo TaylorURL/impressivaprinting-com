@@ -1,7 +1,8 @@
 {
   "name": "impressivaprinting-com",
   "private": true,
-  "version": "2026.36.34",
+  "license": "UNLICENSED",
+  "version": "2026.36.35",
   "type": "module",
   "engines": {
     "node": ">=22"
