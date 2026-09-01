@@ -30,11 +30,27 @@ def load():
     return mod
 
 
-def verdict(rows, scheduled_ago):
+SCHEDULED = [{"id": "maintenance", "host": "pi", "schedule": "0 10 * * *"}]
+POLL = [{"id": "error-monitor", "host": "pi", "interval": 600}]
+SILENT = [{"id": "error-monitor", "host": "pi"}]
+TIMED = [{"id": "status-board", "host": "pi", "unit": "status-board.timer",
+          "schedule": "every 120s"}]
+WATCH = [{"id": "sentinel", "host": "mac", "schedule": "47 3,11,19 * * *"}]
+
+
+def verdict(rows, scheduled_ago, routines=None, units=None, loaded=True):
+    """The findings, with every machine the check would reach stubbed out.
+
+    A suite that opens a connection is a suite that fails when the line does,
+    and it reports the far machine rather than the code under test.
+    """
     mod = load()
     now = time.time()
     mod.statuses = lambda: rows
     mod.scheduled_since = lambda: now - scheduled_ago
+    mod.registry = lambda: SCHEDULED if routines is None else routines
+    mod.units_state = lambda: units or {}
+    mod.mac_loaded = lambda label=None: loaded
     return mod.findings()
 
 
@@ -63,9 +79,48 @@ def main():
           any("has not run since it was scheduled" in f
               for f in verdict({}, 30 * DAY)), True)
 
-    # An event-driven routine has no cadence, so it can never be overdue.
-    check("a routine with no cadence is never overdue",
-          any("error-monitor" in f for f in verdict({}, 365 * DAY)), False)
+    # A poll declares an interval, and an interval is a cadence like any other.
+    # Reading one as uncadenced is what let a routine firing hourly sit silent
+    # for a day without the check having anything to say about it.
+    check("a poll that stopped is a finding like any other",
+          any("error-monitor" in f for f in verdict({}, 3 * DAY, POLL)), True)
+    check("a poll inside its own interval is not",
+          verdict({"error-monitor": {"routine": "error-monitor", "exit": 0,
+                                     "at": now - 60}}, 3 * DAY, POLL), [])
+
+    # A routine the registry names and this cannot judge is the one state that
+    # must never pass quietly: it is indistinguishable from a healthy one.
+    check("a routine declaring no cadence at all is a finding",
+          any("no schedule this can judge" in f
+              for f in verdict({}, 3 * DAY, SILENT)), True)
+
+    # A board writes no status, so its unit is the only account of it.
+    check("a timer running clean is not a finding",
+          verdict({}, 3 * DAY, TIMED,
+                  {"status-board.timer": {"active": "active",
+                                          "result": "success", "exit": "0"}}),
+          [])
+    check("a timer that is not running is a finding",
+          any("its timer is" in f for f in verdict(
+              {}, 3 * DAY, TIMED,
+              {"status-board.timer": {"active": "failed", "result": "success",
+                                      "exit": "0"}})), True)
+    check("a timer whose last run failed is a finding",
+          any("ended" in f for f in verdict(
+              {}, 3 * DAY, TIMED,
+              {"status-board.timer": {"active": "active", "result": "timeout",
+                                      "exit": "1"}})), True)
+    check("a unit that did not answer is a finding",
+          any("did not answer" in f
+              for f in verdict({}, 3 * DAY, TIMED, {})), True)
+
+    # The workstation's watch exits non-zero when it finds something, so its
+    # exit code is its verdict and being loaded is its health.
+    check("the workstation's watch loaded is not a finding",
+          verdict({}, 3 * DAY, WATCH, None, True), [])
+    check("the workstation's watch unloaded is a finding",
+          any("not loaded" in f
+              for f in verdict({}, 3 * DAY, WATCH, None, False)), True)
 
     for f in FAILURES:
         print(f)

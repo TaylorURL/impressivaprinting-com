@@ -139,9 +139,20 @@ window.skeletonProbe = (function () {
                 '[data-loading],[aria-busy="true"]';
 
       function count() { return root.querySelectorAll(SEL).length; }
+      /* Only what the reader can see. A footer sitting a screen below the
+         placeholder is pushed the length of the page when the route lands, and
+         counting that reports the page as having moved under someone who never
+         saw it move. */
       function anchors() {
         return Array.prototype.map.call(root.querySelectorAll('section,article,table,form,ul,h1,h2'),
-          function (el) { return { el: el, y: el.getBoundingClientRect().top + window.scrollY }; });
+          function (el) {
+            var r = el.getBoundingClientRect();
+            return {
+              el: el,
+              y: r.top + window.scrollY,
+              onScreen: r.bottom > 0 && r.top < window.innerHeight,
+            };
+          });
       }
 
       var moments = [], entrances = [], start = performance.now();
@@ -172,6 +183,7 @@ window.skeletonProbe = (function () {
             // Placeholders came or went: measure what that did to everything else.
             var moved = 0, next = anchors();
             marks.forEach(function (m) {
+              if (!m.onScreen) return;
               var found = next.filter(function (n) { return n.el === m.el; })[0];
               if (found) moved += Math.abs(found.y - m.y);
             });

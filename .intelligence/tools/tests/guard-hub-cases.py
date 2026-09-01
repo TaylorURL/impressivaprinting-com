@@ -65,8 +65,7 @@ def in_flight_cases(quiet):
     """A run being worked keeps its guard asleep; a quiet one wakes it."""
     ending = {"session_id": "fixture-session", "stop_hook_active": False,
               "transcript_path": ""}
-    env = dict(quiet, INTELLIGENCE_REMOTE_OFF="1", INTELLIGENCE_CONCISE_OFF="1",
-               INTELLIGENCE_DELEGATION_OFF="1")
+    env = dict(quiet, INTELLIGENCE_REMOTE_OFF="1", INTELLIGENCE_CONCISE_OFF="1")
     with tempfile.TemporaryDirectory() as state:
         runs = Path(state) / "seo-runs"
         runs.mkdir(parents=True)
@@ -105,8 +104,7 @@ def in_flight_cases(quiet):
 
 def agent_liveness_cases(quiet):
     """A working subagent holds the stop guards off its own session's runs."""
-    env = dict(quiet, INTELLIGENCE_REMOTE_OFF="1", INTELLIGENCE_CONCISE_OFF="1",
-               INTELLIGENCE_DELEGATION_OFF="1")
+    env = dict(quiet, INTELLIGENCE_REMOTE_OFF="1", INTELLIGENCE_CONCISE_OFF="1")
     sid = "fixture-session"
     with tempfile.TemporaryDirectory() as state, tempfile.TemporaryDirectory() as project:
         runs = Path(state) / "seo-runs"
@@ -163,15 +161,11 @@ def main():
         code, execs, _ = run_hub("pre", bash("git status"), env=quiet,
                                  state_dir=state)
         check("ordinary bash spawns nothing", (code, execs), (0, []))
-        # A read-shaped command is not one of those: the survey gate counts
-        # reads, so reaching it is the contract rather than a leak in the fast
-        # path. Without a transcript it has nothing to measure and exits 0.
+        # A read-shaped command is one of those too: nothing on the pre side
+        # weighs reading any more, so a read spawns nothing.
         code, execs, _ = run_hub("pre", bash("ls -la /tmp"), env=quiet,
                                  state_dir=state)
-        check("a read reaches the survey gate",
-              (code, [e for e in execs if "delegation-guard" in e]),
-              (0, [str(TARGET.resolve().parent / "delegation-guard.py")
-                   + " guard-probe"]))
+        check("a read spawns nothing", (code, execs), (0, []))
         code, execs, _ = run_hub(
             "post", {"tool_name": "Read", "tool_input": {"file_path": "/tmp/x"}},
             state_dir=state)

@@ -20,6 +20,7 @@ Usage:
 """
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -110,6 +111,8 @@ Requirements:
 - No raster images or external references
 - Optimized paths with minimal nodes
 - Accessible: include <title> element with icon description
+- No background: no rect covering the viewBox, no fill on the root <svg>, no
+  style="background". The icon is transparent behind its drawing
 {style_instructions}
 {color_instructions}
 {size_instructions}
@@ -127,11 +130,35 @@ Requirements for EACH icon:
 - No embedded fonts, raster images, or external references
 - Optimized paths with minimal nodes
 - Include <title> element with icon description
+- No background rect and no fill on the root <svg>: transparent behind the drawing
 {style_instructions}
 {color_instructions}
 
 Generate {count} different visual interpretations. Output each SVG in a separate ```svg``` code block.
 Label each variation (e.g., "Variation 1: [brief description]")."""
+
+
+def strip_ground(svg_code):
+    """An icon comes out transparent whether or not the model was listening.
+
+    The prompt asks for no background and a model answers a prompt most of the
+    time, which is the wrong reliability for something every later use of the
+    file inherits. The measure here is the one the commit hook uses, so a
+    generated icon and a hand-written one are held to the same reading.
+    """
+    for root in (Path.home() / ".intelligence" / "tools",
+                 Path(__file__).resolve().parents[4] / "tools"):
+        target = root / "svg-guard.py"
+        if not target.is_file():
+            continue
+        spec = importlib.util.spec_from_file_location("svg_guard", str(target))
+        module = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(module)
+            return module.repair(svg_code, ".svg")
+        except Exception:
+            return svg_code
+    return svg_code
 
 
 def extract_svgs(text):
@@ -283,7 +310,7 @@ def generate_icon(prompt, style=None, category=None, name=None,
             output_path = f"{slug}{style_suffix}_{timestamp}.svg"
 
         with open(output_path, "w", encoding="utf-8") as f:
-            f.write(svg_code)
+            f.write(strip_ground(svg_code))
 
         print(f"Icon saved to: {output_path}")
         return output_path
@@ -366,7 +393,7 @@ def generate_batch(prompt, count, output_dir, style=None, color=None,
             filepath = os.path.join(output_dir, filename)
 
             with open(filepath, "w", encoding="utf-8") as f:
-                f.write(svg_code)
+                f.write(strip_ground(svg_code))
 
             results.append(filepath)
             print(f"  [{i+1}/{len(svgs[:count])}] Saved: {filename}")

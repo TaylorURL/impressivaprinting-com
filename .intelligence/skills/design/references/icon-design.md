@@ -99,6 +99,19 @@ python3 ~/.intelligence/skills/design/scripts/icon/generate.py --list-categories
 - **Optimization**: Minimal path nodes, no embedded fonts or raster images
 - **Sizing**: Design at 24px, test at 16px and 48px for clarity
 - **Stroke**: Use `stroke-linecap="round"` and `stroke-linejoin="round"` for outlined styles
+- **Ground**: None. A file carries its drawing and nothing behind it — no full-canvas
+  rect, no `background` on the root element. Where a graphic wants a ground, it is a
+  class on whatever renders the file, so the same drawing reads on a dark band, a
+  light card, and a page that changes theme under it. `svg-guard.py fix <path>` strips
+  one, a `Write`/`Edit` hook refuses an edit that adds one, and gates PLT-05 and AST-17
+  hold it. The backings that hold something up rather than sit behind it — a QR code's
+  quiet zone, a scrim with a spotlight masked out of it, a noise texture — already pass
+  the measure and are not exceptions to argue for.
+- **Size of the subject**: A mark, not a scene. Forty or more drawn elements, most of
+  them rectangles and straight segments, is the shape a drawing takes when it was never
+  going to look like the thing it depicts, and no amount of adjustment gets it there.
+  Reach for a photograph, a real exported asset, or a mark simple enough to be right —
+  a silhouette, a wordmark, a single shape. Gate PLT-07 measures it.
 
 ## Model
 

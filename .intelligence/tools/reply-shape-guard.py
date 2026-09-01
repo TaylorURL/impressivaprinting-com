@@ -175,9 +175,14 @@ OPENER = re.compile(r"first\s+reply\s+of\s+every\s+conversation", re.I)
 
 # The skill's instruction for a reach that lands on a settled message. Read
 # from the file for the reason the cap and the reach are: a rule the document
-# has stopped stating is one this gate has to stop enforcing.
+# has stopped stating is one this gate has to stop enforcing. Both wordings the
+# instruction has carried are matched, because the wording moved once and the
+# rule switched itself off without anything saying so -- the one failure a
+# fingerprint of a sentence is prone to, and the cheap half of it to cover.
 SETTLED = re.compile(
-    r"say\s+in\s+a\s+sentence\s+that\s+it\s+holds\s+nothing\s+left\s+to\s+answer",
+    r"say\s+in\s+(?:a|one)\s+sentence\s+"
+    r"(?:that\s+it\s+holds\s+nothing\s+left\s+to\s+answer"
+    r"|whether\s+the\s+work\s+is\s+finished)",
     re.I,
 )
 

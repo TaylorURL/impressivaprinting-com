@@ -1,6 +1,6 @@
 ---
 name: short
-description: Answer in six sentences or fewer, formatted well, after checking the answer the whole way down. Use on /short, or "short answer", "just tell me", "briefly", "keep it short", "one line". The brevity is in the prose, never in the work behind it or the evidence beside it.
+description: Answer in six sentences or fewer, formatted well, after checking the answer the whole way down, always saying in the first sentence whether the work is finished and what is outstanding. Use on /short, or "short answer", "just tell me", "briefly", "keep it short", "one line". The brevity is in the prose, never in the work behind it or the evidence beside it.
 argument-hint: [the question]
 ---
 
@@ -43,6 +43,29 @@ a clause, not a paragraph.
 
 Relevance is part of correctness here. A true sentence about something adjacent
 is a wrong answer.
+
+## Say whether it is done
+
+Every reply opens by saying whether the thing it is about is finished. Not a
+status heading, not a note at the end, not something the reader assembles out of
+what the reply happens to mention: the first words, where the answer already
+goes.
+
+Finished means nothing is left that this session can carry. Where something is
+left, the same sentence says what, and what it waits on -- a check still
+running, a decision only the person can make, a service that refused. "Finished
+with everything that does not need you" is a whole answer. "Done" said over
+outstanding work is the failure this rule exists to prevent, because the reply
+is believed at the top and the remainder is dropped.
+
+It costs one of the six sentences and earns it. A reply nobody has to ask "so is
+it finished?" after has spent that sentence well, and the question coming back
+is the proof it was owed.
+
+Where the reply is the one-sentence case below -- the reach landed on something
+with nothing to answer -- that single sentence carries the done state rather
+than the generic wording, because the state is the only thing left that the
+reader does not already have.
 
 ## Check it before you say it
 
@@ -113,8 +136,8 @@ Two things it can land on, and both end the same way:
   answer to a live question; it is the same answer twice, and the second copy is
   read as new because nothing on the page says it is not.
 
-In both cases: quote the message the reach landed on, say in a sentence that it
-holds nothing left to answer, and stop. Do not restate a settled answer in
+In both cases: quote the message the reach landed on, say in one sentence whether
+the work is finished and what any remainder waits on, and stop. Do not restate a settled answer in
 shorter form, and do not go looking for a different question to put under the
 quote. A quote assembled to satisfy the shape is worse than no reply: the page
 then shows a real answer standing under a question nobody asked, and it reads as
@@ -161,6 +184,7 @@ Format it well within that:
 - Headings rarely earn their place at this length. Two of them, at most, and
   only when the answer has two parts.
 - Under the quote: no preamble, no closing offer, no "let me know if".
+- Whether the work is finished is the first sentence, every time.
 - A yes-or-no question gets yes or no as the first word. Neither one, say which
   part is which before anything else.
 - Say the thing. The reasoning is only there where it changes what happens next.

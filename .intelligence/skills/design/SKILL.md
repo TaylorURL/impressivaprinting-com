@@ -26,11 +26,13 @@ The unified design skill. Every domain — brand voice, design tokens, UI intell
 
 Pick the domain that matches the task. Many tasks span multiple domains — read the relevant references together.
 
-## Three principles across all domains
+## Five principles across all domains
 
 1. **Read the existing project first.** Brand voice, design tokens, theme files, sibling components. Never ship a generic template that ignores what's already there.
 2. **Three themes always.** Dark, light, AND gray. Every color, border, shadow, surface must read correctly in all three. Semantic tokens — never hardcode colors that break in one theme.
 3. **Behavior preservation when redesigning existing code.** Only presentation changes. Routes, handlers, contracts, side effects stay identical.
+4. **Every SVG is transparent behind its drawing.** No full-canvas rect, no `background` on the root element. A ground belongs to whatever renders the file, as a class, so one drawing reads on a dark band, a light card, and a page that changes theme under it. `~/.intelligence/tools/svg-guard.py fix <path>` strips one; a `Write`/`Edit` hook and a `git commit` hook refuse a new one; gates PLT-05 and AST-17 hold it.
+5. **Draw only what can come out right.** Forty or more drawn elements, most of them rectangles and straight segments, is a scene rather than a mark, and it does not end up looking like the thing it depicts however long it is adjusted. Reach for a photograph, a real exported asset, or a mark simple enough to be right — a silhouette, a wordmark, a single shape. Gate PLT-07 measures it, and the same hook refuses a new one.
 
 ---
 
@@ -126,7 +128,11 @@ python3 ~/.intelligence/skills/design/scripts/logo/search.py "healthcare medical
 
 ### Generate with AI
 
-**ALWAYS** generate output logos with white background.
+Generate against white, deliver with alpha. White gives the model a clean field to draw a
+mark on; a white box behind the mark on every surface that is not white is a broken
+deliverable. `scripts/logo/transparent.py` floods the background in from the border, so
+white inside the mark — a counter, a knockout, a highlight — survives. Generation runs it
+automatically; run it by hand on anything that arrived another way.
 
 ```bash
 python3 ~/.intelligence/skills/design/scripts/logo/generate.py --brand "TechFlow" --style minimalist --industry tech

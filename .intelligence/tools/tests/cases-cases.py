@@ -59,6 +59,13 @@ def staged(root, timeout=3):
     tests.mkdir(parents=True)
     runner = tests / "cases.py"
     runner.write_text(patched, encoding="utf-8")
+    # The runner starts every suite through the sandbox, found beside its own
+    # tools first and in the installed tree after. A checkout is where there is
+    # no installed tree, so the copy carries its own rather than reading the
+    # machine's -- which is the difference between this suite passing here and
+    # passing anywhere.
+    (tests.parent / "suite-sandbox.py").write_bytes(
+        (TARGET.parent.parent / "suite-sandbox.py").read_bytes())
     return runner
 
 

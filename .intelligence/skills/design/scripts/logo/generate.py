@@ -20,6 +20,7 @@ Batch mode (generates multiple variants):
 
 import argparse
 import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -74,7 +75,7 @@ Style requirements:
 - Simple, scalable design that works at any size
 - Clear silhouette and recognizable shape
 - Professional quality suitable for business use
-- Centered composition on plain white or transparent background
+- Centered composition on plain white background, which is stripped after the render
 - No text unless specifically requested
 - High contrast and clear edges
 - Square format, perfectly centered
@@ -131,6 +132,23 @@ def enhance_prompt(base_prompt, style=None, industry=None, brand_name=None):
 
     combined = ", ".join(prompt_parts)
     return LOGO_PROMPT_TEMPLATE.format(prompt=combined)
+
+
+def strip_background(path):
+    """Write the transparent twin of a freshly generated logo, and return its path."""
+    script = Path(__file__).with_name("transparent.py")
+    if not script.exists():
+        print("transparent.py is missing; the logo still has its white background.")
+        return None
+    out = str(Path(path).with_name(Path(path).stem + "-transparent.png"))
+    result = subprocess.run([sys.executable, str(script), str(path), "-o", out],
+                            capture_output=True, text=True)
+    if result.returncode != 0:
+        print("Background strip failed: %s" % (result.stderr or result.stdout).strip())
+        return None
+    print(result.stdout.strip())
+    print(f"Transparent logo: {out}")
+    return out
 
 
 def generate_logo(prompt, style=None, industry=None, brand_name=None,
@@ -220,7 +238,13 @@ def generate_logo(prompt, style=None, industry=None, brand_name=None,
             f.write(image_data)
 
         print(f"Logo saved to: {output_path}")
-        return output_path
+
+        # The model draws a cleaner mark against white, so the prompt asks for white
+        # and the background comes off here. Stripping it at the point of generation
+        # is what keeps the delivered file transparent whether or not anyone
+        # remembers to ask - the render on white stays beside it as the preview.
+        transparent_path = strip_background(output_path)
+        return transparent_path or output_path
 
     except Exception as e:
         print(f"Error generating logo: {e}")

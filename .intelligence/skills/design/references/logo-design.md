@@ -33,7 +33,11 @@ python3 ~/.intelligence/skills/design/scripts/logo/search.py "healthcare medical
 
 ### Generate Logo
 
-**ALWAYS** use white background for output logos.
+Generate against white, deliver with alpha. White gives the model a clean field to draw a
+mark on; a white box behind the mark on every surface that is not white is a broken
+deliverable. `scripts/logo/transparent.py` floods the background in from the border, so
+white inside the mark — a counter, a knockout, a highlight — survives. Generation runs it
+automatically; run it by hand on anything that arrived another way.
 
 ```bash
 python3 ~/.intelligence/skills/design/scripts/logo/generate.py --brand "TechFlow" --style minimalist --industry tech
