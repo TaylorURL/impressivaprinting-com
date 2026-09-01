@@ -2,13 +2,24 @@ import { useEffect, useRef, useState } from 'react';
 
 // Three independent paths to visible — intersection, an at-mount bounds check,
 // and a timeout — because content stuck invisible is far worse than content
-// that reveals early.
-export default function Reveal({ as = 'div', delay = 0, className = '', children, ...rest }) {
+// that reveals early. `immediate` opts out of all three: the static shell in
+// index.html has already painted that content opaque, so entering it from
+// transparent would blink it out and fade it back in as React takes over.
+export default function Reveal({
+  as = 'div',
+  delay = 0,
+  immediate = false,
+  className = '',
+  children,
+  ...rest
+}) {
   const Tag = as;
   const ref = useRef(null);
-  const [shown, setShown] = useState(false);
+  const [shown, setShown] = useState(immediate);
 
   useEffect(() => {
+    if (immediate) return;
+
     const el = ref.current;
     if (!el) return;
 
@@ -43,7 +54,7 @@ export default function Reveal({ as = 'div', delay = 0, className = '', children
       io.disconnect();
       clearTimeout(safety);
     };
-  }, []);
+  }, [immediate]);
 
   return (
     <Tag
