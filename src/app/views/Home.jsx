@@ -54,7 +54,7 @@ function Hero() {
       <div
         className={`relative ${WRAP} flex flex-col items-center pb-20 pt-16 text-center sm:pb-28 sm:pt-24`}
       >
-        <Reveal>
+        <Reveal immediate>
           <h1 className="sr-only">Impressiva Printing, custom print shop in Pasadena</h1>
           <Picture
             src="/logo"
