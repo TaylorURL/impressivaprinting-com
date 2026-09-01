@@ -22,6 +22,13 @@ export default defineConfig({
     // Every browser that runs a module script has these; naming them stops the
     // toolchain guessing an older baseline and shipping transforms for it.
     target: ['chrome111', 'edge111', 'firefox111', 'safari16.4'],
+    // A visitor who never signs in still pays for the client if it is
+    // announced to the preload scanner, where it outranks the stylesheet, the
+    // faces and the hero image. The entry still imports it, so it still
+    // arrives; it just stops arriving first.
+    modulePreload: {
+      resolveDependencies: (_file, deps) => deps.filter((dep) => !dep.includes('supabase')),
+    },
     rollupOptions: {
       output: { manualChunks },
     },

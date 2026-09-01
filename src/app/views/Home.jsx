@@ -64,6 +64,7 @@ function Hero() {
             widths={[560, 1200]}
             sizes="(min-width: 640px) 560px, 100vw"
             eager
+            priority
             className="mx-auto w-full max-w-[560px]"
           />
           <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-paper-100/70">
