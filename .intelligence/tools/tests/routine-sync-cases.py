@@ -75,15 +75,27 @@ def config(cron, prompt_file, sources=("https://github.com/o/one",),
     return body
 
 
+PINNED = "claude-opus-4-6"
+
+
 def tree(tmp, routines, tasks=None, configs=None, shared=None):
     """A checkout holding just enough for the registry to be read."""
     root = Path(tmp)
     root.mkdir(parents=True, exist_ok=True)
     (root / "routines").mkdir(exist_ok=True)
     (root / "routine").mkdir(exist_ok=True)
+    runner = root / "routines" / "bin" / "routine-run.sh"
+    runner.parent.mkdir(parents=True, exist_ok=True)
+    runner.write_text("#!/bin/sh\nMODEL=${ROUTINE_MODEL:-%s}\n" % PINNED)
     body = {"routines": routines}
-    if shared is not None:
-        body["shared"] = shared
+    declared = list(shared) if shared is not None else []
+    declared.append({
+        "path": "routines/bin/routine-run.sh",
+        "host": "pi",
+        "installed": "/home/sunday/bin/routine-run.sh",
+        "does": "Hands a registry entry's prompt to a headless turn on the pinned model",
+    })
+    body["shared"] = declared
     (root / "routines" / "registry.json").write_text(json.dumps(body))
     for name, text in (tasks or {}).items():
         (root / "routine" / name).write_text(text)
@@ -401,6 +413,31 @@ def main():
         check("the mark carries what closed",
               state["swept"]["alpha"]["checklists"], ["seo"])
 
+
+    # One line in the runner decides what every scheduled turn is judged by.
+    # A config carrying a model of its own overrides it for that routine, and
+    # the two saying different things is the state nothing else reads as wrong.
+    with tempfile.TemporaryDirectory() as tmp:
+        root = built(tmp, [entry()], {"one.md": TASK})
+        cfg = json.loads((root / "routines/daily/one.json").read_text())
+        cfg["job_config"] = {"ccr": {"session_context": {"model": "elsewhere"}}}
+        (root / "routines/daily/one.json").write_text(json.dumps(cfg))
+        check("a config running a model of its own is caught",
+              any("the runner pins" in p for p in mod.check(root)), True)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = built(tmp, [entry()], {"one.md": TASK})
+        cfg = json.loads((root / "routines/daily/one.json").read_text())
+        cfg["job_config"] = {"ccr": {"session_context": {"model": PINNED}}}
+        (root / "routines/daily/one.json").write_text(json.dumps(cfg))
+        check("a config naming the pinned model is clean", mod.check(root), [])
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = built(tmp, [entry()], {"one.md": TASK})
+        (root / "routines/bin/routine-run.sh").unlink()
+        check("a tree whose runner names no model is caught",
+              any("nothing pins the routines" in p for p in mod.check(root)),
+              True)
 
     # The programs every routine runs through belong to no single entry, so
     # without a shared block they read as files nothing accounts for.

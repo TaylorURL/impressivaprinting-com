@@ -27,6 +27,23 @@
       "fix": "Run scripts/logo/transparent.py on the export, then re-verify. Deliver the transparent file; keep the white-background render only as a preview."
     },
     {
+      "id": "AST-17",
+      "title": "Every SVG Ships With A Transparent Background",
+      "rule": "AST-01 holds the raster exports; this holds the vector ones, and it holds all of them - marks, icons, favicons, plates, artwork out of a generator. A graphic carries its drawing and nothing behind it, so it reads the same on a dark band, a light card, and a page that changes theme under it. The ground, where one is wanted, is a class on whatever renders the file. The exceptions are the backings that hold something up rather than sit behind it - a QR code's quiet zone, a scrim with a spotlight masked out of it, a noise texture - and each of those is a shape the measure already passes rather than a licence to paint a canvas.",
+      "source": "references/icon-design.md",
+      "kinds": [
+        "logo",
+        "icon",
+        "cip"
+      ],
+      "when": "image",
+      "severity": "blocker",
+      "check": {
+        "type": "svg_transparent"
+      },
+      "fix": "Run ~/.intelligence/tools/svg-guard.py fix on the export directory, then put any ground the design wants on the element that renders the file."
+    },
+    {
       "id": "AST-02",
       "title": "Logo Ships In Vector Where It Can",
       "rule": "An SVG accompanies the raster wherever the mark is vectorisable. A logo that only exists as a PNG cannot go on a vehicle or a sign.",

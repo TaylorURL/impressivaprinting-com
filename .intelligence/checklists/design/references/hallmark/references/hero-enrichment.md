@@ -49,7 +49,7 @@ Reach for the highest tier the brief lets you ship in the time you have. Skippin
 | **D · Library illustration** | Storyset / Humaaans / unDraw, customised with brand colours. | When budget and timeline force a shortcut — and even then, never unmodified. |
 | **E · Lottie animation** | LAST RESORT. Only when complex character motion can't be hand-built. | Articulated figures, multi-frame mascot loops. Never for "spinning logo" or "checkmark draw" — those are CSS. |
 
-**The discipline.** If you can do it in tier A, do it in tier A. If A can't reach it, try B. Only drop to C when characters demand it. Only D when the brief is explicit about "fast and cheap". Only E when E is genuinely the only option. Reaching for E because it's familiar — and many AI tools do — is the signature of a templated page.
+**The discipline.** If you can do it in tier A, do it in tier A. If A can't reach it, try B. Only drop to C when characters demand it. Only D when the brief is explicit about "fast and cheap". Only E when E is genuinely the only option. Reaching for E because it's familiar — and many AI tools do — is the signature of a templated page. The hierarchy is about reach, not about persistence: tier B stops where the subject stops being a shape and starts being a scene. Forty or more drawn elements, most of them rectangles and straight segments, is a drawing that was never going to look like the thing it depicts, and the answer there is tier C or a photograph rather than more tier B. Gate PLT-07 measures it and a Write hook refuses it.
 
 See [`custom-craft.md`](custom-craft.md) for *how* to build at tiers A and B. See [`assets.md`](assets.md) for the catalogue of sources at tiers C, D, and E.
 

@@ -7,12 +7,26 @@ down goes with it: a worktree cut and never landed, a pull request opened and
 never watched, a skill edited and never mirrored, and the sentence somebody had
 to say twice because no mechanism catches it.
 
-Those are two different problems and both are answered here. Unfinished work is
-a matter of fact and gets measured -- the trees the chat touched, the branches it
-cut, the pull requests it opened, the config it edited. A lesson is a matter of
-reading, and the transcript is where it is legible: a correction is somebody
-supplying by hand what a mechanism should supply, and a refusal is a mechanism
-that fired and went on firing.
+Those are three different problems and all three are answered here. Unfinished
+work is a matter of fact and gets measured -- the trees the chat touched, the
+branches it cut, the pull requests it opened, the config it edited, and the
+files it changed without either pass running over them. A dropped ask is a
+matter of arithmetic: an opening message carries several things, the run carries
+out some of them, and the words of the rest never surface again. A lesson is a
+matter of reading, and the transcript is where it is legible: a correction is
+somebody supplying by hand what a mechanism should supply, a refusal is a
+mechanism that fired and went on firing, and a collision is two mechanisms
+refusing one reply on terms that cannot both be met.
+
+The dropped ask leads all of them. The other readings are about how the work was
+done and it is the only one about whether it was done, and the person who typed
+the message has already paid for it once.
+
+A refusal that fires once, is obeyed and never returns is the common case and
+raises nothing, but the draft it turned down and the draft that replaced it are
+the clearest statement anywhere of what the machine wanted. Those are kept
+against the ground rather than read and dropped, so a wall met once in each of
+several chats becomes visible to a run that was present for none of them.
 
 Scope is what keeps this from crying wolf. A machine-wide sweep refuses over a
 stale branch in a repository the chat never opened, and a gate that refuses over
@@ -21,6 +35,8 @@ the directories, repositories and branches the transcript actually names, and
 --all widens it for a run that wants the whole machine.
 
   archive.py check [--all] [--json] [--session ID]   work the chat still holds
+  archive.py finish [--json] [--session ID]          what was asked and not done
+  archive.py polish [--files|--mark [path...]]       the passes the diff is owed
   archive.py harvest [--json] [--session ID]         what nothing enforces yet
   archive.py hand-off [<id>] [--session ID]          start the agent that fixes it
   archive.py close [--session ID]                    end the chat, either shape
@@ -34,8 +50,10 @@ action the harness declines rather than a discipline anybody has to keep.
 """
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
+import math
 import os
 import re
 import shlex
@@ -113,6 +131,26 @@ MIN_REPEATS = 2
 # know before it acted and had to learn by being refused.
 CONTEXT_REPEATS = 2
 
+# Two mechanisms refusing one reply on different grounds need no repeat. A
+# correction told once could be a slip of the moment and a guard that fires once
+# is a guard doing its job, so both wait for a second telling before they mean
+# anything. A collision is already complete on its first occurrence: both
+# demands are on record, in full, along with the drafts that failed to satisfy
+# them. Waiting for a repeat waits for another run to walk into the same
+# contradiction and lose the same hour deciding which side to take.
+COLLISION_GROUNDS = 2
+
+# How many separate chats have to meet the same ground before it is raised on
+# that evidence alone. Inside one sitting a refusal has to repeat to mean
+# anything; across sittings the repeat is the evidence, and nobody was present
+# for all of it. Two is a coincidence in a busy week. Three is a wall.
+RECURRENCE_CHATS = 3
+
+# How much of a draft is worth keeping beside the ground that refused it. The
+# pair is read to work out what the machine wanted, and the opening of a reply
+# is where its shape is decided.
+DRAFT_KEEP = 600
+
 # Findings are read to a person who is closing a chat, so the list has to fit on
 # a screen or it gets skimmed past the thing that mattered.
 SHORTLIST = 12
@@ -121,6 +159,17 @@ SHORTLIST = 12
 # directory reference is noise, and a match only becomes a repository when git
 # says so.
 PATHS = re.compile(r"(?:~|/Users/[A-Za-z0-9._-]+)/[A-Za-z0-9._/-]{2,}")
+
+# The same file named from inside its own directory. Nobody working in a tree
+# types the whole path to it, so a reading that takes only absolute paths sees
+# the commands that set a directory up and none of the ones that did the work.
+# A match counts only where the file it names is really there.
+RELATIVE = re.compile(r"(?<![\w/.-])([A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)+)")
+
+# Where a command put itself before it named anything. The directory stamped on
+# a row is where the session is, and a command opening with a move is working
+# somewhere else for the rest of its length.
+MOVED = re.compile(r"(?:^|[;&|]\s*)cd\s+['\"]?((?:~|/)[A-Za-z0-9._/-]+)")
 
 PR_URL = re.compile(r"https://github\.com/([\w.-]+/[\w.-]+)/pull/(\d+)")
 
@@ -134,7 +183,7 @@ STOP_FEEDBACK = re.compile(r"^\s*stop hook feedback", re.I)
 # reach an ending: the block becomes the reason for the next block.
 OWN_BLOCK = "the chat is still holding something"
 
-CANDIDATE_STATES = ("built", "context", "declined")
+CANDIDATE_STATES = ("built", "context", "declined", "done")
 
 # A handed-off lesson belongs to the chat opened on it, which carries the brief.
 # It stays unsettled in the ledger and stops being raised, because a gate that
@@ -164,6 +213,51 @@ def save_ledger(ledger):
     path = ledger_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     _lib.write_atomic(path, json.dumps(ledger, indent=2, sort_keys=True) + "\n")
+
+
+def evidence_path():
+    return state_root() / "archive" / "evidence.json"
+
+
+def read_evidence():
+    try:
+        return json.loads(evidence_path().read_text())
+    except (OSError, ValueError):
+        return {"grounds": {}}
+
+
+def save_evidence(store):
+    path = evidence_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    _lib.write_atomic(path, json.dumps(store, indent=2, sort_keys=True) + "\n")
+
+
+def keep_evidence(session, marks):
+    """Hold what one refusal wanted, against the chat that met it.
+
+    A guard that refuses once, is obeyed, and never fires again leaves nothing
+    behind: the chat closes, the reading finds no repeat, and the pair of drafts
+    that says exactly what the machine wanted goes with it. That pair is the
+    clearest statement on this machine of what right looked like, and it is
+    thrown away every time.
+
+    Keeping it costs a line and turns a single firing into evidence. The same
+    ground met in three separate chats is a lesson nobody had to be present for,
+    which is the only kind that survives the chats it was learned in.
+
+    Keyed by ground and then by chat, so a guard rerun over a transcript it has
+    already read rewrites what it wrote rather than counting it again.
+    """
+    if not marks:
+        return
+    store = read_evidence()
+    grounds = store.setdefault("grounds", {})
+    for mark, seen in marks.items():
+        held = grounds.setdefault(mark, {"chats": {}})
+        held["ground"] = seen["ground"]
+        held["chats"][session] = {
+            "at": NOW(), "refused": seen["refused"], "accepted": seen["accepted"]}
+    save_evidence(store)
 
 
 def git(cwd, *args, timeout=60):
@@ -219,6 +313,25 @@ def rows_of(session, payload=None):
 # --------------------------------------------------------------- the footprint
 
 
+def paths_in(text, cwd):
+    """Every path one command names, absolute or named from where it stands.
+
+    Nobody working in a tree types the whole path to a file in it, so a reading
+    that takes only absolute paths sees the commands that set a directory up
+    and none of the ones that did the work. A relative match counts only where
+    the file it names is really there.
+    """
+    out = {os.path.expanduser(hit) for hit in PATHS.findall(text)}
+    bases = [cwd] if cwd else []
+    bases.extend(os.path.expanduser(one) for one in MOVED.findall(text))
+    for base in bases:
+        for hit in RELATIVE.findall(text):
+            beside = Path(base) / hit
+            if beside.exists():
+                out.add(str(beside))
+    return out
+
+
 def footprint(rows):
     """Every directory, repository and pull request one transcript names.
 
@@ -234,8 +347,7 @@ def footprint(rows):
         if cwd:
             paths.add(cwd)
         for text in _commands(row):
-            for hit in PATHS.findall(text):
-                paths.add(os.path.expanduser(hit))
+            paths |= paths_in(text, cwd)
             for slug, number in PR_URL.findall(text):
                 prs.add((slug, number))
         result = row.get("toolUseResult") or {}
@@ -406,6 +518,44 @@ def pr_findings(prs):
     return found
 
 
+# The sync walks the whole config tree, and both the drift reading and the
+# change set ask it the same question. Held for the life of the process, since
+# two walks answer identically and the second one is paid for at the gate,
+# where somebody is waiting on it.
+_SYNC = []
+
+
+def sync_drift():
+    """What the sync says differs, as its own lines, read once.
+
+    An empty list is a mirror in step and None is a mirror nothing could read.
+    Answering both with the same value reports a tree that is fine as a tree
+    nobody can see, which is the reading this whole tool is built to avoid.
+    """
+    if _SYNC:
+        return _SYNC[0]
+    tool = TOOLS / "config-sync.py"
+    if not tool.is_file():
+        _SYNC.append(None)
+        return _SYNC[0]
+    try:
+        done = subprocess.run([sys.executable, str(tool), "check"],
+                              capture_output=True, text=True, timeout=180)
+    except (OSError, subprocess.SubprocessError):
+        _SYNC.append(None)
+        return _SYNC[0]
+    if done.returncode == 0:
+        _SYNC.append([])
+        return _SYNC[0]
+    # The first line carries a count and the names are underneath it, so a
+    # reading that keeps one line reports a number and no way to act on it.
+    # The closing remedy is dropped instead, since the block already names it.
+    _SYNC.append([line.strip()
+                  for line in (done.stdout or done.stderr or "").splitlines()
+                  if line.strip() and not line.lstrip().startswith("Run:")])
+    return _SYNC[0]
+
+
 def config_findings(paths):
     """Whether the mirror carries what the machine holds.
 
@@ -413,24 +563,11 @@ def config_findings(paths):
     took it leaves a container installing last week's copy, and nothing about
     the local tree looks wrong afterwards.
     """
-    tool = TOOLS / "config-sync.py"
-    if not tool.is_file():
-        return []
-    try:
-        done = subprocess.run([sys.executable, str(tool), "check"],
-                              capture_output=True, text=True, timeout=180)
-    except (OSError, subprocess.SubprocessError):
-        return []
-    if done.returncode == 0:
-        return []
-    # The first line carries a count and the names are underneath it, so a
-    # reading that keeps one line reports a number and no way to act on it.
-    # The closing remedy is dropped instead, since the block already names it.
-    detail = [line.strip()
-              for line in (done.stdout or done.stderr or "").splitlines()
-              if line.strip() and not line.lstrip().startswith("Run:")]
-    if not detail:
+    detail = sync_drift()
+    if detail is None:
         return ["the mirror could not be read"]
+    if not detail:
+        return []
     # The sync answers for the whole config tree, so a chat that edited one
     # skill is held to every file any chat has moved. Keeping only the names
     # this one touched is what stops work in progress elsewhere from refusing
@@ -468,24 +605,643 @@ def survey(session, payload=None, everything=False):
         drift = config_findings(paths)
         if drift:
             areas.append(("config not mirrored", drift))
+    # The passes are owed on the diff the transcript names and on nothing else,
+    # so the repositories it reached are the scope whether or not the run asked
+    # for the whole machine. A sweep holding one chat to another chat's unpassed
+    # diff is the gate switched off inside a day.
+    owed = polish_findings(rows, repos_of(paths), session)
+    if owed:
+        areas.append(("changed code not passed over", owed))
     return areas
+
+
+# ------------------------------------------------------------ what it changed
+
+
+# Every file the chat wrote goes past /clean, and the half of it a person reads
+# goes past /copywriting as well. The split is by extension rather than by
+# judgement, because a judgement made per file is a judgement that gets skipped
+# on the fortieth one, and a file's name already says whether anybody outside
+# the repository ever reads its words.
+READ_BY_PEOPLE = frozenset("""
+.md .mdx .markdown .txt .html .htm .jsx .tsx .vue .svelte
+""".split())
+
+# What a pass has anything to say about. A file outside this set was changed by
+# the chat and is nobody's writing: a lockfile, a manifest, a generated bundle.
+PASSABLE = frozenset("""
+.md .mdx .markdown .txt .html .htm .css .scss .sass .less .js .mjs .cjs .jsx
+.ts .mts .cts .tsx .vue .svelte .py .rb .go .rs .java .kt .swift .sh .zsh
+.sql .yml .yaml .toml
+""".split())
+
+# Changed by a chat without being written by one. Holding a pass open over a
+# lockfile teaches the run to mark passes it did not do, which costs more than
+# the file was ever worth.
+NOT_WORK = re.compile(
+    r"(?:^|/)(?:package-lock\.json|yarn\.lock|pnpm-lock\.yaml|\.DS_Store"
+    r"|[^/]+\.min\.(?:js|css)|[^/]+\.map)$")
+
+# Trees where nothing is ours to pass over. The mirror clone is the config tree
+# copied, so a pass owed on a file inside it is owed twice: once on the original,
+# which the config reading already names, and once on a duplicate that every
+# machine's sync rewrites. Worse, its branch carries whatever any chat has synced
+# since develop last moved, so the diff a chat is held to there is mostly other
+# people's -- and a sweep that answers its own mirror finding by publishing then
+# reads the publish back as unpassed work. The harness writes a fetched artifact
+# into its own tool results the same way: a file that appeared because something
+# was read, which no pass has anything to say about.
+NOT_OURS = ("/node_modules/", "/.next/", "/dist/", "/build/", "/.venv/",
+            "/venv/", "/__pycache__/", "/.git/", "/vendor/", "/coverage/",
+            "/.config-sync-repo/", "/tool-results/")
+
+# The calls that put words in a file. A file reached any other way is caught by
+# the tree reading below instead.
+WRITING_TOOLS = ("Write", "Edit", "MultiEdit", "NotebookEdit")
+
+# A shell writes a file without any tool naming it. The config tree is edited
+# this way most of the time and answers to no git repository, so a reading that
+# waits for a diff to appear covers none of it.
+REDIRECTS = re.compile(
+    r"(?:>>?|\btee\s+(?:-a\s+)?|\bsed\s+-i(?:\s+\S+)?\s+[^|;&]*?\s)"
+    r"\s*['\"]?(?!/dev/)((?:~|/)[A-Za-z0-9._/-]{2,})")
+
+
+def touched(rows):
+    """Every file the chat wrote, taken from the calls that wrote them.
+
+    Read from the tool inputs rather than from the working tree, because a chat
+    that landed its work has no diff left and changed the code all the same.
+    The tree reading is the other half and neither is complete alone: a file
+    written by a heredoc never names itself in an input, and a file written and
+    then reverted never reaches the tree.
+    """
+    out = set()
+    for row in rows:
+        message = row.get("message")
+        content = message.get("content") if isinstance(message, dict) else None
+        for part in content if isinstance(content, list) else []:
+            if not isinstance(part, dict) or part.get("type") != "tool_use":
+                continue
+            if part.get("name") not in WRITING_TOOLS:
+                continue
+            given = part.get("input") or {}
+            for key in ("file_path", "notebook_path", "path"):
+                value = given.get(key)
+                if isinstance(value, str) and value.strip():
+                    out.add(os.path.expanduser(value.strip()))
+        result = row.get("toolUseResult")
+        if isinstance(result, dict):
+            named = result.get("filePath") or result.get("file_path")
+            if isinstance(named, str) and named.strip():
+                out.add(os.path.expanduser(named.strip()))
+        for command in _commands(row):
+            for hit in REDIRECTS.findall(command):
+                out.add(os.path.expanduser(hit))
+    return out
+
+
+def worth_passing(path):
+    """Whether a changed file is one either pass has anything to say about.
+
+    A ledger, a day plan and a published board are written by the machine
+    rather than by anybody, and they move while a chat is open whatever the
+    chat is doing. Holding a pass open over one puts a file nobody wrote in
+    front of a person closing a chat, every time.
+    """
+    real = str(path)
+    if real.startswith(str(state_root())) or \
+            real.startswith(str(Path(CONFIG) / "state")):
+        return False
+    if any(part in real for part in NOT_OURS) or NOT_WORK.search(real):
+        return False
+    if not Path(real).is_file():
+        return False
+    return Path(real).suffix.lower() in PASSABLE
+
+
+def at(row):
+    """When a row happened, as seconds, or None where it does not say."""
+    stamp = row.get("timestamp")
+    if not isinstance(stamp, str) or not stamp:
+        return None
+    try:
+        return datetime.fromisoformat(stamp.replace("Z", "+00:00")).timestamp()
+    except ValueError:
+        return None
+
+
+def first_named(rows):
+    """Every path the transcript names, against the moment it first named it.
+
+    Half the trees on this machine answer to no repository, so there is no diff
+    to read them out of. What is left is the clock, and the clock on its own
+    says only that a file moved while the chat was open -- which is true of
+    every file a routine rewrote in the same minutes.
+
+    The moment the chat first named a file is what separates the two. A file
+    that moved after that moved while the chat had it in hand. A file whose
+    last change predates the first mention of it was somebody else's work,
+    however recent, and the chat was reading it rather than writing it.
+    """
+    out, clock = {}, None
+    for row in rows:
+        clock = at(row) or clock
+        cwd = row.get("cwd")
+        for text in _commands(row):
+            for one in paths_in(text, cwd):
+                if one not in out and clock is not None:
+                    out[one] = clock
+    return out
+
+
+def moved_after(named):
+    """The files that changed after the chat first reached for them."""
+    out = set()
+    for raw, when in named.items():
+        one = Path(raw)
+        try:
+            if one.is_file() and one.stat().st_mtime > when:
+                out.add(str(one))
+        except OSError:
+            continue
+    return out
+
+
+def config_changed(paths):
+    """The config files that differ from the mirror and were reached here.
+
+    The config tree answers to no repository, so the sync is the only thing on
+    the machine that knows what moved in it. Held to the paths the transcript
+    named, because the sync answers for the whole tree and work in progress
+    elsewhere belongs to whichever chat is doing it.
+    """
+    reached = {str(Path(one).resolve()) for one in paths}
+    out = set()
+    for one in (sync_drift() or [])[1:]:
+        full = Path(CONFIG) / one
+        if full.exists() and str(full.resolve()) in reached:
+            out.add(str(full))
+    return out
+
+
+def remembered(session):
+    """The change set already recorded against a chat.
+
+    A file leaves the diff the moment the branch lands or the mirror takes it,
+    and neither of those is a pass. Held per chat, what entered the set stays in
+    it, so the order the steps run in cannot empty the thing the gate measures.
+    """
+    return set((read_polish().get("chats") or {}).get(session) or [])
+
+
+def remember(session, files):
+    store = read_polish()
+    held = store.setdefault("chats", {})
+    held[session] = sorted(set(held.get(session) or []) | set(files))
+    save_polish(store)
+
+
+def changed(rows, roots, session=""):
+    """The files this chat is answerable for, from every place they show up.
+
+    The branch is read against the point it was cut from rather than against
+    its own tip, so a chat that committed as it went is still held to what it
+    wrote. Where nothing says where it was cut from, the reading falls back to
+    the working tree, which is the only honest answer left.
+    """
+    mine = moved_after(first_named(rows))
+    found = set(touched(rows)) | config_changed(mine) | mine
+    for root in roots:
+        base = git(root, "merge-base", "HEAD", "origin/develop")
+        spans = [["diff", "--name-only", "--cached"],
+                 ["diff", "--name-only"],
+                 ["ls-files", "--others", "--exclude-standard"]]
+        spans.insert(0, ["diff", "--name-only", base] if base
+                     else ["diff", "--name-only", "HEAD"])
+        for span in spans:
+            for name in (git(root, *span) or "").splitlines():
+                if name.strip():
+                    found.add(str(Path(root) / name.strip()))
+    keep = {one for one in found if worth_passing(one)}
+    if session:
+        keep |= {one for one in remembered(session) if worth_passing(one)}
+        remember(session, keep)
+    return sorted(keep)
+
+
+def polish_path():
+    return state_root() / "archive" / "polish.json"
+
+
+def read_polish():
+    path = polish_path()
+    if not path.is_file():
+        return {"files": {}}
+    try:
+        held = json.loads(path.read_text())
+    except (OSError, ValueError):
+        return {"files": {}}
+    return held if isinstance(held, dict) else {"files": {}}
+
+
+def save_polish(store):
+    path = polish_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    _lib.write_atomic(path, json.dumps(store, indent=2, sort_keys=True) + "\n")
+
+
+def digest(path):
+    """What a file holds, as the thing a pass is recorded against.
+
+    A mark against a name survives the next edit to the file, which leaves the
+    ledger claiming a pass that covered work done after it. Against the
+    contents the mark reopens on its own the moment the file moves again.
+    """
+    try:
+        return hashlib.sha256(Path(path).read_bytes()).hexdigest()[:16]
+    except OSError:
+        return ""
+
+
+def unpassed(files):
+    """The changed files no pass is recorded against as they now stand."""
+    marks = read_polish().get("files") or {}
+    out = []
+    for one in files:
+        real = str(Path(one).resolve())
+        held = marks.get(real) or {}
+        if held.get("hash") and held["hash"] == digest(real):
+            continue
+        out.append(one)
+    return out
+
+
+def flagged(files):
+    """What the AI-writing detector still blocks among the files people read.
+
+    The copy half is the one part of this a tool can settle outright, so it is
+    checked rather than marked. Everywhere else a mark is a record of work done
+    and nothing verifies it; here something does, and a mark cannot close it.
+    """
+    wanted = [one for one in files
+              if Path(one).suffix.lower() in READ_BY_PEOPLE]
+    tool = TOOLS / "writing-pass.py"
+    if not wanted or not tool.is_file():
+        return []
+    try:
+        done = subprocess.run([sys.executable, str(tool), "check", *wanted],
+                              capture_output=True, text=True, timeout=180)
+    except (OSError, subprocess.SubprocessError):
+        return []
+    if done.returncode == 0:
+        return []
+    lines = [" ".join(line.split())
+             for line in (done.stdout or done.stderr or "").splitlines()
+             if line.strip() and not line.lstrip().startswith("Run:")]
+    return lines[:SHORTLIST]
+
+
+def shorten(path):
+    """A path as it reads to somebody who knows the machine."""
+    text = str(path)
+    home = str(HOME)
+    return "~" + text[len(home):] if text.startswith(home) else text
+
+
+def owed(files):
+    """The passes a change set is owed and has not had.
+
+    Scoped to what changed and to nothing else. A pass over a whole repository
+    at the moment a chat closes is a pass nobody runs, and a gate demanding one
+    is a gate somebody switches off inside a week.
+    """
+    if not files:
+        return []
+    found = []
+    waiting = unpassed(files)
+    if waiting:
+        copy = [one for one in waiting
+                if Path(one).suffix.lower() in READ_BY_PEOPLE]
+        found.append("%d changed file(s) have had no /clean pass:" % len(waiting))
+        found.extend("  " + shorten(one) for one in waiting[:SHORTLIST])
+        if len(waiting) > SHORTLIST:
+            found.append("  and %d more" % (len(waiting) - SHORTLIST))
+        if copy:
+            found.append("%d of them carry words a person reads, so /copywriting "
+                         "owes them a pass too:" % len(copy))
+            found.extend("  " + shorten(one) for one in copy[:SHORTLIST])
+    for line in flagged(files):
+        found.append("copy still flagged: %s" % line)
+    return found
+
+
+def polish_findings(rows, roots, session=""):
+    """What one transcript's own diff is owed."""
+    return owed(changed(rows, roots, session))
+
+
+def cmd_polish(argv):
+    """What the diff is owed, the diff itself, or the record that both ran."""
+    session = _named(argv, "--session") or here_session()
+    try:
+        rows = rows_of(session)
+    except Unreadable as why:
+        print("the chat could not be read: %s" % why, file=sys.stderr)
+        return 2
+    paths, _ = footprint(rows)
+    roots = repos_of(paths)
+    files = changed(rows, roots, session)
+    if "--files" in argv:
+        for one in files:
+            print(one)
+        return 0
+    if "--mark" in argv:
+        # The clock reading claims a named file that moved while the chat was
+        # open, which is right for the gate and wrong for the ledger: a file
+        # somebody else changed lands in the set and a mark over the whole set
+        # records a pass nobody did. Naming the paths is what keeps the two
+        # apart, and taking the set is the shorthand for having passed all of
+        # it.
+        named = [one for one in _positional_all(argv)
+                 if one != "--mark"] or files
+        outside = [one for one in named
+                   if str(Path(one).resolve())
+                   not in {str(Path(f).resolve()) for f in files}]
+        if outside:
+            print("refusing: %s is not in the change set"
+                  % ", ".join(shorten(one) for one in outside),
+                  file=sys.stderr)
+            return 2
+        blocking = flagged(named)
+        if blocking:
+            print("refusing: the copy half is checked rather than marked, and "
+                  "it is still flagged.", file=sys.stderr)
+            for line in blocking:
+                print("  %s" % line, file=sys.stderr)
+            return 2
+        store = read_polish()
+        held = store.setdefault("files", {})
+        for one in named:
+            mark = digest(one)
+            if mark:
+                held[str(Path(one).resolve())] = {
+                    "hash": mark, "at": NOW(), "session": session}
+        save_polish(store)
+        print("%d changed file(s) recorded as passed over" % len(named))
+        return 0
+    found = owed(files)
+    if "--json" in argv:
+        print(json.dumps({"files": files, "findings": found}, indent=2))
+        return 1 if found else 0
+    if not found:
+        print("nothing owed: every changed file has had both passes")
+        return 0
+    for line in found:
+        print(line)
+    print("Run /clean over those paths, /copywriting over the ones a person "
+          "reads, then archive.py polish --mark.")
+    return 1
+
+
+# --------------------------------------------------------------- what it missed
+
+
+# Somebody asking a second time for something already asked for. The reading is
+# narrow on purpose: a loose pattern turns every follow-up instruction into a
+# dropped ask, and a list that cries wolf is a list nobody opens twice.
+OMISSION = re.compile(
+    r"\byou (?:forgot|missed|skipped|ignored|didn'?t|did not|never did)\b"
+    r"|\bstill (?:haven'?t|hasn'?t|need|needs|needed|missing|not done)\b"
+    r"|\b(?:i|we) (?:also|already) (?:said|asked|told|wanted)\b"
+    r"|\bwhat about (?:the|my|that|this)\b"
+    r"|\byou (?:only|just) (?:did|added|changed|wrote)\b"
+    r"|\byou left out\b|\bleft that out\b"
+    r"|\bthe rest of (?:it|them|the)\b"
+    r"|\bfinish (?:the|it|that)\b|\bhalf (?:done|of it)\b",
+    re.I)
+
+# How much of an ask has to surface in the work afterwards before it counts as
+# answered. An ask is read by its content words, and a run that carried one out
+# names most of them somewhere: in a reply, a path, a command, or the text it
+# wrote. Half is the line, and below it the words never came up again, which is
+# what a dropped ask looks like from outside.
+ANSWERED_SHARE = 0.5
+
+# An ask carrying fewer content words than this cannot be checked by its words,
+# and one longer than a message is a message rather than an ask.
+MIN_ASK_WORDS = 3
+MIN_ASK_TOPIC = 2
+
+# How many separate asks an opening message has to carry before the words
+# reading applies to it. The failure it catches is a message asking for several
+# things and getting some of them, so a message asking for one thing has no part
+# it could have lost.
+MIN_ASKS = 2
+
+# How much of what a run did is read back when deciding whether an ask was
+# carried out. Long enough to hold a working session, short enough that the
+# reading stays a reading rather than a second pass over the transcript.
+DID_CAP = 500000
+
+
+def asks(text):
+    """One turn split into the separate things it asked for.
+
+    A message asking for three things in one breath is answered in part and
+    read as answered, and that is the whole shape this catches. The split is on
+    sentence ends, list markers and the joining words a second ask arrives
+    under, because that is how a second ask is actually written down.
+    """
+    body = re.sub(r"```.*?```", " ", text or "", flags=re.S)
+    body = re.sub(r"<[^>]{1,80}>", " ", body)
+    parts = re.split(r"(?<=[.!?;])\s+|\n+|\s+(?:also|and also|plus)[,:]?\s+",
+                     body, flags=re.I)
+    out = []
+    for part in parts or []:
+        one = " ".join((part or "").split()).strip("-*#> ").strip()
+        if len(one.split()) >= MIN_ASK_WORDS:
+            out.append(one)
+    return out
+
+
+def did(rows, start):
+    """Everything the run wrote or ran after a turn, as one body of words.
+
+    Tool inputs count as much as prose. A run that acted on an ask names its
+    words in a path, a command or the text it wrote far more reliably than it
+    restates them in a reply, and a reading that looks only at the replies calls
+    quiet work forgotten.
+    """
+    out, size = [], 0
+    for row in rows[start + 1:]:
+        pieces = []
+        if row.get("type") == "assistant":
+            pieces.append(_reply_text(row))
+        message = row.get("message")
+        content = message.get("content") if isinstance(message, dict) else None
+        for part in content if isinstance(content, list) else []:
+            if not isinstance(part, dict):
+                continue
+            if part.get("type") == "tool_use":
+                pieces.append(json.dumps(part.get("input") or {})[:4000])
+            elif part.get("type") == "tool_result" and not part.get("is_error"):
+                body = part.get("content")
+                if isinstance(body, str):
+                    pieces.append(body[:2000])
+        for piece in pieces:
+            out.append(piece)
+            size += len(piece)
+        if size > DID_CAP:
+            break
+    return " ".join(out).lower()
+
+
+def _human_turns(rows, lessons):
+    """The turns a person actually typed, in order, as prose.
+
+    A hook injects feedback through a user row and a finished agent reports
+    through one, and neither is somebody asking for anything. The command
+    marker the harness writes is dropped for the same reason.
+    """
+    out = []
+    for index, row in enumerate(rows):
+        if row.get("type") != "user" or row.get("isSidechain"):
+            continue
+        if (row.get("origin") or {}).get("kind") != "human":
+            continue
+        body = lessons.FENCE.sub(" ", lessons.text_of(row.get("message") or {}))
+        line = " ".join(body.split()).strip()
+        if not line or line.startswith("<") or STOP_FEEDBACK.match(line):
+            continue
+        out.append((index, line))
+    return out
+
+
+def worked(rows, start):
+    """Whether the run did anything after a turn that a reading could measure.
+
+    A chat that answered in prose and touched nothing leaves no trace of what
+    it carried out, so an ask whose words are absent from it proves nothing.
+    The reading stays quiet there rather than calling a conversation a dropped
+    ask.
+    """
+    for row in rows[start + 1:]:
+        message = row.get("message")
+        content = message.get("content") if isinstance(message, dict) else None
+        for part in content if isinstance(content, list) else []:
+            if isinstance(part, dict) and part.get("type") == "tool_use":
+                return True
+    return False
+
+
+def dropped(rows, lessons):
+    """Asks that went in and never came out.
+
+    Two readings, catching the same failure from opposite ends. The first takes
+    the opening message apart into the separate things it asked for and checks
+    each against everything the run did afterwards. The second is somebody
+    saying so -- a later turn asking again for something already asked for --
+    which is the same finding with a person's own words as the evidence.
+
+    Only the opening message is read the first way. Every turn after it is
+    answered under the eye of the person who typed it, and a run that drops
+    something there gets told inside the chat. The opening message is the one
+    nobody re-reads, and it is where the implied half of an ask lives.
+
+    Three things have to hold before an absence means anything. The message has
+    to carry more than one ask, since a message asking for one thing has no
+    part it could have lost. The run has to have done something, since a chat
+    that touched nothing leaves no trace of what it carried out. And at least
+    one of the asks has to have been carried out, because a message where none
+    of the words came back is a reading that cannot see the work rather than a
+    run that did none of it. What is left is the shape this is about: some of it
+    done, and the rest quietly dropped.
+    """
+    out = []
+    turns = _human_turns(rows, lessons)
+    if not turns:
+        return out
+    start, opening = turns[0]
+    wanted = asks(opening)
+    if len(wanted) >= MIN_ASKS and worked(rows, start):
+        later = did(rows, start)
+        answered, missing = 0, []
+        for one in wanted:
+            words = sorted({w for w in re.findall(r"[a-z][a-z-]{3,}",
+                                                  one.lower())
+                            if w not in lessons.STOPWORDS})
+            if len(words) < MIN_ASK_TOPIC:
+                continue
+            need = max(1, math.ceil(len(words) * ANSWERED_SHARE))
+            if sum(1 for w in words if w in later) >= need:
+                answered += 1
+            else:
+                missing.append(one)
+        if answered:
+            out.extend(("part of the opening message, and nothing carried it "
+                        "out", one[:200]) for one in missing)
+    for _, line in turns[1:]:
+        if len(line) > lessons.MAX_CORRECTION_CHARS:
+            continue
+        if OMISSION.search(line):
+            out.append(("asked again, because the first time went undone",
+                        line[:200]))
+    return out
 
 
 # ----------------------------------------------------------------- the lessons
 
 
+# What each reading is owed, and the order they are owed it in. A collision
+# leads because the other three cost a repeat of something while a collision
+# costs a decision: two rules that contradict each other cannot both be kept, so
+# every run after one picks a side alone and records nothing, and the run after
+# that picks again from the same standing start.
+WANTS = {"omission": "the work finished", "collision": "precedence",
+         "correction": "a mechanism", "recurrence": "context",
+         "refusal": "context"}
+
+# An omission leads. The other four are readings about how the work was done
+# and it is the only one about whether the work was done at all: a rule with no
+# gate behind it costs the next run an argument, and an ask nobody carried out
+# costs the person who typed it the thing they asked for. Nothing else here
+# outranks that.
+ORDER = ("omission", "collision", "correction", "recurrence", "refusal")
+
+
 def candidates(session, payload=None):
     """What one transcript shows that nothing on this machine enforces.
 
-    Two readings come out of the same pass and mean opposite things. A
-    correction is somebody supplying by hand what a mechanism should supply, so
-    a repeat means no mechanism exists. A refusal is a mechanism working, so a
-    repeat means the run kept walking into a rule it had no way to know, which
+    Four readings come out of the same pass and they mean different things.
+
+    A correction is somebody supplying by hand what a mechanism should supply,
+    so a repeat means no mechanism exists. A refusal is a mechanism working, so
+    a repeat means the run kept walking into a rule it had no way to know, which
     is missing context rather than a missing gate.
+
+    A collision is two mechanisms refusing one reply on different grounds. It is
+    neither a missing gate nor a missing fact: both gates exist and both fired,
+    and satisfying one is what broke the other. What it wants is a decision
+    about which of the two yields, written where both are read.
+
+    A recurrence is a ground the transcript carries that enough earlier
+    transcripts carry too. A single refusal proves nothing inside one sitting
+    and is left alone there; held across sittings the same ground is a wall the
+    runs keep meeting, and no one sitting is where that becomes visible.
     """
     lessons = load("lessons")
     rows = rows_of(session, payload)
     seen = {}
+    stretch = {}
+    pending = {}
+    evidence = {}
+    met = set()
+    # Whether a reply has been written since the last ground was taken down. A
+    # second ground only collides with the first once the run has answered the
+    # first, and a run of refusals with no draft between them is a list of
+    # things wrong with one draft rather than two rules pulling against it.
+    redrafted = [False]
 
     def note(kind, mark, example):
         if OWN_BLOCK in example:
@@ -494,16 +1250,66 @@ def candidates(session, payload=None):
         entry["count"] += 1
         entry["example"] = entry["example"] or example
 
+    def refused_reply(line, draft):
+        """One ground that landed on a reply rather than on a tool call."""
+        if OWN_BLOCK in line:
+            return
+        mark = lessons.fingerprint("guard", _ground(line))
+        met.add(mark)
+        if not stretch or (mark not in stretch and redrafted[0]):
+            stretch[mark] = _ground(line)
+            redrafted[0] = False
+        # The first pairing is the honest one. One firing is written down again
+        # further along the transcript, by which time the draft in front of it
+        # is the one that answered it, and a second pairing over the same ground
+        # records the accepted draft as the refused one.
+        if mark in evidence:
+            return
+        pending.setdefault(mark, {"ground": _ground(line), "refused": draft,
+                                  "accepted": ""})
+
+    def close_stretch():
+        """The collision reading, taken where a run of drafts ends.
+
+        Two grounds inside one stretch mean the reply was refused, written
+        again, and refused on other terms. Nothing else produces that shape: a
+        stop hook speaks only over a finished reply, so a second ground with no
+        human turn between them is the machine turning down the answer its own
+        first refusal asked for.
+        """
+        if len(stretch) >= COLLISION_GROUNDS:
+            grounds = [stretch[m] for m in sorted(stretch)]
+            topics = sorted(lessons.topic(g) or g for g in grounds)
+            mark = lessons.fingerprint("collide", " ".join(topics))
+            note("collision", mark,
+                 " -- then, on the redraft -- ".join(grounds))
+            # A collision counts the mechanisms that refused rather than the
+            # times it was met, and it carries the grounds it is made of so the
+            # drafts held against each one can be read back beside it.
+            held = seen.get(mark)
+            if held:
+                held["count"] = len(stretch)
+                held["marks"] = sorted(set(held.get("marks", []))
+                                       | set(stretch))
+        stretch.clear()
+
     for row in rows:
-        if row.get("isSidechain"):
-            continue
         kind = row.get("type")
+        side = bool(row.get("isSidechain"))
         if kind == "user":
-            for line in _refused(row):
+            # A refusal issued inside a subagent is the same machine saying no.
+            # Only the correction half is confined to the main thread, because
+            # nobody types in a sidechain.
+            for source, line in _refusals(row):
                 mark = lessons.fingerprint("guard", lessons.topic(line) or line)
                 note("refusal", mark, line)
+                if source == "stop":
+                    refused_reply(line, _reply_before(rows, row))
+            if side:
+                continue
             body = _said(row, lessons)
             if body:
+                close_stretch()
                 key = lessons.topic(body)
                 if key:
                     note("correction", lessons.fingerprint("said", key),
@@ -516,19 +1322,111 @@ def candidates(session, payload=None):
                 line = " ".join(hit.group(1).split())[:150].strip('"\\ ')
                 mark = lessons.fingerprint("guard", lessons.topic(line) or line)
                 note("refusal", mark, line)
+                refused_reply(line, _reply_before(rows, row))
+        elif kind == "assistant" and not side:
+            text = _reply_text(row)
+            if not text:
+                continue
+            redrafted[0] = True
+            # The draft that follows a refusal is the half nothing keeps. The
+            # ground says what was wrong with the first one; the second one is
+            # the only statement anywhere of what right looked like.
+            for held in pending.values():
+                if not held["accepted"]:
+                    held["accepted"] = text[:DRAFT_KEEP]
+            for mark, held in list(pending.items()):
+                if held["accepted"]:
+                    evidence[mark] = held
+                    del pending[mark]
+    close_stretch()
+    # Read once over the whole transcript rather than turn by turn, because
+    # whether an ask was carried out is a question about everything that came
+    # after it and cannot be answered from the turn it arrived in.
+    for why, line in dropped(rows, lessons):
+        key = lessons.topic(line) or line
+        note("omission", lessons.fingerprint("dropped", key),
+             "%s: %s" % (why, line))
+    keep_evidence(session, evidence)
 
     ledger = read_ledger().get("candidates", {})
+    # An omission needs no repeat. A correction told once could be a slip and a
+    # guard firing once is a guard working, so both wait for a second telling
+    # before they mean anything. Something asked for and not done means the
+    # same thing the first time as the fifth, and the person who asked has
+    # already paid for it once.
+    floors = {"omission": 1, "correction": MIN_REPEATS, "collision": 1,
+              "refusal": CONTEXT_REPEATS}
     out = []
     for mark, entry in seen.items():
-        floor = MIN_REPEATS if entry["kind"] == "correction" else CONTEXT_REPEATS
-        if entry["count"] < floor:
+        if entry["count"] < floors.get(entry["kind"], CONTEXT_REPEATS):
             continue
         if ledger.get(mark, {}).get("status") in ANSWERED:
             continue
-        out.append(dict(entry, id=mark, wants=(
-            "a mechanism" if entry["kind"] == "correction" else "context")))
-    out.sort(key=lambda c: (c["kind"] != "correction", -c["count"]))
+        out.append(dict(entry, id=mark, wants=WANTS[entry["kind"]]))
+    out.extend(recurrences(met, ledger))
+    out.sort(key=lambda c: (ORDER.index(c["kind"]), -c["count"]))
     return out
+
+
+def recurrences(met, ledger):
+    """Grounds the transcript carries that enough earlier chats carried too.
+
+    Read from what was kept rather than from the transcript, because no single
+    transcript holds it: a ground that fired once in one sitting and once in
+    another is worth nothing in either, and worth raising across both. Held to
+    the grounds the transcript itself met, so a chat is never stopped over a
+    wall it never walked into.
+    """
+    grounds = read_evidence().get("grounds", {})
+    out = []
+    for mark, held in grounds.items():
+        chats = held.get("chats") or {}
+        if len(chats) < RECURRENCE_CHATS or mark not in met:
+            continue
+        if ledger.get(mark, {}).get("status") in ANSWERED:
+            continue
+        out.append({"id": mark, "kind": "recurrence", "count": len(chats),
+                    "wants": WANTS["recurrence"],
+                    "example": held.get("ground", "")})
+    return out
+
+
+def _ground(line):
+    """The sentence a refusal leads with, the one part every shape of it shares.
+
+    A single firing reaches a transcript more than once: as feedback on the turn
+    it stopped, and again in the summary of the hooks that ran. The copies are
+    cut to different lengths and escaped differently, so a key taken over the
+    whole line reads one mechanism as two. The opening sentence is what survives
+    both cuts.
+    """
+    head = re.split(r"(?<=[.!?])\s|\\n|\n", line.strip(), maxsplit=1)[0]
+    return " ".join(head.lower().split())[:120]
+
+
+def _reply_text(row):
+    """The prose of an assistant turn, with thinking and tool calls left out."""
+    content = ((row.get("message") or {}).get("content"))
+    if isinstance(content, str):
+        return " ".join(content.split())
+    parts = [block.get("text") or "" for block in content or []
+             if isinstance(block, dict) and block.get("type") == "text"]
+    return " ".join(" ".join(parts).split())
+
+
+def _reply_before(rows, row):
+    """The last reply written before a row, which is what a stop hook refused."""
+    try:
+        stop = rows.index(row)
+    except ValueError:
+        return ""
+    for earlier in reversed(rows[:stop]):
+        if earlier.get("type") != "assistant" or earlier.get("isSidechain"):
+            continue
+        text = _reply_text(earlier)
+        if text:
+            return text[:DRAFT_KEEP]
+    return ""
 
 
 def _said(row, lessons):
@@ -549,14 +1447,21 @@ def _said(row, lessons):
     return body if lessons.CORRECTION.search(body) else ""
 
 
-def _refused(row):
-    """Every refusal carried by a user row, from either shape it takes."""
+def _refusals(row):
+    """Every refusal carried by a user row, tagged by what it landed on.
+
+    A denied tool call and a refused reply are both the machine saying no, and
+    they answer different questions. A tool call is the machine steering the
+    work. A reply is the machine and the run disagreeing over the answer itself,
+    which is the only one of the two that another rule can collide with, since
+    it is the only one where two mechanisms are reading the same words.
+    """
     out = []
     message = row.get("message") or {}
     content = message.get("content")
     if isinstance(content, str) and STOP_FEEDBACK.match(content.strip()):
         for line in re.findall(r"BLOCKED:\s*(.+)", content):
-            out.append(" ".join(line.split())[:150])
+            out.append(("stop", " ".join(line.split())[:150]))
     if isinstance(content, list):
         for part in content:
             if not isinstance(part, dict) or part.get("type") != "tool_result":
@@ -566,8 +1471,13 @@ def _refused(row):
             body = part.get("content")
             text = body if isinstance(body, str) else json.dumps(body)
             for line in re.findall(r"BLOCKED:\s*(.+)", text or ""):
-                out.append(" ".join(line.split())[:150])
+                out.append(("tool", " ".join(line.split())[:150]))
     return out
+
+
+def _refused(row):
+    """Every refusal carried by a user row, from either shape it takes."""
+    return [line for _, line in _refusals(row)]
 
 
 # ------------------------------------------------------------------- the verbs
@@ -595,6 +1505,35 @@ def cmd_check(argv):
     return 1
 
 
+def cmd_finish(argv):
+    """What the chat was asked for and never did.
+
+    The same reading the harvest carries, on its own, because it is the one
+    finding here that is answered by doing the work rather than by building
+    something. Putting it in front of the other four is what keeps a chat from
+    closing tidily over the thing somebody actually wanted.
+    """
+    session = _named(argv, "--session") or here_session()
+    try:
+        found = [one for one in candidates(session)
+                 if one["kind"] == "omission"]
+    except Unreadable as why:
+        print("the chat could not be read: %s" % why, file=sys.stderr)
+        return 2
+    if "--json" in argv:
+        print(json.dumps(found, indent=2))
+        return 1 if found else 0
+    if not found:
+        print("nothing dropped: every ask was carried out")
+        return 0
+    for entry in found[:SHORTLIST]:
+        print("  %-18s x%-3d %s" % (entry["id"], entry["count"],
+                                    entry["example"]))
+    print("%d ask(s) unanswered. Do them, then archive.py settle <id> --as "
+          "done --note \"what was finished\"." % len(found))
+    return 1
+
+
 def cmd_harvest(argv):
     session = _named(argv, "--session") or here_session()
     try:
@@ -606,7 +1545,7 @@ def cmd_harvest(argv):
         print(json.dumps(found, indent=2))
         return 1 if found else 0
     if not found:
-        print("nothing to harvest: no repeated correction or refusal")
+        print("nothing to harvest: no correction, refusal or collision")
         return 0
     for entry in found[:SHORTLIST]:
         print("  %-18s %-11s x%-3d wants %s"
@@ -636,6 +1575,21 @@ def cmd_settle(argv):
     save_ledger(ledger)
     print("%s settled as %s" % (mark, status))
     return 0
+
+
+def _positional_all(argv):
+    """Every bare argument, skipping the values the named flags consume."""
+    out, skip = [], False
+    for item in argv:
+        if skip:
+            skip = False
+            continue
+        if item in ("--session",):
+            skip = True
+            continue
+        if not item.startswith("-"):
+            out.append(os.path.expanduser(item))
+    return out
 
 
 def _positional(argv, taking):
@@ -680,8 +1634,9 @@ BRIEF = """# %(id)s
     ~/.intelligence/tools/archive.py settle %(id)s --as %(state)s --note "%(names)s"
 
 `built` records a mechanism and needs to name it. `context` records a line
-written into INTELLIGENCE.md or a skill where no mechanism can reach. `declined`
-records a judgement that neither is owed.
+written into INTELLIGENCE.md or a skill where no mechanism can reach. `done`
+records work that was asked for and has now been carried out. `declined`
+records a judgement that none of them is owed.
 """
 
 MECHANISM = ("A correction repeated inside one sitting is a rule with no gate "
@@ -693,6 +1648,34 @@ CONTEXT = ("A guard that refuses the same run twice is a mechanism working and "
            "a fact missing. Find what the run needed to know before it acted, "
            "and put it where the next run reads it rather than where it gets "
            "refused.")
+
+PRECEDENCE = ("Two mechanisms refused one reply on different grounds, so "
+              "satisfying the first is what broke the second. Neither is wrong "
+              "on its own and neither gets loosened to end the argument: a gate "
+              "that yields to whoever it inconveniences is a comment. Decide "
+              "which one gives way at the point the two meet, write that where "
+              "both are read, and leave both gates standing. Where one of them "
+              "already carries an override for exactly this reading, saying so "
+              "is the whole answer.")
+
+RECURRENCE = ("One ground has refused runs in separate chats, and no single one "
+              "of them repeated it often enough to raise it alone. The drafts "
+              "either side of each refusal are held beside it: the first is "
+              "what a run reached for and the second is what the machine "
+              "accepted, and the difference between them is the fact nobody has "
+              "written down. Write it where the next run reads it before it "
+              "drafts rather than where it gets refused.")
+
+FINISH = ("Something asked for went undone. What closes this is neither a gate "
+          "nor a note: it is the work. Read the ask in the words it was typed "
+          "in, including the half that was implied rather than spelled out, do "
+          "the whole of it, and settle this as done naming what was finished. "
+          "Where it was asked and answered and this reading is simply wrong, "
+          "decline it -- but a decline that is really a shrug is the same "
+          "finding coming back on the next chat, with the work still not done.")
+
+CLOSING = {"omission": FINISH, "correction": MECHANISM, "refusal": CONTEXT,
+           "collision": PRECEDENCE, "recurrence": RECURRENCE}
 
 # The prompt travels as an argument to an agent rather than through a URL, so
 # nothing truncates it on the way. The cap stays anyway, because a brief that
@@ -719,18 +1702,51 @@ def brief_path(session, mark):
 def settling(kind):
     """The state a finding of this kind settles into, and what the note names.
 
-    A correction settles as a mechanism and a refusal as context. Offering
-    `built` to both invites a refusal to be recorded as a gate that was never
-    written, which is the ledger saying the opposite of the truth.
+    A correction settles as a mechanism and everything else as context.
+    Offering `built` to all of them invites a refusal to be recorded as a gate
+    that was never written, which is the ledger saying the opposite of the
+    truth. A collision settles as context too: what it produces is a line
+    saying which rule yields, and a new gate on top of two that already fired
+    is a third thing to collide with.
     """
+    if kind == "omission":
+        return "done", "what was finished"
     if kind == "correction":
         return "built", "what was built"
+    if kind == "collision":
+        return "context", "which rule yields, and where that is written"
     return "context", "where the fact was written"
+
+
+def drafts_for(entry):
+    """The refused and accepted pairs held against a finding, as a brief reads it.
+
+    A ground on its own says what was wrong. The pair says what right looked
+    like, which is the half that closes the lesson and the half no reading of a
+    single sitting keeps. A collision is made of two grounds and reads both,
+    since the point of it is the two side by side.
+    """
+    grounds = read_evidence().get("grounds") or {}
+    out = []
+    for mark in entry.get("marks") or [entry["id"]]:
+        chats = (grounds.get(mark) or {}).get("chats") or {}
+        for session, pair in sorted(chats.items(),
+                                    key=lambda kv: kv[1].get("at", ""))[-2:]:
+            out.append("%s, chat %s" % ((grounds.get(mark) or {}).get(
+                "ground", mark)[:90], session[:8]))
+            out.append("")
+            out.append("    refused   %s" % pair.get("refused", "")[:400])
+            out.append("    accepted  %s" % pair.get("accepted", "")[:400])
+            out.append("")
+    if not out:
+        return ""
+    return "\n".join(["", "", "## What was refused, and what stood in its place",
+                      ""] + out)
 
 
 def write_brief(session, entry):
     """The brief the next chat opens on, saved where a link can reach it."""
-    closing = MECHANISM if entry["kind"] == "correction" else CONTEXT
+    closing = CLOSING.get(entry["kind"], CONTEXT) + drafts_for(entry)
     state, names = settling(entry["kind"])
     body = BRIEF % {"id": entry["id"], "kind": entry["kind"].capitalize(),
                     "count": entry["count"], "wants": entry["wants"],
@@ -755,22 +1771,42 @@ def opening_prompt(entry, path, remote=False):
     alternative to naming that route is an agent that stops and asks.
     """
     state, _ = settling(entry["kind"])
-    if entry["kind"] == "correction":
+    kind = entry["kind"]
+    if kind == "omission":
+        head = ("Something asked for in the chat that closed was never carried "
+                "out. Do it, in full, as it was asked, including the part that "
+                "was implied rather than spelled out. Do not report on it and "
+                "do not ask which half to do first.")
+    elif kind == "correction":
         head = "/enforce %s" % entry["example"][:200]
+    elif kind == "collision":
+        head = ("Two mechanisms refused one reply on different grounds. Read "
+                "both, decide which one yields where they meet, and write that "
+                "where both are read. Neither gate comes out and neither gets "
+                "weakened.")
     else:
         head = ("Write the fact this run was missing into INTELLIGENCE.md or "
                 "the skill that owns it, so the next run reads it rather than "
                 "learning it by being refused.")
+    seen = {"omission": "Raised out of the chat that closed, where it was "
+                        "asked %d time(s) and nothing afterwards carried it "
+                        "out.",
+            "collision": "Raised out of the chat that closed, where %d "
+                         "mechanisms refused one reply and nothing on this "
+                         "machine says which of them wins.",
+            "recurrence": "Raised across %d separate chats, none of which "
+                          "repeated it often enough to raise it alone."}.get(
+        kind, "Raised out of the chat that closed. Seen %d times there, and "
+              "nothing on this machine answers it yet.")
     text = ("%s\n\n"
-            "Raised out of the chat that closed. Seen %d times there, and "
-            "nothing on this machine answers it yet.\n\n"
+            "%s\n\n"
             "  %s\n\n"
             "%s\n\n"
             "%s"
             "The brief is at %s. When it is settled, record what it became:\n"
             "  ~/.intelligence/tools/archive.py settle %s --as %s --note \"...\"\n"
-            % (head, entry["count"], entry["example"],
-               MECHANISM if entry["kind"] == "correction" else CONTEXT,
+            % (head, seen % entry["count"], entry["example"],
+               CLOSING.get(kind, CONTEXT) + drafts_for(entry),
                (REACH + "\n\n") if remote else "",
                path, entry["id"], state))
     return text[:PROMPT_CAP]
@@ -1099,10 +2135,17 @@ def cmd_guard(argv):
                  for c in found[:SHORTLIST])
     ways = []
     names = {area for area, _ in areas}
-    if names - {"config not mirrored"}:
+    if names - {"config not mirrored", "changed code not passed over"}:
         ways.append("Land the work, or say where it goes.")
     if "config not mirrored" in names:
         ways.append("config-sync.py publish puts the mirror in step.")
+    if "changed code not passed over" in names:
+        ways.append("archive.py polish --files names the diff; run /clean over "
+                    "it and /copywriting over the words a person reads, then "
+                    "archive.py polish --mark.")
+    if any(c["kind"] == "omission" for c in found):
+        ways.append("archive.py finish names what was asked and not done. Do "
+                    "it, then archive.py settle <id> --as done.")
     if found:
         ways.append("archive.py hand-off opens the chat that answers the "
                     "lesson; archive.py settle records a judgement that "
@@ -1182,7 +2225,8 @@ def cmd_guard_stop(argv):
     return 2
 
 
-COMMANDS = {"check": cmd_check, "harvest": cmd_harvest, "settle": cmd_settle,
+COMMANDS = {"check": cmd_check, "finish": cmd_finish, "polish": cmd_polish,
+            "harvest": cmd_harvest, "settle": cmd_settle,
             "hand-off": cmd_handoff, "close": cmd_close,
             "guard-archive": cmd_guard,
             "guard-stop": cmd_guard_stop}

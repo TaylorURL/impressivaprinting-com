@@ -206,6 +206,11 @@ check("a skill body carrying the same words is not a refusal",
       g.refused_drafts([user("go"), answer(DRAFT), meta(SKILL_BODY)]), [])
 check("a draft from before the last typed message is out of the turn",
       g.refused_drafts(ROWS + [user("and the fourth?"), answer(REWRITTEN)]), [])
+check("a row carrying only a reminder is nobody taking a turn",
+      [d for d, _ in g.refused_drafts(
+          [user("theme the three replicas"), answer(DRAFT),
+           user("<system-reminder>the plan is current</system-reminder>"),
+           meta(FEEDBACK)])], [DRAFT])
 check("two refusals in one turn are both held",
       len(g.refused_drafts(ROWS + [answer(SHAVED), meta(FEEDBACK)])), 2)
 check("a refusal from this guard is counted as its own",

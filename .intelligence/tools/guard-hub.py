@@ -222,24 +222,6 @@ SECRET_SHAPE = re.compile(
     r"|-----BEGIN|://[^\s:@/\"']+:[^\s:@/\"']{6,}@")
 
 
-# The read verbs delegation-guard measures a survey in, matched loosely here:
-# the guard tokenizes and re-tests, so the hub only has to avoid spawning it for
-# a command that cannot possibly be a read.
-READ_VERB = re.compile(
-    r"\b(?:cat|head|tail|grep|rg|find|ls|fd|wc|sed|awk|tree|stat|file|nl|cut"
-    r"|sort|uniq|jq|diff|basename|dirname|readlink|du|column)\b")
-
-
-def delegation_armed(payload):
-    """Whether the delegation gates could act on this event."""
-    if os.environ.get("INTELLIGENCE_DELEGATION_OFF") == "1":
-        return False
-    name = str(payload.get("tool_name") or "")
-    if name != "Bash":
-        return True
-    return bool(READ_VERB.search(command_of(payload)))
-
-
 def comment_guard_armed(payload):
     """Whether comment-guard could act on this event.
 
@@ -444,14 +426,6 @@ def registry():
              lambda p, raw: MCP_GH_WRITE.match(p.get("tool_name") or "")
              and re.search(r"claude|generated|/code/session",
                            json.dumps(p.get("tool_input") or {}), re.I)),
-            (lambda t: t == "Bash" or t in ("Read", "Grep", "Glob",
-                                            "NotebookRead"),
-             tool("delegation-guard.py", "guard-probe"),
-             lambda p, raw: os.environ.get("INTELLIGENCE_ALLOW_INLINE") != "1"
-             and delegation_armed(p)),
-            (lambda t: t in ("Agent", "Task"),
-             tool("delegation-guard.py", "guard-agent"),
-             lambda p, raw: os.environ.get("INTELLIGENCE_DELEGATION_OFF") != "1"),
             (lambda t: t in ("Write", "Edit", "NotebookEdit", "Read", "Bash",
                              "MultiEdit", "NotebookRead"),
              tool("scratchpad-guard.py", "guard"),
@@ -459,6 +433,13 @@ def registry():
              and "/scratchpad" in raw),
             (is_bash, tool("reporter-site-guard.py", "guard"),
              lambda p, raw: os.environ.get("INTELLIGENCE_ALLOW_SITE_RENAME") != "1"
+             and re.search(r"\bgit\b[^|;&]*\bcommit\b", command_of(p))),
+            (lambda t: t in ("Write", "Edit", "MultiEdit", "NotebookEdit"),
+             tool("svg-guard.py", "guard-edit"),
+             lambda p, raw: os.environ.get("INTELLIGENCE_ALLOW_SVG_BACKGROUND") != "1"
+             and "<svg" in raw),
+            (is_bash, tool("svg-guard.py", "guard-bash"),
+             lambda p, raw: os.environ.get("INTELLIGENCE_ALLOW_SVG_BACKGROUND") != "1"
              and re.search(r"\bgit\b[^|;&]*\bcommit\b", command_of(p))),
             (mcp_chrome, tool("chrome-guard.py", "guard"),
              lambda p, raw: os.environ.get("INTELLIGENCE_ALLOW_CHROME") != "1"),
@@ -497,6 +478,9 @@ def registry():
             (is_edit, tool("secret-shape-guard.py", "guard-edit"),
              lambda p, raw: os.environ.get("INTELLIGENCE_ALLOW_SECRET") != "1"
              and SECRET_SHAPE.search(edited_content(p))),
+            (lambda t: t == "mcp__ccd_session_mgmt__archive_session",
+             tool("archive.py", "guard-archive"),
+             lambda p, raw: os.environ.get("INTELLIGENCE_ALLOW_ARCHIVE") != "1"),
         ],
         "post": [
             (is_bash, tool("serving-guard.py", "track"),
@@ -575,9 +559,6 @@ def registry():
             (None, tool("repetition-guard.py", "guard-stop"),
              lambda p, raw: os.environ.get("INTELLIGENCE_ALLOW_REPEAT") != "1"
              and bool(p.get("stop_hook_active"))),
-            (None, tool("delegation-guard.py", "guard-stop"),
-             lambda p, raw: os.environ.get("INTELLIGENCE_DELEGATION_OFF") != "1"
-             and not p.get("stop_hook_active")),
             (None, tool("day-plan.py", "guard-stop"),
              lambda p, raw: os.environ.get("INTELLIGENCE_DAYPLAN_OFF") != "1"
              and not p.get("stop_hook_active")
@@ -595,10 +576,17 @@ def registry():
             (None, tool("plain-brief-guard.py", "guard-stop"),
              lambda p, raw: os.environ.get("INTELLIGENCE_PLAIN_OFF") != "1"
              and not p.get("stop_hook_active")),
+            (None, tool("manual-ask-guard.py", "guard-stop"),
+             lambda p, raw: os.environ.get("INTELLIGENCE_MANUAL_ASK_OFF") != "1"
+             and not p.get("stop_hook_active")),
+            # A headless ending makes no tool call, so the stop is the only
+            # place this one can stand. It carries no stop_hook_active test for
+            # that reason: a gate that lets the second reply through is a gate
+            # anything gets past by answering twice.
+            (None, tool("archive.py", "guard-stop"),
+             lambda p, raw: os.environ.get("INTELLIGENCE_ALLOW_ARCHIVE") != "1"),
         ],
         "prompt": [
-            (None, tool("delegation-guard.py", "guard-prompt"),
-             lambda p, raw: os.environ.get("INTELLIGENCE_DELEGATION_OFF") != "1"),
             (None, tool("concise-guard.py", "guard-prompt"),
              lambda p, raw: os.environ.get("INTELLIGENCE_CONCISE_OFF") != "1"),
         ],

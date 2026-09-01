@@ -430,6 +430,11 @@ with tempfile.TemporaryDirectory() as d:
     skill.write_text("# Short\n\nsay in a sentence that it holds nothing "
                      "left to answer, and stop.\n")
     check("the settled shape is read from the file", g.declared_settled(skill), True)
+    skill.write_text("# Short\n\nquote the message the reach landed on, say in "
+                     "one sentence whether the work is finished and what any "
+                     "remainder waits on, and stop.\n")
+    check("the wording the skill carries now is read as the same rule",
+          g.declared_settled(skill), True)
     skill.write_text("# Short\n\nSix sentences, at most.\n")
     check("a file no longer saying it leaves the rule off",
           g.declared_settled(skill), False)

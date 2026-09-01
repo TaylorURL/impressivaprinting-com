@@ -534,7 +534,7 @@
     {
       "id": "SLP-31",
       "title": "Illustration Is Not Reflexively Lottie",
-      "rule": "A hand-built SVG or pure-CSS shape comes first; Lottie is the last resort.",
+      "rule": "A hand-built SVG or pure-CSS shape comes first; Lottie is the last resort. The preference has a ceiling: a hand-built SVG stops being the first choice where the subject needs a scene rather than a shape, and past forty drawn elements that are mostly boxes and straight segments the answer is a photograph or a generated still. PLT-07 measures it.",
       "source": "slop gate 31",
       "kinds": [
         "web-ui"
@@ -544,7 +544,7 @@
       "check": {
         "type": "manual"
       },
-      "fix": "Build the shape, or use a licensed illustration source from assets.md."
+      "fix": "Build the shape, or use a licensed illustration source from assets.md, or use a photograph where the subject is past what a hand-built shape reaches."
     },
     {
       "id": "SLP-32",

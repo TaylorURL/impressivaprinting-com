@@ -646,6 +646,25 @@ sys.stderr.write("fatal: could not read from remote repository\\n")
 sys.exit(1)
 """
 
+# The stand-in that lands what it was given, which is a push leaving its record
+# behind. The record is the whole of what a session end reads, so a stub that
+# carries the plans without writing one is a trip that never happened as far as
+# the gate can tell -- which is the other stub, and the other case.
+SETTLING_CARRIER = CARRIER + """
+import json
+
+root = pathlib.Path(os.environ["INTELLIGENCE_STATE_DIR"])
+landed = {}
+for path in sorted((root / "day-plans").glob("*.json")):
+    body = json.loads(path.read_text())
+    landed[body["date"]] = {
+        "state": "shared",
+        "stamp": body.get("updated") or body.get("created"),
+        "at": "2026-08-28T00:00:00+00:00",
+    }
+(root / ".day-plan-shared.json").write_text(json.dumps({"plans": landed}))
+"""
+
 
 # A scheduled push leaves two traces and they settle at different moments. The
 # mark is the run's own write, made before the carrier is spawned, so it is
@@ -954,6 +973,40 @@ def case_unshared_state_holds_the_session(state):
     record(state, {"2026-08-28": {"state": "shared", "stamp": created}})
     check("an unstamped plan is read by its creation",
           stop(state, tool).returncode, 0)
+
+
+def case_the_gate_makes_the_trip_before_it_refuses(state):
+    """A session end carries the plans itself rather than reporting them behind.
+
+    The push a write schedules waits out the burst behind it, so the gate meets
+    plans that are behind the mirror for no reason but the clock. Making the
+    trip is what separates that from a mirror that will not take them, and it
+    is the difference between a session that ends and a person handed a command
+    whose whole effect is to start the same push a moment early.
+    """
+    tool = stub_carrier(state, SETTLING_CARRIER)
+    run(state, "new", stdin=json.dumps(PLAN), carrier=tool)
+
+    r = stop(state, tool)
+    check("a plan the gate could carry lets the session end", r.returncode, 0)
+    contains("the gate made the trip", " ".join(carrier_calls(state)), "push --plans")
+    missing("and says nothing about the mirror", r.stderr, "reached the mirror")
+
+
+def case_a_trip_that_settles_nothing_still_holds_the_session(state):
+    """A push that lands no record leaves the refusal where it was.
+
+    A carrier that returns without recording a plan has settled nothing, and a
+    gate reading the return rather than the record would let every unreachable
+    mirror through as a success.
+    """
+    tool = stub_carrier(state)
+    run(state, "new", stdin=json.dumps(PLAN), carrier=tool)
+
+    r = stop(state, tool)
+    check("the session is held", r.returncode, 2)
+    contains("the trip is named as made", r.stderr, "settled none of these")
+    contains("with the plan that is behind", r.stderr, "2026-08-28")
 
 
 def case_the_page_and_the_ledger_are_reported_together(state):
@@ -1638,6 +1691,8 @@ def main():
                  case_a_redirected_remote_still_publishes,
                  case_the_machines_own_root_publishes,
                  case_unshared_state_holds_the_session,
+                 case_the_gate_makes_the_trip_before_it_refuses,
+                 case_a_trip_that_settles_nothing_still_holds_the_session,
                  case_the_page_and_the_ledger_are_reported_together,
                  case_a_read_fetches_when_it_could_be_stale,
                  case_a_read_survives_an_unreachable_mirror,

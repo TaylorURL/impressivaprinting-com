@@ -274,6 +274,51 @@ def check(root):
     shared = load_shared(root)
     problems.extend(check_shared(root, shared))
     problems.extend(check_orphans(root, routines, shared))
+    problems.extend(check_model(root, routines))
+    return problems
+
+
+def runner_model(root):
+    """The model the routines are pinned to, read out of the runner itself.
+
+    One line in the runner decides what every scheduled turn is judged by. It
+    is the answer rather than one opinion among several, so the configs are
+    read against it instead of each being free to say anything.
+    """
+    path = root / "routines" / "bin" / "routine-run.sh"
+    if not path.is_file():
+        return None
+    for line in path.read_text().splitlines():
+        if line.startswith("MODEL=") and ":-" in line:
+            return line.split(":-", 1)[1].rstrip("}").strip()
+    return None
+
+
+def check_model(root, routines):
+    """Every routine judged by one model, or the split named.
+
+    A model set in two places drifts without anything reading wrong: the runner
+    says one thing, a cloud config says another, and a routine runs on whichever
+    door it came through. Nothing catches that until a bill does, which is why
+    the split is a finding here rather than a preference.
+    """
+    pinned = runner_model(root)
+    if not pinned:
+        return ["the runner names no model, so nothing pins the routines"]
+    problems = []
+    for entry in routines:
+        rel = entry.get("config")
+        if not rel or not (root / rel).is_file():
+            continue
+        try:
+            cfg = json.loads((root / rel).read_text())
+        except ValueError:
+            continue
+        named = (((cfg.get("job_config") or {}).get("ccr") or {})
+                 .get("session_context") or {}).get("model")
+        if named and named != pinned:
+            problems.append("%s: its config runs %s, the runner pins %s"
+                            % (entry.get("id"), named, pinned))
     return problems
 
 

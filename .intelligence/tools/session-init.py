@@ -49,7 +49,6 @@ INSTALLERS = [
     ("chrome-guard.py", "install"),
     ("concise-guard.py", "install"),
     ("remote-access.py", "install"),
-    ("delegation-guard.py", "install"),
     ("plain-brief-guard.py", "install"),
     ("checklist-runs.py", "install"),
 ]
@@ -168,7 +167,7 @@ def run():
 COVERED = tuple(name for name, _ in INSTALLERS) + (
     "cloud-refresh.sh", "git-develop-base-guard.sh", "prune-worktrees.sh",
     "config-sync.py", "remote-access.py", "checklist-runs.py",
-    "plain-brief-guard.py", "delegation-guard.py", "concise-guard.py")
+    "plain-brief-guard.py", "concise-guard.py")
 
 def portable(tool, verb):
     """A hook command in the form the sync would rewrite this one into.

@@ -2,7 +2,7 @@
 
 This file is loaded only when an enrichment archetype requires construction (Tier A or B in [`hero-enrichment.md`](hero-enrichment.md)). It tells you *which technique* to reach for at *which complexity tier* — and what each looks like done well.
 
-**The principle.** Custom-built artwork is the design. Library-picked artwork is a shortcut, and a good audience reads it as one. The skill's job is to make custom-build the path of least resistance — by knowing when CSS alone suffices, when SVG is right, when JS-driven animation earns its bundle cost, and when (rarely) Three.js is justified.
+**The principle.** Custom-built artwork is the design. Library-picked artwork is a shortcut, and a good audience reads it as one. The skill's job is to make custom-build the path of least resistance — by knowing when CSS alone suffices, when SVG is right, when JS-driven animation earns its bundle cost, and when (rarely) Three.js is justified. Custom-build is not the answer at every size, though: past the point where a subject needs a scene rather than a shape, hand-building produces a drawing that looks hand-built, and the honest move is a photograph or a generated still.
 
 The 2026 canon is set by Lynn Fisher (*A Single Div*), Diana Smith (*Pure CSS Francine* / *Lace*), Rauno Freiberg, Paco Coursey, Jhey Tompkins, and Adam Argyle. The thread: constraint-driven, hand-crafted, performance-respecting, accessibility-embedded. Use the platform; don't fight it.
 
@@ -152,6 +152,17 @@ The breath comes from `@property --bake` interpolating a percentage; the score-m
 
 ### Anti-patterns of hand-built SVG
 
+- **A scene assembled out of boxes.** The one that ends the argument: forty or more drawn
+  elements, most of them axis-aligned rectangles and straight segments. A dock wall, three
+  barges, mooring wires and a hundred water dashes reads as none of those things, and no
+  amount of adjustment gets it there, because the failure is the approach rather than the
+  execution. Exported artwork is curves; a scene built by hand is boxes, and the count is the
+  tell. Use a photograph, a real exported asset, or a mark simple enough to be right — a
+  silhouette, a wordmark, a single shape. Gate PLT-07 measures it and a `Write` hook refuses
+  it before the file exists.
+- **A ground drawn into the file.** A full-canvas rect or a `background` on the root element
+  makes the drawing correct on one surface and wrong on every other. The ground belongs to
+  whatever renders the file. `svg-guard.py fix <path>` takes one out; PLT-05 and AST-17 hold it.
 - **Shipping the raw Figma export.** Always run SVGOMG. Untouched exports carry hundreds of bytes of metadata, unused `<defs>`, doubled transforms.
 - **A 300-KB SVG.** Anything over 30 KB is suspicious. Most well-built illustrations sit at 4–15 KB. If yours is 100 KB+, you have hidden raster embeds or thousands of unnecessary path commands.
 - **`viewBox` cruft.** A `viewBox="0 0 24 24"` for an icon, or `viewBox="0 0 1920 1080"` for a hero illustration. Match the box to the design's bounds, no padding, no extra space.
