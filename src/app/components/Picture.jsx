@@ -1,12 +1,17 @@
-// One photo, offered in two formats at two widths. `src` is the path without
-// an extension; the derivatives sit beside it under the same stem, built by
-// scripts/images.sh. The browser takes the smallest file its screen and
-// decoder can use and the rendered result is the same either way.
+// One photo, offered in two formats at each of the widths its layout asks
+// for. `src` is the path without an extension; the derivatives sit beside it
+// under the same stem, built by scripts/images.sh. The browser takes the
+// smallest file its screen and decoder can use and the rendered result is
+// the same either way.
 //
 // `eager` takes the image out of the lazy queue so it starts with the
 // document. `priority` is the separate claim that it outranks everything else
 // competing for the connection, which only the largest element on the first
 // screen can truthfully make; a second image asking for it demotes the first.
+// It also decides the decode: asynchronous decoding lets the browser put up a
+// frame without the picture and finish it in a later one, which is right for
+// everything the reader has not reached and wrong for the one element the
+// first screen is measured on.
 export default function Picture({
   src,
   alt,
@@ -33,7 +38,7 @@ export default function Picture({
         height={height}
         loading={eager ? 'eager' : 'lazy'}
         fetchPriority={priority ? 'high' : 'auto'}
-        decoding="async"
+        {...(priority ? {} : { decoding: 'async' })}
         className={className}
       />
     </picture>

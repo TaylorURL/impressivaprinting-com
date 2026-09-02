@@ -61,8 +61,8 @@ function Hero() {
             alt="Impressiva Printing"
             width="1200"
             height="410"
-            widths={[560, 1200]}
-            sizes="(min-width: 640px) 560px, 100vw"
+            widths={[560, 800, 1200]}
+            sizes="(min-width: 640px) 560px, calc(100vw - 2.5rem)"
             eager
             priority
             className="mx-auto w-full max-w-[560px]"
