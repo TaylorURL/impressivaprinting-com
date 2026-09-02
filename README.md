@@ -11,6 +11,9 @@
   A print-shop storefront with a client portal and an admin back office,<br />
   backed by Supabase.
 </p>
+<p align="center">
+  <sub>Published for reading. Proprietary — see <a href="LICENSE.md">LICENSE.md</a>. Outside contributions are not accepted.</sub>
+</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-2026.36.42-e5352b?style=for-the-badge" alt="Version 2026.36.42" />
@@ -162,6 +165,8 @@ Customers create their own accounts from **Sign up**. Where the Supabase project
 ```
 impressivaprinting-com/
 ├── index.html                 The home page head, its structured data, and the first screen
+├── api/
+│   └── version.js             Reports the commit this deployment was built from
 ├── public/
 │   ├── logo.png, og-card.png, favicon.svg, release.json
 │   ├── apple-touch-icon.png, icon-192.png, icon-512.png, site.webmanifest
@@ -170,7 +175,8 @@ impressivaprinting-com/
 │   ├── categories/            Catalog category imagery
 │   └── work/                  Portfolio shots
 ├── scripts/
-│   └── images.sh              Builds the WebP and AVIF derivatives of every photo
+│   ├── images.sh              Builds the WebP and AVIF derivatives of every photo
+│   └── paint-first.js         Moves the bundle behind the first frame of the built page
 ├── supabase/
 │   └── migrations/            Schema, RLS policies, triggers: the backend as SQL
 ├── src/
@@ -193,7 +199,7 @@ impressivaprinting-com/
 
 ## License
 
-Private project. All rights reserved.
+Copyright (c) 2026 TaylorURL LLC. All rights reserved. See [LICENSE.md](LICENSE.md).
 
 <br />
 
