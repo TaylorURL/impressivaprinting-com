@@ -25,7 +25,7 @@ function Brand() {
         alt="Impressiva Printing"
         width="1200"
         height="410"
-        widths={[560, 1200]}
+        widths={[560, 800, 1200]}
         sizes="(min-width: 640px) 176px, 160px"
         eager
         className="h-11 w-auto sm:h-12"
