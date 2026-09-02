@@ -44,35 +44,3 @@ export const STATS = [
   { value: '99%', label: 'Repeat Clients' },
   { value: '12', label: 'Presses On-Site' },
 ];
-
-export const CAPABILITIES = [
-  { k: 'Stocks', v: '14pt-32pt · 13-18oz vinyl · cotton · SBS board' },
-  { k: 'Finishes', v: 'Soft-touch · spot UV · foil · die-cut · lamination' },
-  { k: 'Process', v: 'Offset · digital · DTF · screen · wide-format' },
-  { k: 'Color', v: 'CMYK + spot · G7 calibrated · hand-proofed' },
-  { k: 'Turnaround', v: 'Standard 3-5 days · rush same-day' },
-  { k: 'Delivery', v: 'Studio pickup · local courier · nationwide ship' },
-];
-
-export const PROCESS = [
-  {
-    step: '01',
-    title: 'Submit Your Art',
-    body: 'Upload your files directly from your account. No artwork yet? Our design team will build it for you.',
-  },
-  {
-    step: '02',
-    title: 'Digital Proof',
-    body: 'Review and approve a digital proof before anything goes to press. No surprises, no guesswork.',
-  },
-  {
-    step: '03',
-    title: 'Production',
-    body: 'Premium stocks, calibrated inks, and precise color, printed on professional equipment and checked by hand.',
-  },
-  {
-    step: '04',
-    title: 'Pickup or Delivery',
-    body: 'Collect at the studio or have it shipped to your door. Rush orders go out the same day.',
-  },
-];

@@ -483,34 +483,6 @@
     border-right: 1px solid currentColor;
   }
 
-  .registration {
-    @apply rounded-full;
-    position: relative;
-    width: var(--space-8);
-    height: var(--space-8);
-    border: 1px solid currentColor;
-  }
-  .registration::before,
-  .registration::after {
-    content: '';
-    position: absolute;
-    background: currentColor;
-  }
-  .registration::before {
-    left: 50%;
-    top: calc(var(--space-2) * -1);
-    bottom: calc(var(--space-2) * -1);
-    width: 1px;
-    transform: translateX(-50%);
-  }
-  .registration::after {
-    top: 50%;
-    left: calc(var(--space-2) * -1);
-    right: calc(var(--space-2) * -1);
-    height: 1px;
-    transform: translateY(-50%);
-  }
-
   .colorbar {
     display: flex;
     height: var(--space-2);
