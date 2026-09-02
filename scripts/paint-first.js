@@ -13,6 +13,13 @@
  * first, which is the first frame the document can have been painted in and
  * the earliest the bundle can no longer hold it back.
  *
+ * The preloads are also taken off the top of the queue. A module preload is
+ * asked for at the same priority as the wordmark and the faces the first
+ * screen sets, and there are four of them carrying a hundred kilobytes, so on
+ * a phone connection the mark the page is measured on waits behind code that
+ * nothing has painted yet. Marked low, the same files still arrive, and the
+ * first screen has the connection to itself until they do.
+ *
  * Run by `npm run build`, after the bundle exists.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -22,6 +29,11 @@ const html = readFileSync(file, 'utf8');
 const entry = html.match(/^[ \t]*<script type="module" crossorigin src="([^"]+)"><\/script>\n/m);
 if (!entry) throw new Error('paint-first: dist/index.html carries no module entry');
 const [tag, src] = entry;
-const preload = `    <link rel="modulepreload" crossorigin href="${src}" />\n`;
+const preload = `    <link rel="modulepreload" fetchpriority="low" crossorigin href="${src}" />\n`;
 const boot = `    <script type="module">requestAnimationFrame(() => requestAnimationFrame(() => import(${JSON.stringify(src)})))</script>\n`;
-writeFileSync(file, html.replace(tag, `${preload}${boot}`));
+const out = html
+  .replace(tag, `${preload}${boot}`)
+  .replaceAll('<link rel="modulepreload" crossorigin', '<link rel="modulepreload" fetchpriority="low" crossorigin');
+if (/<link rel="modulepreload" (?!fetchpriority)/.test(out))
+  throw new Error('paint-first: a module preload still outranks the first screen');
+writeFileSync(file, out);

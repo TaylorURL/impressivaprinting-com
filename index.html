@@ -2,14 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#07080a" />
 
-    <link rel="preconnect" href="https://auzwqbakalnsxqwwklrh.supabase.co" crossorigin />
-    <link rel="preconnect" href="https://gujgtjqqurildqurpffh.supabase.co" crossorigin />
+    <!-- The wordmark is the largest thing on the first screen at every width,
+         so it is asked for before anything else in the head. What follows it
+         here is ordered the same way: the browser starts requests in the order
+         it finds them, and on a phone connection the order is the difference
+         between the mark landing first and it landing behind everything. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      href="/logo-800.avif"
+      imagesrcset="/logo-560.avif 560w, /logo-800.avif 800w, /logo-1200.avif 1200w"
+      imagesizes="(min-width: 640px) 560px, calc(100vw - 2.5rem)"
+      fetchpriority="high"
+    />
 
     <!-- The two faces the first screen sets. The rest load with the stylesheet. -->
     <link
@@ -26,15 +35,18 @@
       href="/fonts/anton-400-normal.woff2"
       crossorigin
     />
-    <link
-      rel="preload"
-      as="image"
-      type="image/avif"
-      href="/logo-560.avif"
-      imagesrcset="/logo-560.avif 560w, /logo-1200.avif 1200w"
-      imagesizes="(min-width: 640px) 560px, 100vw"
-      fetchpriority="high"
-    />
+
+    <!-- Neither origin is reached before the largest paint: the database is
+         asked for the session once the app has mounted, and the tracker
+         attaches after the load event. The handshakes are opened here so
+         neither pays for one later, and below the first screen's own files so
+         neither takes a turn ahead of them. -->
+    <link rel="preconnect" href="https://auzwqbakalnsxqwwklrh.supabase.co" crossorigin />
+    <link rel="preconnect" href="https://gujgtjqqurildqurpffh.supabase.co" crossorigin />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- The home page head, served without script. Every other route rewrites
          it on navigation from src/app/components/RouteHead.jsx. -->
@@ -441,19 +453,18 @@
         <picture>
           <source
             type="image/avif"
-            srcset="/logo-560.avif 560w, /logo-1200.avif 1200w"
-            sizes="(min-width: 640px) 560px, 100vw"
+            srcset="/logo-560.avif 560w, /logo-800.avif 800w, /logo-1200.avif 1200w"
+            sizes="(min-width: 640px) 560px, calc(100vw - 2.5rem)"
           />
           <img
             src="/logo-1200.webp"
-            srcset="/logo-560.webp 560w, /logo-1200.webp 1200w"
-            sizes="(min-width: 640px) 560px, 100vw"
+            srcset="/logo-560.webp 560w, /logo-800.webp 800w, /logo-1200.webp 1200w"
+            sizes="(min-width: 640px) 560px, calc(100vw - 2.5rem)"
             alt="Impressiva Printing"
             class="mx-auto w-full max-w-[560px]"
             width="1200"
             height="410"
             fetchpriority="high"
-            decoding="async"
           />
         </picture>
         <h1 class="sr-only">Impressiva Printing, custom print shop in Pasadena</h1>
