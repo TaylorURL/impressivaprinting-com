@@ -175,7 +175,8 @@ impressivaprinting-com/
 │   ├── categories/            Catalog category imagery
 │   └── work/                  Portfolio shots
 ├── scripts/
-│   └── images.sh              Builds the WebP and AVIF derivatives of every photo
+│   ├── images.sh              Builds the WebP and AVIF derivatives of every photo
+│   └── paint-first.js         Moves the bundle behind the first frame of the built page
 ├── supabase/
 │   └── migrations/            Schema, RLS policies, triggers: the backend as SQL
 ├── src/
