@@ -17,14 +17,6 @@ npm-debug.log*
 *.sql
 # Database migrations are code, not dumps — they ride along.
 !supabase/migrations/*.sql
-# .intelligence/ is checked in on purpose: the skills, the tools they call, and
-# the hook wiring travel with the repo, so a session that starts from the
-# repository alone still has them. See .intelligence/VENDOR.md. Only the personal
-# half stays out.
-.intelligence/settings.local.json
-.intelligence/**/__pycache__/
-.intelligence/skills/.trash/
-INTELLIGENCE.md
 .fleet/
 .junie/
 
@@ -34,12 +26,3 @@ INTELLIGENCE.md
 *.pfx
 id_rsa
 id_ed25519
-
-# The vendored setup ships with the repo; see .intelligence/VENDOR.md.
-!.intelligence/
-!.intelligence/skills/
-!.intelligence/checklists/
-!.intelligence/tools/
-!.intelligence/scripts/
-!.intelligence/settings.json
-!.intelligence/VENDOR.md
