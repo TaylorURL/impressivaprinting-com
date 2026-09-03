@@ -6,11 +6,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 
 export default [
   {
-    // The checked-in agent setup is a copy of another repo and is linted there.
-    // Its scripts are Node CommonJS, so a browser-globals config reports every
-    // require and process in them, and those findings are not this project's to
-    // fix.
-    ignores: ['dist', 'node_modules', '.intelligence/**'],
+    ignores: ['dist', 'node_modules'],
   },
   {
     files: ['**/*.{js,jsx}'],
