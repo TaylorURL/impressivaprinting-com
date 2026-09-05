@@ -9,9 +9,15 @@
 // is an old document.
 //
 // The document is what pins a build, so a reload settles it. One reload per
-// tab is allowed, which is enough for a chunk that moved and not enough for a
-// chunk that is genuinely missing to become a loop. A load that succeeds
-// afterwards releases the allowance, so the next deploy gets its own.
+// build is allowed, which is enough for a chunk that moved and not enough for
+// a chunk that is genuinely missing to become a loop. The allowance is
+// recorded against the build that spent it, so the document a deploy hands
+// back arrives with an allowance of its own.
+//
+// Nothing gives an allowance back, because more than one of these loaders is
+// in flight at a time — a route chunk and the auth client, a portal layout and
+// the page inside it — and a loader that succeeds has nothing to say about the
+// one racing it that did not.
 //
 // The refresh is announced on the way out, because the page reporter sees the
 // same missing chunk before this does. The browser fails the preload link
@@ -23,12 +29,18 @@ const RELOAD_MARK = 'impressiva:build-refresh';
 // Named in index.html, where the reporter listens for it.
 const REFRESH_EVENT = 'impressiva:build-refresh';
 
+// The build this document is running, named by the URL this module was loaded
+// from. That name is content-hashed, and the names of the chunks it imports
+// are part of what is hashed, so a deploy that moves any of them moves this
+// too.
+const BUILD = import.meta.url;
+
 // A store that cannot be read cannot gate anything, and an ungated reload over
 // a chunk that will never arrive never stops, so an unreadable store counts as
 // an allowance already spent.
 function reloadSpent() {
   try {
-    return sessionStorage.getItem(RELOAD_MARK) === '1';
+    return sessionStorage.getItem(RELOAD_MARK) === BUILD;
   } catch {
     return true;
   }
@@ -36,17 +48,9 @@ function reloadSpent() {
 
 function spendReload() {
   try {
-    sessionStorage.setItem(RELOAD_MARK, '1');
+    sessionStorage.setItem(RELOAD_MARK, BUILD);
   } catch {
     // Nothing to spend when the store is closed to us.
-  }
-}
-
-function releaseReload() {
-  try {
-    sessionStorage.removeItem(RELOAD_MARK);
-  } catch {
-    // Nothing to release when the store is closed to us.
   }
 }
 
@@ -59,19 +63,13 @@ function releaseReload() {
  */
 export function withBuildRefresh(loader) {
   return () =>
-    loader().then(
-      (module) => {
-        releaseReload();
-        return module;
-      },
-      (error) => {
-        if (typeof window === 'undefined' || reloadSpent()) throw error;
-        spendReload();
-        window.dispatchEvent(new Event(REFRESH_EVENT));
-        window.location.reload();
-        // The reload is already under way. Settling this promise either way
-        // would only put something on screen for the instant before it.
-        return new Promise(() => {});
-      },
-    );
+    loader().catch((error) => {
+      if (typeof window === 'undefined' || reloadSpent()) throw error;
+      spendReload();
+      window.dispatchEvent(new Event(REFRESH_EVENT));
+      window.location.reload();
+      // The reload is already under way. Settling this promise either way
+      // would only put something on screen for the instant before it.
+      return new Promise(() => {});
+    });
 }
