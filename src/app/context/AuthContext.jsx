@@ -1,5 +1,21 @@
 import { startTransition, useCallback, useEffect, useMemo, useState } from 'react';
 import { AuthContext } from '@context/authContext.js';
+import { withBuildRefresh } from '@utils/chunk-recovery.js';
+
+// Holds the module a loader fetched, so a second caller reuses the first
+// caller's work instead of asking for the same chunk again. A rejection is
+// dropped rather than held: one bad moment on the network should cost the
+// next sign-in a retry, not the rest of the page's life.
+function once(load) {
+  let pending;
+  return () => {
+    pending ??= load().catch((error) => {
+      pending = undefined;
+      throw error;
+    });
+    return pending;
+  };
+}
 
 // The auth client and the data layer over it are fifty-odd kilobytes of code
 // that a reader who never signs in never runs. Named as static imports they
@@ -8,16 +24,18 @@ import { AuthContext } from '@context/authContext.js';
 // screen waits on a session check for a session almost nobody has. Reached
 // through these accessors instead, the same modules arrive after the mount
 // rather than in front of it. Everything below that touches them is already
-// async, so awaiting one module more costs the signed-in path a single fetch
-// and costs the first screen nothing. Each accessor keeps its own promise,
-// which is what makes a second caller reuse the first caller's module
-// instead of racing it.
-let clientModule;
-const getSupabase = () =>
-  (clientModule ??= import('@data/supabaseClient.js')).then((m) => m.supabase);
+// async, so awaiting one module more costs the signed-in path a round trip
+// and costs the first screen nothing.
+//
+// They carry the same build refresh the routes in App.jsx do, and for a
+// sharper reason: a tab left open across a deploy asks for a filename the
+// host has replaced, and a sign-in that loses the store there would tell
+// somebody their login failed while the session it opened is real.
+const loadClient = once(withBuildRefresh(() => import('@data/supabaseClient.js')));
+const getSupabase = () => loadClient().then((m) => m.supabase);
 
-let storeModule;
-const getStore = () => (storeModule ??= import('@data/store.js')).then((m) => m.store);
+const loadStore = once(withBuildRefresh(() => import('@data/store.js')));
+const getStore = () => loadStore().then((m) => m.store);
 
 // Supabase Auth error strings, translated into the shop's voice.
 function friendlyAuthError(error) {
@@ -49,23 +67,30 @@ export function AuthProvider({ children }) {
     // this binding instead, and an unmount that beats the module leaves
     // `active` false, so no subscription is ever opened to leak.
     let unsubscribe;
-    getSupabase().then((supabase) => {
-      if (!active) return;
-      // getClaims verifies the token's signature; getSession reports whatever
-      // storage holds, which is user input where the role gates the panels.
-      supabase.auth.getClaims().then(({ data }) => {
+    getSupabase()
+      .then((supabase) => {
         if (!active) return;
-        setSessionUserId(data?.claims?.sub ?? null);
-        // With no session there is no profile to wait for.
-        if (!data?.claims) setReady(true);
+        // getClaims verifies the token's signature; getSession reports whatever
+        // storage holds, which is user input where the role gates the panels.
+        supabase.auth.getClaims().then(({ data }) => {
+          if (!active) return;
+          setSessionUserId(data?.claims?.sub ?? null);
+          // With no session there is no profile to wait for.
+          if (!data?.claims) setReady(true);
+        });
+        const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+          // No supabase calls in this callback — the client holds its auth lock
+          // while it runs. The profile loads in the effect below instead.
+          setSessionUserId(session?.user?.id ?? null);
+        });
+        unsubscribe = () => subscription.subscription.unsubscribe();
+      })
+      // A client that never arrives is nobody signed in. Saying so hands the
+      // protected routes their login redirect, where holding `ready` false
+      // would leave them on an empty page instead.
+      .catch(() => {
+        if (active) setReady(true);
       });
-      const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-        // No supabase calls in this callback — the client holds its auth lock
-        // while it runs. The profile loads in the effect below instead.
-        setSessionUserId(session?.user?.id ?? null);
-      });
-      unsubscribe = () => subscription.subscription.unsubscribe();
-    });
     return () => {
       active = false;
       if (unsubscribe) unsubscribe();

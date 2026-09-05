@@ -22,18 +22,6 @@ export default defineConfig({
     // Every browser that runs a module script has these; naming them stops the
     // toolchain guessing an older baseline and shipping transforms for it.
     target: ['chrome111', 'edge111', 'firefox111', 'safari16.4'],
-    // A visitor who never signs in still pays for the client if it is
-    // announced to the preload scanner. The other preloads are marked low by
-    // scripts/paint-first.js so they cannot take a turn ahead of the first
-    // screen, and this one is left out of every list entirely, because at
-    // fifty kilobytes it is the one whose share of the connection is worth
-    // having back. AuthContext reaches the client through a dynamic import,
-    // so the one list left to keep it out of is the dependency list of that
-    // import: the signed-in path spends a round trip discovering it, and the
-    // first screen keeps the connection to itself.
-    modulePreload: {
-      resolveDependencies: (_file, deps) => deps.filter((dep) => !dep.includes('supabase')),
-    },
     rollupOptions: {
       output: { manualChunks },
     },
