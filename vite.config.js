@@ -25,10 +25,12 @@ export default defineConfig({
     // A visitor who never signs in still pays for the client if it is
     // announced to the preload scanner. The other preloads are marked low by
     // scripts/paint-first.js so they cannot take a turn ahead of the first
-    // screen, and this one is left out of the list entirely, because at fifty
-    // kilobytes it is the one whose share of the connection is worth having
-    // back. The entry still imports it, so it still arrives; it just stops
-    // arriving first.
+    // screen, and this one is left out of every list entirely, because at
+    // fifty kilobytes it is the one whose share of the connection is worth
+    // having back. AuthContext reaches the client through a dynamic import,
+    // so the one list left to keep it out of is the dependency list of that
+    // import: the signed-in path spends a round trip discovering it, and the
+    // first screen keeps the connection to itself.
     modulePreload: {
       resolveDependencies: (_file, deps) => deps.filter((dep) => !dep.includes('supabase')),
     },

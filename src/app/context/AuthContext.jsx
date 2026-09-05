@@ -1,7 +1,23 @@
 import { startTransition, useCallback, useEffect, useMemo, useState } from 'react';
-import { store } from '@data/store.js';
-import { supabase } from '@data/supabaseClient.js';
 import { AuthContext } from '@context/authContext.js';
+
+// The auth client and the data layer over it are fifty-odd kilobytes of code
+// that a reader who never signs in never runs. Named as static imports they
+// join the entry's own dependencies, so the browser has to fetch, parse and
+// evaluate all of it before React is allowed to mount — the shop's first
+// screen waits on a session check for a session almost nobody has. Reached
+// through these accessors instead, the same modules arrive after the mount
+// rather than in front of it. Everything below that touches them is already
+// async, so awaiting one module more costs the signed-in path a single fetch
+// and costs the first screen nothing. Each accessor keeps its own promise,
+// which is what makes a second caller reuse the first caller's module
+// instead of racing it.
+let clientModule;
+const getSupabase = () =>
+  (clientModule ??= import('@data/supabaseClient.js')).then((m) => m.supabase);
+
+let storeModule;
+const getStore = () => (storeModule ??= import('@data/store.js')).then((m) => m.store);
 
 // Supabase Auth error strings, translated into the shop's voice.
 function friendlyAuthError(error) {
@@ -28,22 +44,31 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     let active = true;
-    // getClaims verifies the token's signature; getSession reports whatever
-    // storage holds, which is user input where the role gates the panels.
-    supabase.auth.getClaims().then(({ data }) => {
+    // The subscription cannot be handed back from the effect body, because
+    // the client it comes from has not arrived yet. Cleanup takes it through
+    // this binding instead, and an unmount that beats the module leaves
+    // `active` false, so no subscription is ever opened to leak.
+    let unsubscribe;
+    getSupabase().then((supabase) => {
       if (!active) return;
-      setSessionUserId(data?.claims?.sub ?? null);
-      // With no session there is no profile to wait for.
-      if (!data?.claims) setReady(true);
-    });
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-      // No supabase calls in this callback — the client holds its auth lock
-      // while it runs. The profile loads in the effect below instead.
-      setSessionUserId(session?.user?.id ?? null);
+      // getClaims verifies the token's signature; getSession reports whatever
+      // storage holds, which is user input where the role gates the panels.
+      supabase.auth.getClaims().then(({ data }) => {
+        if (!active) return;
+        setSessionUserId(data?.claims?.sub ?? null);
+        // With no session there is no profile to wait for.
+        if (!data?.claims) setReady(true);
+      });
+      const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+        // No supabase calls in this callback — the client holds its auth lock
+        // while it runs. The profile loads in the effect below instead.
+        setSessionUserId(session?.user?.id ?? null);
+      });
+      unsubscribe = () => subscription.subscription.unsubscribe();
     });
     return () => {
       active = false;
-      subscription.subscription.unsubscribe();
+      if (unsubscribe) unsubscribe();
     };
   }, []);
 
@@ -54,15 +79,15 @@ export function AuthProvider({ children }) {
       return undefined;
     }
     let active = true;
-    store
-      .getProfile(sessionUserId)
+    getStore()
+      .then((store) => store.getProfile(sessionUserId))
       .then((profile) => {
         if (!active) return;
         if (profile) {
           setUser(profile);
         } else {
           // A session for an account that no longer exists (removed customer).
-          supabase.auth.signOut();
+          getSupabase().then((supabase) => supabase.auth.signOut());
           setUser(null);
         }
       })
@@ -76,11 +101,13 @@ export function AuthProvider({ children }) {
   }, [sessionUserId]);
 
   const login = useCallback(async ({ email, password }) => {
+    const supabase = await getSupabase();
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
     });
     if (error) throw new Error(friendlyAuthError(error));
+    const store = await getStore();
     const profile = await store.getProfile(data.user.id);
     if (!profile) {
       await supabase.auth.signOut();
@@ -93,6 +120,7 @@ export function AuthProvider({ children }) {
   // Signup may or may not open a session, depending on whether the project
   // requires email confirmation — callers branch on `confirmationRequired`.
   const signup = useCallback(async ({ name, email, password, company = '' }) => {
+    const supabase = await getSupabase();
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
@@ -108,6 +136,7 @@ export function AuthProvider({ children }) {
       throw new Error('An account with that email already exists.');
     }
     if (!data.session) return { confirmationRequired: true };
+    const store = await getStore();
     const profile = await store.getProfile(data.user.id);
     setUser(profile);
     return profile;
@@ -119,7 +148,7 @@ export function AuthProvider({ children }) {
   // intended "back to home" navigation. The server-side sign-out finishes
   // in the background.
   const logout = useCallback(() => {
-    supabase.auth.signOut();
+    getSupabase().then((supabase) => supabase.auth.signOut());
     startTransition(() => setUser(null));
   }, []);
 
@@ -127,8 +156,8 @@ export function AuthProvider({ children }) {
   // context immediately.
   const refresh = useCallback(() => {
     if (!sessionUserId) return;
-    store
-      .getProfile(sessionUserId)
+    getStore()
+      .then((store) => store.getProfile(sessionUserId))
       .then((profile) => profile && setUser(profile))
       .catch(() => {});
   }, [sessionUserId]);
@@ -138,6 +167,7 @@ export function AuthProvider({ children }) {
   const changePassword = useCallback(
     async (currentPassword, nextPassword) => {
       if (!user?.email) throw new Error('Not signed in.');
+      const supabase = await getSupabase();
       const { error: reauthError } = await supabase.auth.signInWithPassword({
         email: user.email,
         password: currentPassword,
@@ -150,6 +180,7 @@ export function AuthProvider({ children }) {
   );
 
   const requestPasswordReset = useCallback(async (email) => {
+    const supabase = await getSupabase();
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: `${window.location.origin}/reset-password`,
     });
@@ -159,6 +190,7 @@ export function AuthProvider({ children }) {
   // Used on the recovery landing page, where the emailed link has already
   // opened a session.
   const completePasswordReset = useCallback(async (password) => {
+    const supabase = await getSupabase();
     const { error } = await supabase.auth.updateUser({ password });
     if (error) throw new Error(friendlyAuthError(error));
   }, []);
