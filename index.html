@@ -334,6 +334,16 @@
           }
           return parts.join(' ');
         }
+        // The browser fires this as a global error when a ResizeObserver
+        // callback leaves it more work than the frame allows, then skips the
+        // next delivery to recover. It carries no error object and no stack,
+        // so it names nothing an operator can act on; a third-party script
+        // observing the page can trip it as easily as a first-party one. The
+        // one prefix covers both wordings browsers use for it, "loop limit
+        // exceeded" and "loop completed with undelivered notifications".
+        function isBenignBrowserWarning(message) {
+          return String(message || '').indexOf('ResizeObserver loop') === 0;
+        }
         // A tab open across a deploy asks for a chunk filename the host has
         // replaced, and the browser fails the preload link before the import
         // rejects. That first failure arrives here with nothing attached to say
@@ -368,6 +378,7 @@
                 );
                 setTimeout(flushHeldAssets, HOLD_MS);
               } else {
+                if (isBenignBrowserWarning(event.message)) return;
                 report('uncaught', event.message, event.error && event.error.stack);
               }
             } finally {
