@@ -4,8 +4,8 @@ import { ChevronDown, Menu, X } from 'lucide-react';
 import { NAV_ITEMS, ROUTES } from '@constants/routes.js';
 import { PRODUCTS } from '@constants/products.js';
 import { useAuth } from '@hooks/useAuth.js';
-import Picture from '@components/Picture.jsx';
-import SocialIcons from '@components/SocialIcons.jsx';
+import Picture from '@components/ui/Picture.jsx';
+import SocialIcons from '@components/social/SocialIcons.jsx';
 
 const PANEL_COLUMNS = [
   { head: 'Print', ids: ['business-cards', 'flyers', 'packaging'] },

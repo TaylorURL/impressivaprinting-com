@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2026.36.47-e5352b?style=for-the-badge" alt="Version 2026.36.47" />
+  <img src="https://img.shields.io/badge/version-2026.37.0-e5352b?style=for-the-badge" alt="Version 2026.37.0" />
   <img src="https://img.shields.io/badge/React-19-e5352b?style=for-the-badge&logo=react&logoColor=white" alt="React 19" />
   <img src="https://img.shields.io/badge/Vite-7-e5352b?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 7" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-3-e5352b?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 3" />
@@ -185,9 +185,17 @@ impressivaprinting-com/
 │   ├── index.css              Design tokens, Tailwind layers, keyframes
 │   └── app/
 │       ├── App.jsx            Route table: storefront, portal, admin
-│       ├── components/        Nav, Footer, ProductPlate, WorkTile, Reveal, …
+│       ├── components/
+│       │   ├── layout/        Layout, Nav, Footer, AuthShell, LegalPage, ScrollProgressBar
+│       │   ├── routing/       RouteHead, RouteFallback, ProtectedRoute
+│       │   ├── ui/            Button, Field, Picture, PrintMarks, SectionHeading
+│       │   ├── motion/        Reveal, Parallax, CountUp, ClickSpark
+│       │   ├── social/        SocialIcons, SocialRail, SocialSection, socialIconMap, TikTokIcon
+│       │   ├── sections/      WorkTile, ProductPlate, Timeline
 │       │   └── panel/         PanelShell, OrderStepper, EventTimeline, …
-│       ├── views/             Home, Products, Work, About, Contact, …
+│       ├── views/             Home, Products, Work, About, Contact, NotFound
+│       │   ├── auth/          Login, Signup, ForgotPassword, ResetPassword
+│       │   ├── legal/         Privacy, Terms
 │       │   ├── portal/        Client portal: dashboard, orders, profile
 │       │   └── admin/         Back of house: dashboard, orders, customers
 │       ├── context/           Auth context + provider (Supabase Auth)

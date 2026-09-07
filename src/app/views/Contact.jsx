@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { ArrowRight, Check } from 'lucide-react';
 import { SITE } from '@constants/site.js';
-import Button from '@components/Button.jsx';
-import Reveal from '@components/Reveal.jsx';
-import { ColorBar } from '@components/PrintMarks.jsx';
-import { fieldLabel, fieldInput } from '@components/Field.jsx';
+import Button from '@components/ui/Button.jsx';
+import Reveal from '@components/motion/Reveal.jsx';
+import { ColorBar } from '@components/ui/PrintMarks.jsx';
+import { fieldLabel, fieldInput } from '@components/ui/Field.jsx';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 const LABEL = fieldLabel('paper');
