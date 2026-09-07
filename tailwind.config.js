@@ -7,6 +7,11 @@ const channel = (name) => `rgb(var(${name}) / <alpha-value>)`;
 
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
+  // index.html carries the fallback @font-face blocks, and the scanner
+  // reads `font-display` there as a request for the Anton family utility.
+  // Nothing sets that class, so what it emits is a rule on the sheet that
+  // blocks the first paint and that no element can ever match.
+  blocklist: ['font-display'],
   theme: {
     extend: {
       colors: {

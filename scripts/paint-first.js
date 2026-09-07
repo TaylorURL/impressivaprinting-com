@@ -9,9 +9,18 @@
  * been shown, and the whole download is charged to the first paint.
  *
  * The entry keeps its early fetch, as a module preload, and loses its script
- * tag. An inline module in its place asks for the bundle one frame after the
- * first, which is the first frame the document can have been painted in and
- * the earliest the bundle can no longer hold it back.
+ * tag. An inline module in its place asks for the bundle as a task queued from
+ * the first frame's rendering, which is the earliest moment the bundle can no
+ * longer hold that frame back.
+ *
+ * A hidden document takes the other branch and boots at once. A tab in the
+ * background produces no frames at all, so left to the frame callback alone the
+ * chunks would arrive and nothing would mount until somebody fronted the tab.
+ * It is the right branch rather than a fallback: the frame gate exists to keep
+ * the bundle off a paint, and a document nobody is looking at has no paint to
+ * keep it off. A timer instead of the visibility test would arm on every load
+ * and, on a phone connection where the first frame lands around a second in,
+ * would be what booted the app on nearly all of them.
  *
  * The preloads are also taken off the top of the queue. A module preload is
  * asked for at the same priority as the wordmark and the faces the first
@@ -30,7 +39,7 @@ const entry = html.match(/^[ \t]*<script type="module" crossorigin src="([^"]+)"
 if (!entry) throw new Error('paint-first: dist/index.html carries no module entry');
 const [tag, src] = entry;
 const preload = `    <link rel="modulepreload" fetchpriority="low" crossorigin href="${src}" />\n`;
-const boot = `    <script type="module">requestAnimationFrame(() => requestAnimationFrame(() => import(${JSON.stringify(src)})))</script>\n`;
+const boot = `    <script type="module">let b;const boot=()=>{if(b)return;b=1;import(${JSON.stringify(src)})};const hidden=()=>{if(document.visibilityState==='hidden')boot()};document.addEventListener('visibilitychange',hidden);requestAnimationFrame(()=>setTimeout(boot,0));hidden()</script>\n`;
 const out = html
   .replace(tag, `${preload}${boot}`)
   .replaceAll('<link rel="modulepreload" crossorigin', '<link rel="modulepreload" fetchpriority="low" crossorigin');

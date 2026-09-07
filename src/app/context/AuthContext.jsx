@@ -1,5 +1,6 @@
 import { startTransition, useCallback, useEffect, useMemo, useState } from 'react';
 import { AuthContext } from '@context/authContext.js';
+import { mayHoldSession } from '@data/supabaseProject.js';
 import { withBuildRefresh } from '@utils/chunk-recovery.js';
 
 // Holds the module a loader fetched, so a second caller reuses the first
@@ -37,6 +38,21 @@ const getSupabase = () => loadClient().then((m) => m.supabase);
 const loadStore = once(withBuildRefresh(() => import('@data/store.js')));
 const getStore = () => loadStore().then((m) => m.store);
 
+// Runs the work once the page has finished and the browser has nothing better
+// to do. The client is still wanted on a page nobody is signed in on — a
+// sign-in in another tab arrives through its subscription, and the login form
+// should not have to start its download cold — but it is wanted behind the
+// first screen rather than in front of it. The timeout is the promise that
+// idle eventually arrives on a page that never goes quiet.
+function whenIdle(run) {
+  const queue = () => {
+    if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 4000 });
+    else setTimeout(run, 1500);
+  };
+  if (document.readyState === 'complete') queue();
+  else window.addEventListener('load', queue, { once: true });
+}
+
 // Supabase Auth error strings, translated into the shop's voice.
 function friendlyAuthError(error) {
   const message = error?.message || '';
@@ -67,30 +83,44 @@ export function AuthProvider({ children }) {
     // this binding instead, and an unmount that beats the module leaves
     // `active` false, so no subscription is ever opened to leak.
     let unsubscribe;
-    getSupabase()
-      .then((supabase) => {
-        if (!active) return;
-        // getClaims verifies the token's signature; getSession reports whatever
-        // storage holds, which is user input where the role gates the panels.
-        supabase.auth.getClaims().then(({ data }) => {
+    const connect = () => {
+      if (!active) return;
+      getSupabase()
+        .then((supabase) => {
           if (!active) return;
-          setSessionUserId(data?.claims?.sub ?? null);
-          // With no session there is no profile to wait for.
-          if (!data?.claims) setReady(true);
+          // getClaims verifies the token's signature; getSession reports whatever
+          // storage holds, which is user input where the role gates the panels.
+          supabase.auth.getClaims().then(({ data }) => {
+            if (!active) return;
+            setSessionUserId(data?.claims?.sub ?? null);
+            // With no session there is no profile to wait for.
+            if (!data?.claims) setReady(true);
+          });
+          const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+            // No supabase calls in this callback — the client holds its auth lock
+            // while it runs. The profile loads in the effect below instead.
+            setSessionUserId(session?.user?.id ?? null);
+          });
+          unsubscribe = () => subscription.subscription.unsubscribe();
+        })
+        // A client that never arrives is nobody signed in. Saying so hands the
+        // protected routes their login redirect, where holding `ready` false
+        // would leave them on an empty page instead.
+        .catch(() => {
+          if (active) setReady(true);
         });
-        const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-          // No supabase calls in this callback — the client holds its auth lock
-          // while it runs. The profile loads in the effect below instead.
-          setSessionUserId(session?.user?.id ?? null);
-        });
-        unsubscribe = () => subscription.subscription.unsubscribe();
-      })
-      // A client that never arrives is nobody signed in. Saying so hands the
-      // protected routes their login redirect, where holding `ready` false
-      // would leave them on an empty page instead.
-      .catch(() => {
-        if (active) setReady(true);
-      });
+    };
+    // Whether anybody is signed in is readable without the client, and for a
+    // reader who is not there is nothing for it to resolve — so `ready` is
+    // already true and the download can wait for the page to be idle. It is
+    // the difference between the first screen having the connection to itself
+    // and sharing it with 210KB of session code for a session nobody has.
+    if (mayHoldSession()) {
+      connect();
+    } else {
+      setReady(true);
+      whenIdle(connect);
+    }
     return () => {
       active = false;
       if (unsubscribe) unsubscribe();
