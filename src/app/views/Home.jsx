@@ -4,15 +4,15 @@ import { FEATURED_PRODUCTS, PRODUCTS } from '@constants/products.js';
 import { PORTFOLIO } from '@constants/content.js';
 import { SITE } from '@constants/site.js';
 import { ROUTES } from '@constants/routes.js';
-import Button from '@components/Button.jsx';
-import Reveal from '@components/Reveal.jsx';
-import Picture from '@components/Picture.jsx';
-import ProductPlate from '@components/ProductPlate.jsx';
-import SectionHeading from '@components/SectionHeading.jsx';
-import WorkTile from '@components/WorkTile.jsx';
-import SocialIcons from '@components/SocialIcons.jsx';
-import SocialSection from '@components/SocialSection.jsx';
-import { ColorBar } from '@components/PrintMarks.jsx';
+import Button from '@components/ui/Button.jsx';
+import Reveal from '@components/motion/Reveal.jsx';
+import Picture from '@components/ui/Picture.jsx';
+import ProductPlate from '@components/sections/ProductPlate.jsx';
+import SectionHeading from '@components/ui/SectionHeading.jsx';
+import WorkTile from '@components/sections/WorkTile.jsx';
+import SocialIcons from '@components/social/SocialIcons.jsx';
+import SocialSection from '@components/social/SocialSection.jsx';
+import { ColorBar } from '@components/ui/PrintMarks.jsx';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 

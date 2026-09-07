@@ -1,4 +1,4 @@
-import Picture from '@components/Picture.jsx';
+import Picture from '@components/ui/Picture.jsx';
 
 // `tone` only flips the frame and caption bar; the photo face is identical
 // either way.

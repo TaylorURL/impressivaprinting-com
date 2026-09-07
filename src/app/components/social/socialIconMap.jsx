@@ -1,5 +1,5 @@
 import { Facebook, Instagram } from 'lucide-react';
-import TikTokIcon from '@components/TikTokIcon.jsx';
+import TikTokIcon from '@components/social/TikTokIcon.jsx';
 
 export const SOCIAL_ICONS = {
   facebook: Facebook,

@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { CATEGORIES, PORTFOLIO } from '@constants/content.js';
 import { ROUTES } from '@constants/routes.js';
-import Button from '@components/Button.jsx';
-import Reveal from '@components/Reveal.jsx';
-import WorkTile from '@components/WorkTile.jsx';
-import { ColorBar } from '@components/PrintMarks.jsx';
+import Button from '@components/ui/Button.jsx';
+import Reveal from '@components/motion/Reveal.jsx';
+import WorkTile from '@components/sections/WorkTile.jsx';
+import { ColorBar } from '@components/ui/PrintMarks.jsx';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 

@@ -1,10 +1,10 @@
 import { ArrowUpRight } from 'lucide-react';
 import { SITE } from '@constants/site.js';
 import { PORTFOLIO } from '@constants/content.js';
-import { SOCIAL_ICONS } from '@components/socialIconMap.jsx';
-import Reveal from '@components/Reveal.jsx';
-import SectionHeading from '@components/SectionHeading.jsx';
-import Picture from '@components/Picture.jsx';
+import { SOCIAL_ICONS } from '@components/social/socialIconMap.jsx';
+import Reveal from '@components/motion/Reveal.jsx';
+import SectionHeading from '@components/ui/SectionHeading.jsx';
+import Picture from '@components/ui/Picture.jsx';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 const INSTAGRAM = SITE.socials.find((s) => s.icon === 'instagram');

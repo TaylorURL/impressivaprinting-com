@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@constants/routes.js';
 import { SITE } from '@constants/site.js';
-import { ColorBar } from '@components/PrintMarks.jsx';
-import Parallax from '@components/Parallax.jsx';
-import Picture from '@components/Picture.jsx';
-import { SOCIAL_ICONS } from '@components/socialIconMap.jsx';
-import { currentYear } from '../utils/format';
+import { ColorBar } from '@components/ui/PrintMarks.jsx';
+import Parallax from '@components/motion/Parallax.jsx';
+import Picture from '@components/ui/Picture.jsx';
+import { SOCIAL_ICONS } from '@components/social/socialIconMap.jsx';
+import { currentYear } from '@utils/format.js';
 
 export default function Footer({ children }) {
   return (

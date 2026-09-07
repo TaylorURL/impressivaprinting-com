@@ -1,5 +1,5 @@
 import { SITE } from '@constants/site.js';
-import LegalPage, { LegalSection, LegalText } from '@components/LegalPage.jsx';
+import LegalPage, { LegalSection, LegalText } from '@components/layout/LegalPage.jsx';
 
 export default function Privacy() {
   return (

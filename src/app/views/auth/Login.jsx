@@ -3,9 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@hooks/useAuth.js';
 import { ROUTES } from '@constants/routes.js';
-import Button from '@components/Button.jsx';
-import AuthShell from '@components/AuthShell.jsx';
-import { fieldLabel, fieldInput } from '@components/Field.jsx';
+import Button from '@components/ui/Button.jsx';
+import AuthShell from '@components/layout/AuthShell.jsx';
+import { fieldLabel, fieldInput } from '@components/ui/Field.jsx';
 
 const LABEL = fieldLabel();
 const INPUT = fieldInput();

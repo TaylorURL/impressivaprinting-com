@@ -1,11 +1,11 @@
 import { Suspense, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import SplitRail from '@taylorurl/split-rail';
-import Nav from '@components/Nav.jsx';
-import Footer from '@components/Footer.jsx';
-import RouteFallback from '@components/RouteFallback.jsx';
-import ScrollProgressBar from '@components/ScrollProgressBar.jsx';
-import SocialRail from '@components/SocialRail.jsx';
+import Nav from '@components/layout/Nav.jsx';
+import Footer from '@components/layout/Footer.jsx';
+import RouteFallback from '@components/routing/RouteFallback.jsx';
+import ScrollProgressBar from '@components/layout/ScrollProgressBar.jsx';
+import SocialRail from '@components/social/SocialRail.jsx';
 
 export default function Layout() {
   const { pathname } = useLocation();

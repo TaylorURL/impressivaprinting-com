@@ -1,5 +1,5 @@
-import Reveal from '@components/Reveal.jsx';
-import { ColorBar } from '@components/PrintMarks.jsx';
+import Reveal from '@components/motion/Reveal.jsx';
+import { ColorBar } from '@components/ui/PrintMarks.jsx';
 
 const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 
