@@ -1,5 +1,5 @@
 import { SITE } from '@constants/site.js';
-import { SOCIAL_ICONS } from '@components/socialIconMap.jsx';
+import { SOCIAL_ICONS } from '@components/social/socialIconMap.jsx';
 
 export default function SocialIcons({
   className = '',

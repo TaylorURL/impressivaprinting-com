@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { LayoutDashboard, Package, UserRound } from 'lucide-react';
 import PanelShell from '@components/panel/PanelShell.jsx';
-import RouteFallback from '@components/RouteFallback.jsx';
+import RouteFallback from '@components/routing/RouteFallback.jsx';
 import { ROUTES } from '@constants/routes.js';
 
 const NAV = [

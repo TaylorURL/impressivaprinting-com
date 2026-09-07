@@ -185,9 +185,17 @@ impressivaprinting-com/
 │   ├── index.css              Design tokens, Tailwind layers, keyframes
 │   └── app/
 │       ├── App.jsx            Route table: storefront, portal, admin
-│       ├── components/        Nav, Footer, ProductPlate, WorkTile, Reveal, …
+│       ├── components/
+│       │   ├── layout/        Layout, Nav, Footer, AuthShell, LegalPage, ScrollProgressBar
+│       │   ├── routing/       RouteHead, RouteFallback, ProtectedRoute
+│       │   ├── ui/            Button, Field, Picture, PrintMarks, SectionHeading
+│       │   ├── motion/        Reveal, Parallax, CountUp, ClickSpark
+│       │   ├── social/        SocialIcons, SocialRail, SocialSection, socialIconMap, TikTokIcon
+│       │   ├── sections/      WorkTile, ProductPlate, Timeline
 │       │   └── panel/         PanelShell, OrderStepper, EventTimeline, …
-│       ├── views/             Home, Products, Work, About, Contact, …
+│       ├── views/             Home, Products, Work, About, Contact, NotFound
+│       │   ├── auth/          Login, Signup, ForgotPassword, ResetPassword
+│       │   ├── legal/         Privacy, Terms
 │       │   ├── portal/        Client portal: dashboard, orders, profile
 │       │   └── admin/         Back of house: dashboard, orders, customers
 │       ├── context/           Auth context + provider (Supabase Auth)

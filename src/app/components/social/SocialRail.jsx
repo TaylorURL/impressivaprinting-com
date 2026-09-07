@@ -1,5 +1,5 @@
 import { SITE } from '@constants/site.js';
-import { SOCIAL_ICONS } from '@components/socialIconMap.jsx';
+import { SOCIAL_ICONS } from '@components/social/socialIconMap.jsx';
 
 // Hidden below wide screens — narrower viewports have no gutter and the rail
 // would sit on top of content. mix-blend-difference is what keeps the marks

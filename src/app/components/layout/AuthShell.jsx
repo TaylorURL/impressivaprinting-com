@@ -1,4 +1,4 @@
-import { ColorBar } from '@components/PrintMarks.jsx';
+import { ColorBar } from '@components/ui/PrintMarks.jsx';
 
 export default function AuthShell({ index, kicker, headline, children }) {
   return (

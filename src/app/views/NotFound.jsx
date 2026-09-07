@@ -1,6 +1,6 @@
 import { ROUTES } from '@constants/routes.js';
-import Button from '@components/Button.jsx';
-import { ColorBar } from '@components/PrintMarks.jsx';
+import Button from '@components/ui/Button.jsx';
+import { ColorBar } from '@components/ui/PrintMarks.jsx';
 
 export default function NotFound() {
   return (

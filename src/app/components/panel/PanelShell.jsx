@@ -6,7 +6,7 @@ import { MODIFIER, useHotkeys } from '@hooks/useHotkeys.js';
 import { ROUTES } from '@constants/routes.js';
 import { initials } from '@utils/format.js';
 import SplitRail from '@taylorurl/split-rail';
-import Picture from '@components/Picture.jsx';
+import Picture from '@components/ui/Picture.jsx';
 import CommandPalette from '@components/panel/CommandPalette.jsx';
 
 // The panels are their own site view: no marketing nav, footer, or social
