@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2026.36.47-e5352b?style=for-the-badge" alt="Version 2026.36.47" />
+  <img src="https://img.shields.io/badge/version-2026.37.0-e5352b?style=for-the-badge" alt="Version 2026.37.0" />
   <img src="https://img.shields.io/badge/React-19-e5352b?style=for-the-badge&logo=react&logoColor=white" alt="React 19" />
   <img src="https://img.shields.io/badge/Vite-7-e5352b?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 7" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-3-e5352b?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 3" />
