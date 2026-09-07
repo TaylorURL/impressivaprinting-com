@@ -20,28 +20,73 @@
       fetchpriority="high"
     />
 
-    <!-- The two faces the first screen sets. The rest load with the stylesheet. -->
+    <!-- The two faces the first screen sets. The rest load with the stylesheet.
+         These name the source files rather than the served ones: the faces are
+         emitted under a hash of their own bytes, and the build rewrites both
+         these hrefs and the sheet's own url() to whatever it emitted. -->
     <link
       rel="preload"
       as="font"
       type="font/woff2"
-      href="/fonts/inter-variable.woff2"
+      href="/src/fonts/inter-variable.woff2"
       crossorigin
     />
     <link
       rel="preload"
       as="font"
       type="font/woff2"
-      href="/fonts/anton-400-normal.woff2"
+      href="/src/fonts/anton-400-normal.woff2"
       crossorigin
     />
 
-    <!-- Neither origin is reached before the largest paint: the database is
-         asked for the session once the app has mounted, and the tracker
-         attaches after the load event. The handshakes are opened here so
-         neither pays for one later, and below the first screen's own files so
-         neither takes a turn ahead of them. -->
-    <link rel="preconnect" href="https://auzwqbakalnsxqwwklrh.supabase.co" crossorigin />
+    <!-- The four faces that stand in for the real ones while they load, each
+         wearing the metrics of the file it stands in for so the swap moves no
+         line of text. They are in the document rather than only in the sheet
+         that defines them, because that sheet arrives after the first paint
+         and the swap they protect happens before it. -->
+    <style>
+      @font-face {
+        font-family: 'Anton Fallback';
+        src: local('Impact'), local('Haettenschweiler'), local('Arial Narrow Bold');
+        font-display: swap;
+        size-adjust: 100%;
+        ascent-override: 102%;
+        descent-override: 21%;
+        line-gap-override: 0%;
+      }
+      @font-face {
+        font-family: 'Archivo Fallback';
+        src: local('Arial'), local('Helvetica Neue');
+        font-display: swap;
+        size-adjust: 103%;
+        ascent-override: 92%;
+        descent-override: 24%;
+        line-gap-override: 0%;
+      }
+      @font-face {
+        font-family: 'Inter Fallback';
+        src: local('Helvetica Neue'), local('Arial');
+        font-display: swap;
+        size-adjust: 107%;
+        ascent-override: 90%;
+        descent-override: 22.4%;
+        line-gap-override: 0%;
+      }
+      @font-face {
+        font-family: 'Space Mono Fallback';
+        src: local('Menlo'), local('Consolas'), local('Courier New');
+        font-display: swap;
+        size-adjust: 103%;
+        ascent-override: 101%;
+        descent-override: 29%;
+        line-gap-override: 0%;
+      }
+    </style>
+
+    <!-- The tracker's origin, which nothing reaches before the largest paint:
+         its script attaches on the load event. The handshake is opened here so
+         it does not pay for one later, and below the first screen's own files
+         so it does not take a turn ahead of them. -->
     <link rel="preconnect" href="https://gujgtjqqurildqurpffh.supabase.co" crossorigin />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
