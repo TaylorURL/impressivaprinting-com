@@ -5,8 +5,8 @@ import Button from '@components/ui/Button.jsx';
 import Reveal from '@components/motion/Reveal.jsx';
 import { ColorBar } from '@components/ui/PrintMarks.jsx';
 import { fieldLabel, fieldInput } from '@components/ui/Field.jsx';
+import { WRAP } from '@constants/layout.js';
 
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
 const LABEL = fieldLabel('paper');
 const INPUT = fieldInput('paper');
 

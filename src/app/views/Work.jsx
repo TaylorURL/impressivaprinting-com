@@ -6,8 +6,7 @@ import Button from '@components/ui/Button.jsx';
 import Reveal from '@components/motion/Reveal.jsx';
 import WorkTile from '@components/sections/WorkTile.jsx';
 import { ColorBar } from '@components/ui/PrintMarks.jsx';
-
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
+import { WRAP } from '@constants/layout.js';
 
 export default function Work() {
   const [cat, setCat] = useState('All');
