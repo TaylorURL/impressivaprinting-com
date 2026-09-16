@@ -1,7 +1,6 @@
 import Reveal from '@components/motion/Reveal.jsx';
 import { ColorBar } from '@components/ui/PrintMarks.jsx';
-
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
+import { WRAP } from '@constants/layout.js';
 
 // The shell every legal page renders into: dark hero, then a narrow prose
 // column on paper. `title` and `accent` split the heading so the accent half

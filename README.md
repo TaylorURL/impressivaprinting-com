@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2026.37.1-e5352b?style=for-the-badge" alt="Version 2026.37.1" />
+  <img src="https://img.shields.io/badge/version-2026.38.0-e5352b?style=for-the-badge" alt="Version 2026.38.0" />
   <img src="https://img.shields.io/badge/React-19-e5352b?style=for-the-badge&logo=react&logoColor=white" alt="React 19" />
   <img src="https://img.shields.io/badge/Vite-7-e5352b?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 7" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-3-e5352b?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 3" />
@@ -81,6 +81,7 @@ No environment configuration is required: the Supabase project URL and publishab
 | `npm run build`        | Production build to `dist/`.        |
 | `npm run preview`      | Serve the production build locally. |
 | `npm run lint`         | Lint with ESLint.                   |
+| `npm run lint:fix`     | Lint and apply the fixable rules.   |
 | `npm run format`       | Format `src/**` with Prettier.      |
 | `npm run format:check` | Check formatting without writing.   |
 
@@ -171,7 +172,6 @@ impressivaprinting-com/
 │   ├── logo.png, og-card.png, favicon.svg, release.json
 │   ├── apple-touch-icon.png, icon-192.png, icon-512.png, site.webmanifest
 │   ├── robots.txt, sitemap.xml, llms.txt
-│   ├── fonts/                 The four type families, self-hosted, Latin subset
 │   ├── categories/            Catalog category imagery
 │   └── work/                  Portfolio shots
 ├── scripts/
@@ -183,6 +183,7 @@ impressivaprinting-com/
 ├── src/
 │   ├── main.jsx               Browser entry
 │   ├── index.css              Design tokens, Tailwind layers, keyframes
+│   ├── fonts/                 The four type families, self-hosted, Latin subset
 │   └── app/
 │       ├── App.jsx            Route table: storefront, portal, admin
 │       ├── components/
@@ -200,7 +201,7 @@ impressivaprinting-com/
 │       │   └── admin/         Back of house: dashboard, orders, customers
 │       ├── context/           Auth context + provider (Supabase Auth)
 │       ├── hooks/             useAuth, useStoreQuery, useHotkeys
-│       ├── constants/         site.js, products.js, routes.js, orders.js, content.js, seo.js
+│       ├── constants/         site.js, products.js, routes.js, orders.js, content.js, seo.js, layout.js
 │       ├── data/              supabaseClient.js + store.js (async data layer)
 │       └── utils/             files.js (validation), format.js, chunk-recovery.js
 └── vercel.json                SPA rewrites and asset cache headers

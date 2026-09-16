@@ -20,6 +20,9 @@ npm-debug.log*
 .fleet/
 .junie/
 
+# Worktrees a session cuts inside the checkout; the branch is the record.
+.claude/worktrees/
+
 # Secrets and local tooling state — never commit
 *.pem
 *.p12
