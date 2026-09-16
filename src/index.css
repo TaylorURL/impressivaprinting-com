@@ -130,9 +130,7 @@
 
   /* Hairlines and chrome: ink at low alpha rather than a grey of its own. */
   --rule: 244 239 227;
-  --rule-ink: 24 21 16;
   --hairline: rgb(244 239 227 / 0.14);
-  --hairline-ink: rgb(24 21 16 / 0.16);
   --glass: 13 13 16;
   --scroll-thumb: 42 42 49;
 
@@ -238,9 +236,7 @@
   --proc-y: 15 122 68;
 
   --rule: 24 21 16;
-  --rule-ink: 244 239 227;
   --hairline: rgb(24 21 16 / 0.14);
-  --hairline-ink: rgb(244 239 227 / 0.16);
   --field: 255 255 255;
   --glass: 246 247 248;
   --scroll-thumb: 178 184 191;
@@ -280,9 +276,7 @@
   --proc-y: 70 205 134;
 
   --rule: 236 238 241;
-  --rule-ink: 32 34 38;
   --hairline: rgb(236 238 241 / 0.14);
-  --hairline-ink: rgb(32 34 38 / 0.16);
   --field: 52 56 61;
   --glass: 42 45 50;
   --scroll-thumb: 88 94 102;
@@ -499,9 +493,6 @@
   .rule {
     border-color: var(--hairline);
   }
-  .rule-ink {
-    border-color: var(--hairline-ink);
-  }
 
   /* Reserved for floating chrome; blur over page content reads as mush. */
   .glass {
@@ -617,34 +608,6 @@
     }
   }
 
-  /* The pinned portfolio pan. The section is the timeline; the track inside
-     the sticky child reads it. */
-  .work-strip-progress {
-    transform-origin: left;
-  }
-  @supports (animation-timeline: view()) {
-    .work-strip {
-      view-timeline-name: --work-strip;
-    }
-    .work-strip-track {
-      animation: work-strip-pan linear both;
-      animation-timeline: --work-strip;
-      animation-range: contain 0% contain 100%;
-    }
-    .work-strip-progress {
-      transform: scaleX(0);
-      animation: rail-fill-x linear both;
-      animation-timeline: --work-strip;
-      animation-range: contain 0% contain 100%;
-    }
-  }
-
-  /* The overflow clip is what gives the child a baseline to slide up from. */
-  .reveal-line {
-    overflow: hidden;
-    display: block;
-  }
-
   .link-wipe {
     background-image: linear-gradient(currentColor, currentColor);
     background-position: 0 100%;
@@ -700,11 +663,6 @@
   .text-flare {
     color: rgb(var(--flare));
   }
-  .outline-type {
-    color: transparent;
-    -webkit-text-stroke: 1.4px currentColor;
-  }
-
   .halftone {
     background-image: radial-gradient(rgb(var(--paper-100) / 0.5) 1px, transparent 1.4px);
     background-size: 7px 7px;
@@ -731,27 +689,11 @@
     background-size: 40px 40px;
   }
 
-  /* Pair with animate-drift to make the grid crawl. */
   .blueprint {
     background-image:
       linear-gradient(rgb(var(--paper-100) / 0.05) 1px, transparent 1px),
       linear-gradient(90deg, rgb(var(--paper-100) / 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
-  }
-
-  .hazard {
-    background-image: repeating-linear-gradient(
-      -45deg,
-      rgb(var(--flare)) 0,
-      rgb(var(--flare)) 10px,
-      rgb(var(--ink-900)) 10px,
-      rgb(var(--ink-900)) 20px
-    );
-  }
-
-  .scanlines {
-    background: linear-gradient(rgb(var(--flare) / 0.08), transparent);
-    height: 40dvh;
   }
 
   .grain-layer {
@@ -778,8 +720,6 @@
   .timeline-fill,
   .timeline-body,
   .timeline-dot,
-  .work-strip-track,
-  .work-strip-progress,
   .scroll-progress {
     animation: none !important;
     transform: none !important;
@@ -788,19 +728,6 @@
 
   .scroll-progress {
     display: none;
-  }
-
-  .work-strip {
-    height: auto;
-  }
-  .work-strip-pin {
-    position: static;
-    height: auto;
-    padding-block: var(--space-16);
-  }
-  .work-strip-scroll {
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
   }
 }
 
@@ -854,17 +781,16 @@
   }
 }
 
-@keyframes work-strip-pan {
-  to {
-    /* The track is wider than the viewport, so a full shift would run the
-       last tiles off the edge. */
-    transform: translate3d(-55%, 0, 0);
+/* Moved here from the Tailwind config: the sheen is played by .shine:hover
+   rather than by an animate-* utility, so Tailwind never emitted it and the
+   rule below had no keyframes to run. */
+@keyframes shine {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
   }
-}
-
-@keyframes rail-fill-x {
-  to {
-    transform: scaleX(1);
+  60%,
+  100% {
+    transform: translateX(240%) skewX(-18deg);
   }
 }
 

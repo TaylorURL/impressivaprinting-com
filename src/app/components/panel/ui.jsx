@@ -14,11 +14,10 @@ export const AREA = FIELD;
 const CARD = 'rounded-lg border border-paper-100/10 bg-ink-900 shadow-card';
 export const CARD_CLASS = CARD;
 
+// Named as the storefront's Button names them, so a variant reads the same on
+// either side of the app.
 const BTN_VARIANTS = {
-  primary: 'bg-flare text-white hover:bg-flare-deep',
   flare: 'bg-flare text-white hover:bg-flare-deep',
-  secondary:
-    'border border-paper-100/15 bg-ink-850 text-paper-100/80 hover:border-paper-100/30 hover:text-paper-100',
   outline:
     'border border-paper-100/15 bg-ink-850 text-paper-100/80 hover:border-paper-100/30 hover:text-paper-100',
 };
@@ -27,13 +26,12 @@ const BTN_VARIANTS = {
 const BTN_SIZES = {
   sm: 'control-sm px-3 py-1',
   md: 'control-sm px-4 py-2',
-  lg: 'control px-5 py-3',
 };
 
 export function PanelButton({
   as = 'button',
   to,
-  variant = 'primary',
+  variant = 'flare',
   size = 'md',
   full = false,
   className = '',
@@ -44,7 +42,7 @@ export function PanelButton({
     'pressable inline-flex items-center justify-center gap-2 rounded-md text-[13px] font-600 transition-colors',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flare/60 focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950',
     'disabled:pointer-events-none disabled:opacity-40',
-    BTN_VARIANTS[variant] || BTN_VARIANTS.primary,
+    BTN_VARIANTS[variant] || BTN_VARIANTS.flare,
     BTN_SIZES[size] || BTN_SIZES.md,
     full ? 'w-full' : '',
     className,

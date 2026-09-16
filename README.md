@@ -81,6 +81,7 @@ No environment configuration is required: the Supabase project URL and publishab
 | `npm run build`        | Production build to `dist/`.        |
 | `npm run preview`      | Serve the production build locally. |
 | `npm run lint`         | Lint with ESLint.                   |
+| `npm run lint:fix`     | Lint and apply the fixable rules.   |
 | `npm run format`       | Format `src/**` with Prettier.      |
 | `npm run format:check` | Check formatting without writing.   |
 
@@ -171,7 +172,6 @@ impressivaprinting-com/
 │   ├── logo.png, og-card.png, favicon.svg, release.json
 │   ├── apple-touch-icon.png, icon-192.png, icon-512.png, site.webmanifest
 │   ├── robots.txt, sitemap.xml, llms.txt
-│   ├── fonts/                 The four type families, self-hosted, Latin subset
 │   ├── categories/            Catalog category imagery
 │   └── work/                  Portfolio shots
 ├── scripts/
@@ -183,6 +183,7 @@ impressivaprinting-com/
 ├── src/
 │   ├── main.jsx               Browser entry
 │   ├── index.css              Design tokens, Tailwind layers, keyframes
+│   ├── fonts/                 The four type families, self-hosted, Latin subset
 │   └── app/
 │       ├── App.jsx            Route table: storefront, portal, admin
 │       ├── components/
@@ -200,7 +201,7 @@ impressivaprinting-com/
 │       │   └── admin/         Back of house: dashboard, orders, customers
 │       ├── context/           Auth context + provider (Supabase Auth)
 │       ├── hooks/             useAuth, useStoreQuery, useHotkeys
-│       ├── constants/         site.js, products.js, routes.js, orders.js, content.js, seo.js
+│       ├── constants/         site.js, products.js, routes.js, orders.js, content.js, seo.js, layout.js
 │       ├── data/              supabaseClient.js + store.js (async data layer)
 │       └── utils/             files.js (validation), format.js, chunk-recovery.js
 └── vercel.json                SPA rewrites and asset cache headers

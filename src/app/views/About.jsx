@@ -6,8 +6,7 @@ import CountUp from '@components/motion/CountUp.jsx';
 import Timeline from '@components/sections/Timeline.jsx';
 import SectionHeading from '@components/ui/SectionHeading.jsx';
 import { ColorBar } from '@components/ui/PrintMarks.jsx';
-
-const WRAP = 'mx-auto max-w-[1400px] px-5 sm:px-8';
+import { WRAP } from '@constants/layout.js';
 
 const VALUES = [
   {
