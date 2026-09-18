@@ -409,6 +409,15 @@
         // real failure still reports it.
         window.addEventListener('pagehide', flushHeldAssets);
 
+        // An image offered in several formats and widths carries the file it
+        // actually asked for on currentSrc, and the one written into the markup
+        // on src. Those are different files whenever a picture element or a
+        // srcset is involved, and src is the one nothing chose - so reading it
+        // names the widest fallback every time and the report points at a file
+        // that may have loaded perfectly.
+        function failedUrl(target) {
+          return target.currentSrc || target.src || target.href || '';
+        }
         // Capture phase, because element load failures fire error events that do not bubble.
         window.addEventListener(
           'error',
@@ -419,7 +428,7 @@
                   'Failed to load ' +
                     event.target.tagName.toLowerCase() +
                     ': ' +
-                    (event.target.src || event.target.href || ''),
+                    failedUrl(event.target),
                 );
                 setTimeout(flushHeldAssets, HOLD_MS);
               } else {

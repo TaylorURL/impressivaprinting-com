@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 // One photo, offered in two formats at each of the widths its layout asks
 // for. `src` is the path without an extension; the derivatives sit beside it
 // under the same stem, built by scripts/images.sh. The browser takes the
@@ -12,6 +14,20 @@
 // frame without the picture and finish it in a later one, which is right for
 // everything the reader has not reached and wrong for the one element the
 // first screen is measured on.
+//
+// A photo that loses its request is lost for the rest of the visit. The
+// browser asks once, and a connection dropped mid-transfer or an edge that
+// answered badly leaves the element in its failed state until the page is
+// loaded again - so a single unlucky moment puts a broken frame in the middle
+// of the grid and keeps it there. The retry below is that second ask, on a
+// short delay and under a fresh query so nothing answers it from the cache
+// that just failed. What survives the retry is treated as a photo that is not
+// coming: the element goes, and the frame the layout drew stays exactly the
+// size it was with the caption still on it, so a missing photo reads as a
+// plain panel rather than as a page that is broken.
+const RETRIES = 1;
+const RETRY_DELAY_MS = 500;
+
 export default function Picture({
   src,
   alt,
@@ -23,14 +39,46 @@ export default function Picture({
   priority = false,
   widths = [400, 800],
 }) {
-  const set = (ext) => widths.map((w) => `${src}-${w}.${ext} ${w}w`).join(', ');
+  const [attempt, setAttempt] = useState(0);
+  const timer = useRef(null);
+
+  useEffect(() => {
+    setAttempt(0);
+  }, [src]);
+
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  const onError = useCallback(() => {
+    setAttempt((n) => {
+      if (n > RETRIES) return n;
+      if (n === RETRIES) return n + 1;
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => setAttempt((c) => c + 1), RETRY_DELAY_MS);
+      return n;
+    });
+  }, []);
+
+  const exhausted = attempt > RETRIES;
+  const bust = attempt > 0 ? `?retry=${attempt}` : '';
+  const set = (ext) => widths.map((w) => `${src}-${w}.${ext}${bust} ${w}w`).join(', ');
   const widest = widths[widths.length - 1];
+
+  if (exhausted) {
+    return (
+      <div
+        className={className}
+        style={{ aspectRatio: `${width} / ${height}` }}
+        {...(alt ? { role: 'img', 'aria-label': alt } : { 'aria-hidden': true })}
+      />
+    );
+  }
 
   return (
     <picture>
       <source type="image/avif" srcSet={set('avif')} sizes={sizes} />
       <img
-        src={`${src}-${widest}.webp`}
+        key={attempt}
+        src={`${src}-${widest}.webp${bust}`}
         srcSet={set('webp')}
         sizes={sizes}
         alt={alt}
@@ -40,6 +88,7 @@ export default function Picture({
         fetchPriority={priority ? 'high' : 'auto'}
         {...(priority ? {} : { decoding: 'async' })}
         className={className}
+        onError={onError}
       />
     </picture>
   );
