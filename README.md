@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2026.38.1-e5352b?style=for-the-badge" alt="Version 2026.38.1" />
+  <img src="https://img.shields.io/badge/version-2026.39.0-e5352b?style=for-the-badge" alt="Version 2026.39.0" />
   <img src="https://img.shields.io/badge/React-19-e5352b?style=for-the-badge&logo=react&logoColor=white" alt="React 19" />
   <img src="https://img.shields.io/badge/Vite-7-e5352b?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 7" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-3-e5352b?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 3" />
@@ -175,6 +175,7 @@ impressivaprinting-com/
 │   ├── categories/            Catalog category imagery
 │   └── work/                  Portfolio shots
 ├── scripts/
+│   ├── avif-drop-clap.py      Takes the encoder's unwanted crop back out of an AVIF
 │   ├── critical-css.js        Puts the rules the first screen needs into the built page
 │   ├── images.sh              Builds the WebP and AVIF derivatives of every photo
 │   └── paint-first.js         Moves the bundle behind the first frame of the built page
