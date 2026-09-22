@@ -175,6 +175,7 @@ impressivaprinting-com/
 │   ├── categories/            Catalog category imagery
 │   └── work/                  Portfolio shots
 ├── scripts/
+│   ├── avif-drop-clap.py      Takes the encoder's unwanted crop back out of an AVIF
 │   ├── critical-css.js        Puts the rules the first screen needs into the built page
 │   ├── images.sh              Builds the WebP and AVIF derivatives of every photo
 │   └── paint-first.js         Moves the bundle behind the first frame of the built page
