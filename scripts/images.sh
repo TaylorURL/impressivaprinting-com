@@ -7,7 +7,22 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)/public"
+here="$(cd "$(dirname "$0")" && pwd)"
 cd "$root"
+
+# Every AVIF sips writes carries a clean aperture cropping the frame to itself
+# less one row or column, and marks it essential. A reader that implements the
+# property applies a crop nobody wanted; a reader that does not is required to
+# refuse the whole picture rather than ignore it, so the file answers perfectly
+# on the wire and draws nothing at all. That is why this runs over every AVIF
+# below rather than over the one that was noticed: the encoder writes it into
+# all of them and the ones that go unreported are the ones further down the
+# page.
+avif() {
+  local scaled="$1" quality="$2" out="$3"
+  sips -s format avif -s formatOptions "$quality" "$scaled" --out "$out" >/dev/null
+  python3 "$here/avif-drop-clap.py" "$out" >/dev/null
+}
 
 derive() {
   local src="$1" stem="${1%.*}" width
@@ -15,7 +30,7 @@ derive() {
     local scaled="/tmp/impressiva-derive-$width.png"
     sips -Z "$width" "$src" --out "$scaled" >/dev/null
     cwebp -quiet -q 76 "$scaled" -o "${stem}-${width}.webp"
-    sips -s format avif -s formatOptions 55 "$scaled" --out "${stem}-${width}.avif" >/dev/null
+    avif "$scaled" 55 "${stem}-${width}.avif"
     rm -f "$scaled"
   done
 }
@@ -31,7 +46,7 @@ for width in 560 800 1200; do
   scaled="/tmp/impressiva-logo-$width.png"
   sips -Z "$width" logo.png --out "$scaled" >/dev/null
   cwebp -quiet -q 82 -alpha_q 90 "$scaled" -o "logo-${width}.webp"
-  sips -s format avif -s formatOptions 60 "$scaled" --out "logo-${width}.avif" >/dev/null
+  avif "$scaled" 60 "logo-${width}.avif"
   rm -f "$scaled"
 done
 
