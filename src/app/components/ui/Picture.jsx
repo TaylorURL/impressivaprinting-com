@@ -21,10 +21,25 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // loaded again - so a single unlucky moment puts a broken frame in the middle
 // of the grid and keeps it there. The retry below is that second ask, on a
 // short delay and under a fresh query so nothing answers it from the cache
-// that just failed. What survives the retry is treated as a photo that is not
-// coming: the element goes, and the frame the layout drew stays exactly the
-// size it was with the caption still on it, so a missing photo reads as a
-// plain panel rather than as a page that is broken.
+// that just failed.
+//
+// The second ask drops the AVIF. A picture element settles on a format before
+// it fetches anything and settles on AVIF for every browser that says it reads
+// one, so a file that arrives whole and will not decode ends exactly the way a
+// file that never arrived does, and the WebP sitting beside it under the same
+// stem is never consulted. Asking a decoder a second time for bytes it has
+// already refused is not a second ask, it is the same answer - and a reader
+// holding its own copy of those bytes from an earlier visit serves them to
+// itself without the host being asked at all, which is a correction that
+// cannot reach it for as long as the copy lives. So the format that failed
+// comes off the table and the second ask goes to WebP, which every browser
+// that can reach this page can read. A dropped connection recovers either way,
+// and a picture this reader cannot decode now recovers too instead of going.
+//
+// What survives that is treated as a photo that is not coming: the element
+// goes, and the frame the layout drew stays exactly the size it was with the
+// caption still on it, so a missing photo reads as a plain panel rather than
+// as a page that is broken.
 const RETRIES = 1;
 const RETRY_DELAY_MS = 500;
 
@@ -75,7 +90,7 @@ export default function Picture({
 
   return (
     <picture>
-      <source type="image/avif" srcSet={set('avif')} sizes={sizes} />
+      {attempt === 0 ? <source type="image/avif" srcSet={set('avif')} sizes={sizes} /> : null}
       <img
         key={attempt}
         src={`${src}-${widest}.webp${bust}`}
