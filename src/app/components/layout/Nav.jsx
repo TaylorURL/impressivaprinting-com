@@ -61,16 +61,18 @@ export default function Nav() {
     return () => window.removeEventListener('keydown', onKey);
   }, [megaOpen]);
 
-  // A grace period on the way out, so the pointer can cross the gap between
-  // the trigger and the panel without the panel closing under it.
+  // A grace period on the way out, so a pointer that strays off the trigger or
+  // the panel for a moment does not close the panel under it.
   const holdOpen = () => {
     window.clearTimeout(closeTimer.current);
     setMegaOpen(true);
   };
   const releaseOpen = () => {
     window.clearTimeout(closeTimer.current);
-    closeTimer.current = window.setTimeout(() => setMegaOpen(false), 140);
+    closeTimer.current = window.setTimeout(() => setMegaOpen(false), 200);
   };
+
+  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -118,6 +120,11 @@ export default function Nav() {
                       aria-hidden
                     />
                   </button>
+                  {/* Spans the bar's padding and the colour bar below the trigger, so the
+                      pointer stays inside this element all the way down to the panel. */}
+                  {megaOpen ? (
+                    <span className="absolute inset-x-0 top-full h-4" aria-hidden />
+                  ) : null}
                 </div>
               ) : (
                 <NavLink
