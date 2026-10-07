@@ -19,29 +19,47 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // browser asks once, and a connection dropped mid-transfer or an edge that
 // answered badly leaves the element in its failed state until the page is
 // loaded again - so a single unlucky moment puts a broken frame in the middle
-// of the grid and keeps it there. The retry below is that second ask, on a
-// short delay and under a fresh query so nothing answers it from the cache
-// that just failed.
+// of the grid and keeps it there. The asks below are that second chance, on a
+// growing delay and each under a query no earlier ask used, so nothing answers
+// one from the cache that just failed.
 //
-// The second ask drops the AVIF. A picture element settles on a format before
-// it fetches anything and settles on AVIF for every browser that says it reads
-// one, so a file that arrives whole and will not decode ends exactly the way a
-// file that never arrived does, and the WebP sitting beside it under the same
-// stem is never consulted. Asking a decoder a second time for bytes it has
+// The delays grow because the thing that takes a picture away usually takes
+// every picture on the screen away with it, and it lasts seconds rather than
+// milliseconds: a connection that drops as the page is filling, a hotspot
+// changing hands, a tunnel. A single ask half a second later lands inside that
+// same gap and fails for the same reason, which reads from here as a picture
+// that cannot be fetched and is really a picture nobody waited for. So the
+// ladder runs half a second, then two and a half, then seven, which carries an
+// element across a ten-second interruption without asking a healthy page for
+// anything it would not have asked for anyway.
+//
+// The second ask also drops the AVIF. A picture element settles on a format
+// before it fetches anything and settles on AVIF for every browser that says it
+// reads one, so a file that arrives whole and will not decode ends exactly the
+// way a file that never arrived does, and the WebP sitting beside it under the
+// same stem is never consulted. Asking a decoder a second time for bytes it has
 // already refused is not a second ask, it is the same answer - and a reader
 // holding its own copy of those bytes from an earlier visit serves them to
 // itself without the host being asked at all, which is a correction that
 // cannot reach it for as long as the copy lives. So the format that failed
-// comes off the table and the second ask goes to WebP, which every browser
-// that can reach this page can read. A dropped connection recovers either way,
-// and a picture this reader cannot decode now recovers too instead of going.
+// comes off the table for the rest of the visit and every later ask goes to
+// WebP, which every browser that can reach this page can read.
 //
-// What survives that is treated as a photo that is not coming: the element
-// goes, and the frame the layout drew stays exactly the size it was with the
-// caption still on it, so a missing photo reads as a plain panel rather than
-// as a page that is broken.
-const RETRIES = 1;
-const RETRY_DELAY_MS = 500;
+// An interruption longer than the ladder is still survivable, because the
+// browser will say so: `online` fires when the network comes back and the tab
+// says when it is looked at again. Either one buys one more ask. Without them
+// a reader who was away for a minute keeps an empty frame however well the
+// connection recovered, and the page it is looking at is permanently worse
+// than the page it would get by pressing reload.
+//
+// What survives all of that is a photo that is not coming, and the frame says
+// so rather than going quiet: the layout keeps exactly the space it drew and
+// the panel carries the words the picture was there to say. An empty element
+// is the one outcome worth avoiding - a wordmark that vanishes and a grid of
+// invisible holes read as a page that is broken, where a plain panel with the
+// name on it reads as a page with a picture missing from it.
+const RETRY_DELAYS_MS = [500, 2500, 7000];
+const LAST = RETRY_DELAYS_MS.length;
 
 export default function Picture({
   src,
@@ -54,45 +72,90 @@ export default function Picture({
   priority = false,
   widths = [400, 800],
 }) {
-  const [attempt, setAttempt] = useState(0);
+  // `ask` counts every request this element has made and only ever grows, so
+  // no later ask can repeat a URL an earlier one failed on. `tries` is how many
+  // have failed in the round now running, which is what picks the delay and
+  // decides when there is nothing left to try.
+  const [ask, setAsk] = useState(0);
+  const [tries, setTries] = useState(0);
+  const triesRef = useRef(0);
   const timer = useRef(null);
 
   useEffect(() => {
-    setAttempt(0);
+    setAsk(0);
+    setTries(0);
   }, [src]);
+
+  useEffect(() => {
+    triesRef.current = tries;
+  }, [tries]);
 
   useEffect(() => () => clearTimeout(timer.current), []);
 
   const onError = useCallback(() => {
-    setAttempt((n) => {
-      if (n > RETRIES) return n;
-      if (n === RETRIES) return n + 1;
-      clearTimeout(timer.current);
-      timer.current = setTimeout(() => setAttempt((c) => c + 1), RETRY_DELAY_MS);
-      return n;
-    });
+    const n = triesRef.current;
+    if (n > LAST) return;
+    const delay = RETRY_DELAYS_MS[n];
+    if (delay === undefined) {
+      triesRef.current = n + 1;
+      setTries(n + 1);
+      return;
+    }
+    triesRef.current = n + 1;
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      setTries(n + 1);
+      setAsk((a) => a + 1);
+    }, delay);
   }, []);
 
-  const exhausted = attempt > RETRIES;
-  const bust = attempt > 0 ? `?retry=${attempt}` : '';
+  const exhausted = tries > LAST;
+
+  useEffect(() => {
+    if (!exhausted) return undefined;
+    // One more ask, and only one: the round restarts at the end of the ladder,
+    // so a network that keeps coming and going cannot turn this into a loop.
+    const again = () => {
+      triesRef.current = LAST;
+      setTries(LAST);
+      setAsk((a) => a + 1);
+    };
+    const onShown = () => {
+      if (document.visibilityState === 'visible') again();
+    };
+    window.addEventListener('online', again);
+    document.addEventListener('visibilitychange', onShown);
+    return () => {
+      window.removeEventListener('online', again);
+      document.removeEventListener('visibilitychange', onShown);
+    };
+  }, [exhausted]);
+
+  const bust = ask > 0 ? `?retry=${ask}` : '';
   const set = (ext) => widths.map((w) => `${src}-${w}.${ext}${bust} ${w}w`).join(', ');
   const widest = widths[widths.length - 1];
 
   if (exhausted) {
     return (
       <div
-        className={className}
+        className={`${className} grid place-items-center overflow-hidden bg-ink-850`}
         style={{ aspectRatio: `${width} / ${height}` }}
         {...(alt ? { role: 'img', 'aria-label': alt } : { 'aria-hidden': true })}
-      />
+      >
+        {alt ? (
+          <span className="px-2 text-center font-body text-[0.7rem] leading-tight text-paper-100/70">
+            {alt}
+          </span>
+        ) : null}
+      </div>
     );
   }
 
   return (
     <picture>
-      {attempt === 0 ? <source type="image/avif" srcSet={set('avif')} sizes={sizes} /> : null}
+      {ask === 0 ? <source type="image/avif" srcSet={set('avif')} sizes={sizes} /> : null}
       <img
-        key={attempt}
+        key={ask}
         src={`${src}-${widest}.webp${bust}`}
         srcSet={set('webp')}
         sizes={sizes}
