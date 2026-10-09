@@ -70,8 +70,22 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // is the one outcome worth avoiding - a wordmark that vanishes and a grid of
 // invisible holes read as a page that is broken, where a plain panel with the
 // name on it reads as a page with a picture missing from it.
+//
+// Dropping it is a decision about the reader rather than about the file, so it
+// is taken once and taken for all of them. Held per element, the knowledge that
+// this reader gets no AVIF is found and thrown away over and over: the next
+// picture offers the format again, loses its own first ask, stands empty for
+// the length of a rung, and files its own report - and so does each one the
+// reader scrolls into view, for the rest of the visit. The flag the document
+// sets at the first failure is what stops that, and it is set in index.html
+// because the first screen is in the markup and fails there before the app has
+// mounted. An element that reads it off is never offered AVIF at all, so it
+// spends no rung, leaves no empty frame, and asks for the one format this
+// reader can read on its first ask.
 const RETRY_DELAYS_MS = [500, 2500, 7000];
 const LAST = RETRY_DELAYS_MS.length;
+
+const offered = () => typeof window === 'undefined' || window.impressivaAvif !== false;
 
 export default function Picture({
   src,
@@ -90,17 +104,41 @@ export default function Picture({
   // decides when there is nothing left to try.
   const [ask, setAsk] = useState(0);
   const [tries, setTries] = useState(0);
+  const [avif, setAvif] = useState(offered);
   const triesRef = useRef(0);
   const askRef = useRef(0);
   const spent = useRef(-1);
   const timer = useRef(null);
+  const avifRef = useRef(avif);
+  const shown = useRef(false);
 
   useEffect(() => {
     setAsk(0);
     setTries(0);
+    setAvif(offered());
     askRef.current = 0;
     spent.current = -1;
+    shown.current = false;
   }, [src]);
+
+  useEffect(() => {
+    avifRef.current = avif;
+  }, [avif]);
+
+  // An element that has already drawn its photograph keeps it: there is nothing
+  // to recover, and asking again for a file the reader can see would take the
+  // picture away to put the same picture back.
+  useEffect(() => {
+    if (!offered()) {
+      setAvif(false);
+      return undefined;
+    }
+    const drop = () => {
+      if (!shown.current) setAvif(false);
+    };
+    window.addEventListener('impressiva:no-avif', drop);
+    return () => window.removeEventListener('impressiva:no-avif', drop);
+  }, []);
 
   useEffect(() => {
     triesRef.current = tries;
@@ -108,10 +146,25 @@ export default function Picture({
 
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  const onError = useCallback(() => {
+  const onLoad = useCallback(() => {
+    shown.current = true;
+  }, []);
+
+  const onError = useCallback((event) => {
     const a = askRef.current;
     if (spent.current === a) return;
     spent.current = a;
+    // Taking the format off the table is itself the next ask, and it happens in
+    // this frame rather than after a delay, so it costs no rung. The ladder is
+    // for a request that went missing; a format the reader cannot read is not
+    // that, and spending a rung on it is what leaves a picture one ask short.
+    // The file the browser chose says which of the two it was, because the one
+    // written into the markup is the WebP every time.
+    if (avifRef.current && /\.avif(\?|$)/.test(event.currentTarget.currentSrc || '')) {
+      spent.current = -1;
+      setAvif(false);
+      return;
+    }
     const n = triesRef.current;
     if (n > LAST) return;
     const delay = RETRY_DELAYS_MS[n];
@@ -175,8 +228,8 @@ export default function Picture({
   }
 
   return (
-    <picture key={ask}>
-      {ask === 0 ? <source type="image/avif" srcSet={set('avif')} sizes={sizes} /> : null}
+    <picture key={`${ask}-${avif ? 'avif' : 'webp'}`}>
+      {ask === 0 && avif ? <source type="image/avif" srcSet={set('avif')} sizes={sizes} /> : null}
       <img
         src={`${src}-${widest}.webp${bust}`}
         srcSet={set('webp')}
@@ -188,6 +241,7 @@ export default function Picture({
         fetchPriority={priority ? 'high' : 'auto'}
         {...(priority ? {} : { decoding: 'async' })}
         className={className}
+        onLoad={onLoad}
         onError={onError}
       />
     </picture>
