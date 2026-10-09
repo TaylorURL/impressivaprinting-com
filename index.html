@@ -418,17 +418,52 @@
         function failedUrl(target) {
           return target.currentSrc || target.src || target.href || '';
         }
+        // A reader who cannot be given one AVIF cannot be given any of them. A
+        // decoder that refuses a file refuses the format, and a proxy that will
+        // not pass image/avif will not pass the next one either, so the first
+        // picture to lose one has already answered the question for every
+        // photograph on the site. That answer is worth keeping, because the
+        // answer is expensive to find: a picture element settles on a format
+        // before it fetches anything, so an element offered AVIF loses its
+        // first ask, stands empty for as long as the recovery takes, and files
+        // a report on the way. Found once per element and thrown away, that is
+        // every photograph on the page arriving late in a body of blank frames,
+        // and it happens again for each one the reader scrolls to.
+        //
+        // So it is recorded here, where the earliest failure on the page can
+        // reach it. The first screen is in the document and offers AVIF before
+        // the bundle has downloaded, which makes its wordmark the first thing
+        // to fail and the only notice that arrives before the app has mounted
+        // anything. The pre-paint markup has no recovery of its own, so taking
+        // the source away is what lets the img beside it choose the WebP under
+        // the same stem; Picture reads the flag and the event for the rest.
+        //
+        // Taking the source away moves the img onto another file, and the file
+        // it moves onto is the one `currentSrc` then reads - so the name the
+        // report is for is taken before this runs and passed in, rather than
+        // read off the element afterwards. Read after, every one of these
+        // reports names the WebP that loaded perfectly instead of the AVIF that
+        // did not.
+        window.impressivaAvif = true;
+        function noAvif(target, url) {
+          if (!window.impressivaAvif) return;
+          if (target.tagName !== 'IMG') return;
+          if (!/\.avif(\?|$)/.test(url)) return;
+          window.impressivaAvif = false;
+          var sources = document.querySelectorAll('source[type="image/avif"]');
+          for (var i = 0; i < sources.length; i += 1) sources[i].remove();
+          window.dispatchEvent(new Event('impressiva:no-avif'));
+        }
         // Capture phase, because element load failures fire error events that do not bubble.
         window.addEventListener(
           'error',
           function (event) {
             try {
               if (event.target && event.target !== window && event.target.tagName) {
+                var url = failedUrl(event.target);
+                noAvif(event.target, url);
                 heldAssets.push(
-                  'Failed to load ' +
-                    event.target.tagName.toLowerCase() +
-                    ': ' +
-                    failedUrl(event.target),
+                  'Failed to load ' + event.target.tagName.toLowerCase() + ': ' + url,
                 );
                 setTimeout(flushHeldAssets, HOLD_MS);
               } else {
