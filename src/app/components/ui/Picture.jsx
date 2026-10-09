@@ -52,6 +52,18 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // connection recovered, and the page it is looking at is permanently worse
 // than the page it would get by pressing reload.
 //
+// Each ask is worth exactly one rung, however many times the browser says it
+// failed. A failed ask can report itself twice: the round that drops the AVIF
+// takes the `source` element away, and an `img` left in the document without
+// it chooses again from its own `srcSet` - the WebP under no query at all -
+// and fails a second time on the way out. Counted as two, that pair spends two
+// rungs for one ask and the later one cancels the ask the earlier one had
+// scheduled, so the ladder runs out of rungs an ask early and the frame gives
+// up at seven seconds having never asked a third time. So the whole picture
+// element is replaced per ask rather than the image inside it, which leaves no
+// image in the document without its source, and an ask that has already spent
+// its rung is not given another.
+//
 // What survives all of that is a photo that is not coming, and the frame says
 // so rather than going quiet: the layout keeps exactly the space it drew and
 // the panel carries the words the picture was there to say. An empty element
@@ -79,11 +91,15 @@ export default function Picture({
   const [ask, setAsk] = useState(0);
   const [tries, setTries] = useState(0);
   const triesRef = useRef(0);
+  const askRef = useRef(0);
+  const spent = useRef(-1);
   const timer = useRef(null);
 
   useEffect(() => {
     setAsk(0);
     setTries(0);
+    askRef.current = 0;
+    spent.current = -1;
   }, [src]);
 
   useEffect(() => {
@@ -93,6 +109,9 @@ export default function Picture({
   useEffect(() => () => clearTimeout(timer.current), []);
 
   const onError = useCallback(() => {
+    const a = askRef.current;
+    if (spent.current === a) return;
+    spent.current = a;
     const n = triesRef.current;
     if (n > LAST) return;
     const delay = RETRY_DELAYS_MS[n];
@@ -104,6 +123,9 @@ export default function Picture({
     triesRef.current = n + 1;
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
+      // The ref moves with the ask rather than after it, because the browser
+      // can report the new ask failed before a passive effect has run.
+      askRef.current += 1;
       setTries(n + 1);
       setAsk((a) => a + 1);
     }, delay);
@@ -117,6 +139,7 @@ export default function Picture({
     // so a network that keeps coming and going cannot turn this into a loop.
     const again = () => {
       triesRef.current = LAST;
+      askRef.current += 1;
       setTries(LAST);
       setAsk((a) => a + 1);
     };
@@ -152,10 +175,9 @@ export default function Picture({
   }
 
   return (
-    <picture>
+    <picture key={ask}>
       {ask === 0 ? <source type="image/avif" srcSet={set('avif')} sizes={sizes} /> : null}
       <img
-        key={ask}
         src={`${src}-${widest}.webp${bust}`}
         srcSet={set('webp')}
         sizes={sizes}
