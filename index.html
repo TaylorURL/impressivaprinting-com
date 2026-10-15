@@ -285,6 +285,12 @@
         // inside one arrives at this handler with nothing of the site in its
         // stack. A stack naming only extension scripts describes the visitor's
         // browser; one carrying a single site frame is the site's.
+        //
+        // An extension writing to the console describes itself the same way, but
+        // the frames arrive somewhere else: console.error is handed an error
+        // object rather than a stack, and flatten turns the two into one string.
+        // So the message is read as well as the stack, and whichever carries the
+        // frames answers for them.
         function extensionOnly(stack) {
           var schemes = String(stack || '').match(/[a-z][a-z0-9+.-]*:\/\//gi);
           if (!schemes) return false;
@@ -346,7 +352,7 @@
         function report(kind, message, stack) {
           hold(kind, message, stack);
           if (sent >= 10) return; // a page stuck in an error loop stops at ten
-          if (extensionOnly(stack)) return;
+          if (extensionOnly(stack) || extensionOnly(message)) return;
           sent += 1;
           try {
             send(
