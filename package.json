@@ -2,7 +2,7 @@
   "name": "impressivaprinting-com",
   "private": true,
   "license": "UNLICENSED",
-  "version": "2026.42.0",
+  "version": "2026.42.1",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -12,6 +12,7 @@
     "build": "vite build && node scripts/critical-css.js && node scripts/paint-first.js",
     "preview": "vite preview",
     "lint": "eslint .",
+    "test": "node --test \"tests/*.test.js\"",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""

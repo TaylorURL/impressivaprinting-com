@@ -300,6 +300,34 @@
           }
           return true;
         }
+        // The other half of that rule, for a throw that arrives with no frames
+        // anywhere in it. Both tests above read URLs, and an extension's own
+        // messaging failure often carries none: the extension APIs on iOS are a
+        // native bridge rather than a script, so Safari rejects with an Error
+        // whose stack is empty and whose message is the whole of the evidence.
+        // One came off the home page on 2026-10-16 saying "Invalid call to
+        // runtime.sendMessage(). Tab not found.", with no stack, and the scheme
+        // test answered no to the only question it could be asked.
+        //
+        // What is left to read is the message, and these messages name an API
+        // that exists only in an extension. `runtime.sendMessage`,
+        // `tabs.connect` and the ports behind them are reachable from a content
+        // script and from nowhere on a page; this site calls none of them, ships
+        // no dependency that does, and has nothing to reach if it tried. So a
+        // message naming one describes the visitor's browser exactly as a stack
+        // of `extension://` frames does, and it is held for the same reason:
+        // there is no fault here to fix.
+        //
+        // The list is spelled out rather than matched loosely, because this is
+        // the reporter choosing what never reaches the collector, and a rule
+        // that widened would take real faults with it silently. The method name
+        // is required beside the namespace, so a site error that merely says
+        // `channel.sendMessage is not a function` still reports.
+        var EXTENSION_API =
+          /\b(?:chrome|browser|runtime|tabs|extension)\.(?:sendMessage|connect|onMessage|onConnect)\b|\bExtension context invalidated\b|\bReceiving end does not exist\b|\bThe message port closed before a response was received\b/;
+        function extensionApi(message) {
+          return EXTENSION_API.test(String(message == null ? '' : message));
+        }
         // A request the page makes writes its own failure to the console when it
         // fails, and a collector that cannot be reached would then be the loudest
         // thing on the page. The same request issued inside a worker writes
@@ -352,7 +380,7 @@
         function report(kind, message, stack) {
           hold(kind, message, stack);
           if (sent >= 10) return; // a page stuck in an error loop stops at ten
-          if (extensionOnly(stack) || extensionOnly(message)) return;
+          if (extensionOnly(stack) || extensionOnly(message) || extensionApi(message)) return;
           sent += 1;
           try {
             send(
