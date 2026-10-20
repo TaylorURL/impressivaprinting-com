@@ -20,8 +20,19 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // answered badly leaves the element in its failed state until the page is
 // loaded again - so a single unlucky moment puts a broken frame in the middle
 // of the grid and keeps it there. The asks below are that second chance, on a
-// growing delay and each under a query no earlier ask used, so nothing answers
-// one from the cache that just failed.
+// growing delay.
+//
+// EACH ASK IS FOR THE FILE THE MARKUP NAMED. An `img` handed the `src` it
+// already holds does nothing, which is why these asks used to carry a query no
+// earlier ask had used - but a query is not the way round it. The edge caches
+// by the whole URL, so `?retry=1` is a second cache key: it misses the healthy
+// copy the edge is already holding, goes to the origin for it, and is
+// therefore slower and likelier to fail than the request it is recovering. It
+// also puts an address that is not a file on this site into everything that
+// watches the site, so one photograph failing reads as faults against several
+// different files. What makes the ask instead is the whole picture element
+// going and a new one taking its place, which is a fresh `img` with the URLs
+// the markup wrote - one request, on the key the edge already has.
 //
 // The delays grow because the thing that takes a picture away usually takes
 // every picture on the screen away with it, and it lasts seconds rather than
@@ -84,6 +95,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // reader can read on its first ask.
 const RETRY_DELAYS_MS = [500, 2500, 7000];
 const LAST = RETRY_DELAYS_MS.length;
+const LADDER_SECONDS = Math.round(RETRY_DELAYS_MS.reduce((total, ms) => total + ms, 0) / 1000);
+
+// One photograph that never comes is one thing to say, and the same photograph
+// can be on the page more than once - the wordmark is in the header and in the
+// markup the app replaces. Said per element, a reader who lost one file hears
+// about it as many times as the page drew it.
+const saidFor = new Set();
 
 const offered = () => typeof window === 'undefined' || window.impressivaAvif !== false;
 
@@ -98,10 +116,11 @@ export default function Picture({
   priority = false,
   widths = [400, 800],
 }) {
-  // `ask` counts every request this element has made and only ever grows, so
-  // no later ask can repeat a URL an earlier one failed on. `tries` is how many
-  // have failed in the round now running, which is what picks the delay and
-  // decides when there is nothing left to try.
+  // `ask` counts every request this element has made and only ever grows. It
+  // is what the picture element is keyed on, so each ask replaces the element
+  // rather than handing the old one an attribute it already has. `tries` is
+  // how many have failed in the round now running, which is what picks the
+  // delay and decides when there is nothing left to try.
   const [ask, setAsk] = useState(0);
   const [tries, setTries] = useState(0);
   const [avif, setAvif] = useState(offered);
@@ -111,6 +130,11 @@ export default function Picture({
   const timer = useRef(null);
   const avifRef = useRef(avif);
   const shown = useRef(false);
+  // The file the element actually asked for, taken as it fails. By the time
+  // the ladder has run out the img is gone and the panel is in its place, and
+  // the widest WebP under the stem is the one nothing chose - naming that is
+  // how a report comes to name a file that was never requested.
+  const asked = useRef('');
 
   useEffect(() => {
     setAsk(0);
@@ -119,6 +143,7 @@ export default function Picture({
     askRef.current = 0;
     spent.current = -1;
     shown.current = false;
+    asked.current = '';
   }, [src]);
 
   useEffect(() => {
@@ -151,6 +176,7 @@ export default function Picture({
   }, []);
 
   const onError = useCallback((event) => {
+    asked.current = event.currentTarget.currentSrc || event.currentTarget.src || '';
     const a = askRef.current;
     if (spent.current === a) return;
     spent.current = a;
@@ -184,7 +210,27 @@ export default function Picture({
     }, delay);
   }, []);
 
+  const set = (ext) => widths.map((w) => `${src}-${w}.${ext} ${w}w`).join(', ');
+  const widest = widths[widths.length - 1];
+
   const exhausted = tries > LAST;
+
+  // The asks after the first are held by the entry document, because each of
+  // them failing while the file is still away is the same fault as the first
+  // and filing them turns one photograph into four. What is worth hearing is
+  // how it came out, so this says so once when the ladder runs out, naming the
+  // file, the asks it took and the time they covered - the thing a report of a
+  // single dead request cannot say. `console.error` is where the entry
+  // document is listening, so it travels the way every other fault does.
+  useEffect(() => {
+    if (!exhausted) return;
+    if (saidFor.has(src)) return;
+    saidFor.add(src);
+    const file = asked.current || `${src}-${widest}.webp`;
+    console.error(
+      `Failed to load img: ${file} - still failing after ${LAST + 1} asks over ${LADDER_SECONDS}s`,
+    );
+  }, [exhausted, src, widest]);
 
   useEffect(() => {
     if (!exhausted) return undefined;
@@ -207,9 +253,6 @@ export default function Picture({
     };
   }, [exhausted]);
 
-  const bust = ask > 0 ? `?retry=${ask}` : '';
-  const set = (ext) => widths.map((w) => `${src}-${w}.${ext}${bust} ${w}w`).join(', ');
-  const widest = widths[widths.length - 1];
 
   if (exhausted) {
     return (
@@ -231,8 +274,9 @@ export default function Picture({
     <picture key={`${ask}-${avif ? 'avif' : 'webp'}`}>
       {ask === 0 && avif ? <source type="image/avif" srcSet={set('avif')} sizes={sizes} /> : null}
       <img
-        src={`${src}-${widest}.webp${bust}`}
+        src={`${src}-${widest}.webp`}
         srcSet={set('webp')}
+        {...(ask > 0 ? { 'data-asking': '' } : {})}
         sizes={sizes}
         alt={alt}
         width={width}

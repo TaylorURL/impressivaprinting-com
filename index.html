@@ -432,9 +432,24 @@
         // wait elapses was a real failure and goes.
         var HOLD_MS = 1500;
         var heldAssets = [];
+        // One file failing on one page is one fault, however many elements on
+        // the page were asking for it. The first screen is in the markup and
+        // the app renders the same wordmark again on mount, so a file the
+        // document cannot fetch is lost by two elements in the same second,
+        // and a grid built from one photograph loses it once per frame. Filed
+        // per element, that reads as several faults and carries no more
+        // information than the first of them.
+        var filed = {};
         function flushHeldAssets() {
           var pending = heldAssets.splice(0, heldAssets.length);
-          for (var i = 0; i < pending.length; i += 1) report('resource', pending[i]);
+          for (var i = 0; i < pending.length; i += 1) {
+            if (filed[pending[i]]) {
+              hold('resource', pending[i] + ' (already filed on this page)');
+              continue;
+            }
+            filed[pending[i]] = true;
+            report('resource', pending[i]);
+          }
         }
         window.addEventListener('impressiva:build-refresh', function () {
           heldAssets.length = 0;
@@ -488,6 +503,33 @@
           for (var i = 0; i < sources.length; i += 1) sources[i].remove();
           window.dispatchEvent(new Event('impressiva:no-avif'));
         }
+        function isAvif(url) {
+          return /\.avif(\?|$)/.test(String(url || ''));
+        }
+        // WHAT IS FILED IS THE OUTCOME, NOT EACH ASK. A photograph that does
+        // not arrive on the first ask costs the reader nothing as long as it
+        // arrives, and the site has two answers of its own before anybody
+        // needs to hear about it: the AVIF comes off the table and the WebP
+        // beside it is asked for in the same frame, and an ask that goes
+        // missing is made again on a ladder. Filed ask by ask, one photograph
+        // on one page arrives as four faults against four addresses, three of
+        // which are something the recovery made up - and the one thing none of
+        // them says is whether the reader ever saw the picture.
+        //
+        // So an AVIF that fails is held. The document answers it itself, in
+        // the same frame and without spending a rung, by dropping the format
+        // for the rest of the visit and choosing the WebP under the same stem;
+        // nothing about the site is wrong for a reader whose decoder or proxy
+        // refuses the format, and the file keeps answering for everybody else.
+        // What is worth filing is the WebP behind it failing too, and that
+        // still files. An element already recovering is held for the same
+        // reason: its first failure filed this fault, and Picture says once,
+        // through the console, if the photograph never comes.
+        function heldRatherThanFiled(target, url) {
+          if (isAvif(url)) return ' (the format is off the table for this visit)';
+          if (target.dataset && target.dataset.asking !== undefined) return ' (asking again)';
+          return '';
+        }
         // Capture phase, because element load failures fire error events that do not bubble.
         window.addEventListener(
           'error',
@@ -496,9 +538,13 @@
               if (event.target && event.target !== window && event.target.tagName) {
                 var url = failedUrl(event.target);
                 noAvif(event.target, url);
-                heldAssets.push(
-                  'Failed to load ' + event.target.tagName.toLowerCase() + ': ' + url,
-                );
+                var message = 'Failed to load ' + event.target.tagName.toLowerCase() + ': ' + url;
+                var why = heldRatherThanFiled(event.target, url);
+                if (why) {
+                  hold('resource', message + why);
+                  return;
+                }
+                heldAssets.push(message);
                 setTimeout(flushHeldAssets, HOLD_MS);
               } else {
                 if (isBenignBrowserWarning(event.message)) return;
