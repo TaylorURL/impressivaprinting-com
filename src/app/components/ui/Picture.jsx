@@ -253,7 +253,6 @@ export default function Picture({
     };
   }, [exhausted]);
 
-
   if (exhausted) {
     return (
       <div
