@@ -431,7 +431,36 @@
         // event on its way out, which drops them; anything still held when the
         // wait elapses was a real failure and goes.
         var HOLD_MS = 1500;
+        // A PHOTOGRAPH THAT ARRIVES LATE IS NOT A FAULT, SO THE FIRST FAILED
+        // ASK WAITS FOR THE ANSWER. An element that loses a request asks again
+        // on a ladder that runs ten seconds, and the reader sees the picture as
+        // long as any one of those asks lands - so the ask that failed says
+        // nothing on its own about whether anything here is wrong. Filed as it
+        // happens, one request lost in a bad second arrives as a fault against
+        // a page the reader saw whole, and the file it names is the wordmark
+        // almost every time: the wordmark is preloaded, stands in the pre-paint
+        // markup, and is drawn again by the header and the footer, so it is
+        // three elements asking for one file ahead of everything else on the
+        // page. That makes it the file most often in flight when a connection
+        // hiccups, and the only one asked for a second time mid-visit when AVIF
+        // comes off the table. Whichever of those elements is on its first ask
+        // files, and the recovery then brings the picture in behind the report.
+        //
+        // So an image failure is held for longer than the ladder takes and
+        // filed only if the file never arrives. What reaches the collector is
+        // then a photograph the reader did not get, which is the only version
+        // of this worth a ticket.
+        var RECOVERY_MS = 11000;
         var heldAssets = [];
+        // Every file an image on this page has loaded, whichever element asked
+        // for it and however many asks it took. A file that arrived answers
+        // every failure held against it.
+        var arrived = {};
+        // A file the ladder gave up on says so itself, through the console, and
+        // that report carries the asks and the time they covered as well as the
+        // name. It takes the place of the first failed ask rather than arriving
+        // beside it.
+        var outcome = {};
         // One file failing on one page is one fault, however many elements on
         // the page were asking for it. The first screen is in the markup and
         // the app renders the same wordmark again on mount, so a file the
@@ -440,23 +469,78 @@
         // per element, that reads as several faults and carries no more
         // information than the first of them.
         var filed = {};
-        function flushHeldAssets() {
+        function flushHeldAssets(leaving) {
           var pending = heldAssets.splice(0, heldAssets.length);
+          var now = Date.now();
           for (var i = 0; i < pending.length; i += 1) {
-            if (filed[pending[i]]) {
-              hold('resource', pending[i] + ' (already filed on this page)');
+            var entry = pending[i];
+            if (arrived[entry.url] || drawn(entry.url)) {
+              hold('resource', entry.message + ' (it arrived on a later ask)');
               continue;
             }
-            filed[pending[i]] = true;
-            report('resource', pending[i]);
+            if (outcome[entry.url]) {
+              hold('resource', entry.message + ' (the outcome of the asks is filed instead)');
+              continue;
+            }
+            if (entry.due > now) {
+              if (!leaving) {
+                heldAssets.push(entry);
+                continue;
+              }
+              // A reader who leaves takes the answer with them. The browser
+              // cancels whatever was still in flight as the page goes, which
+              // fails the request the recovery was in the middle of making, and
+              // a picture nobody waited for is not a picture the site could not
+              // serve. A chunk a build replaced is a fault whatever happens
+              // next, so that one still goes.
+              if (entry.img) {
+                hold('resource', entry.message + ' (the page was left while it was still being asked for)');
+                continue;
+              }
+            }
+            if (filed[entry.message]) {
+              hold('resource', entry.message + ' (already filed on this page)');
+              continue;
+            }
+            filed[entry.message] = true;
+            report('resource', entry.message);
           }
+        }
+        // An image that loads says its file arrived, and that is the answer the
+        // held failures above are waiting for.
+        window.addEventListener(
+          'load',
+          function (event) {
+            var target = event.target;
+            if (!target || target === window || target.tagName !== 'IMG') return;
+            var url = target.currentSrc || target.src || '';
+            if (url) arrived[url] = true;
+          },
+          true,
+        );
+        // The listener above is not enough on its own, and the reason is the
+        // reason these failures were invisible until now: an element the app
+        // builds is handed its `src` before it is put into the page, so the
+        // request starts while it is still detached and an event fired then has
+        // nowhere to propagate to. So the page is asked directly as well. An
+        // image drawing the file at flush time is the file having arrived, by
+        // the only measure that matters - the reader is looking at it.
+        function drawn(url) {
+          var images = document.querySelectorAll('img');
+          for (var i = 0; i < images.length; i += 1) {
+            var image = images[i];
+            if ((image.currentSrc || image.src) === url && image.naturalWidth > 0) return true;
+          }
+          return false;
         }
         window.addEventListener('impressiva:build-refresh', function () {
           heldAssets.length = 0;
         });
         // Leaving for any other reason ends the wait, so a page closed on a
         // real failure still reports it.
-        window.addEventListener('pagehide', flushHeldAssets);
+        window.addEventListener('pagehide', function () {
+          flushHeldAssets(true);
+        });
 
         // An image offered in several formats and widths carries the file it
         // actually asked for on currentSrc, and the one written into the markup
@@ -544,8 +628,17 @@
                   hold('resource', message + why);
                   return;
                 }
-                heldAssets.push(message);
-                setTimeout(flushHeldAssets, HOLD_MS);
+                var isImage = event.target.tagName === 'IMG';
+                var wait = isImage ? RECOVERY_MS : HOLD_MS;
+                heldAssets.push({
+                  message: message,
+                  url: url,
+                  img: isImage,
+                  due: Date.now() + wait,
+                });
+                setTimeout(function () {
+                  flushHeldAssets(false);
+                }, wait);
               } else {
                 if (isBenignBrowserWarning(event.message)) return;
                 report('uncaught', event.message, event.error && event.error.stack);
@@ -571,10 +664,14 @@
         // A library writing to these is addressing whoever maintains the site
         // rather than whoever is reading the page, so the message travels to the
         // Pi instead of to the visitor's console.
+        var LADDER_GAVE_UP = /^Failed to load img: (\S+) - still failing/;
         ['error', 'warn', 'trace'].forEach(function (level) {
           var original = console[level];
           console[level] = function () {
-            report('console', flatten(arguments, 0));
+            var message = flatten(arguments, 0);
+            var gaveUp = LADDER_GAVE_UP.exec(message);
+            if (gaveUp) outcome[gaveUp[1]] = true;
+            report('console', message);
             if (loud) original.apply(console, arguments);
           };
         });
