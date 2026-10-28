@@ -6,7 +6,7 @@ Website and customer portal for Impressiva Printing, a print shop in Pasadena.
 
 [impressivaprinting.com](https://www.impressivaprinting.com)
 
-<img src="https://img.shields.io/badge/version-2026.44.1-e5352b?style=for-the-badge" alt="Version 2026.44.1" />
+<img src="https://img.shields.io/badge/version-2026.44.2-e5352b?style=for-the-badge" alt="Version 2026.44.2" />
 
 The public side is the catalog and a filterable portfolio. Behind sign-in, customers start jobs, upload artwork, approve proofs and track orders. Staff run the same orders from an admin dashboard with a review queue, proofs, a customer list and internal notes.
 
