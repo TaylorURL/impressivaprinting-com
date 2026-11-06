@@ -66,7 +66,7 @@ const PAGE = `<!doctype html>
     <main>
       <h1>This site is temporarily unavailable</h1>
       <p>Please check back soon.</p>
-      <p class="owner">If this is your website, call TaylorURL at <a href="tel:+12818628687">(281) 862-8687</a>.</p>
+      <p class="owner">If this is your website, call TaylorURL at <a href="tel:+19363911956">(936) 391-1956</a>.</p>
     </main>
   </body>
 </html>
