@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import ClickSpark from '@components/motion/ClickSpark.jsx';
 import Layout from '@components/layout/Layout.jsx';
 import ProtectedRoute from '@components/routing/ProtectedRoute.jsx';
+import RouteErrorBoundary from '@components/routing/RouteErrorBoundary.jsx';
 import RouteFallback from '@components/routing/RouteFallback.jsx';
 import RouteHead from '@components/routing/RouteHead.jsx';
 import { ROUTES } from '@constants/routes.js';
@@ -48,59 +49,64 @@ export default function App() {
     <>
       <RouteHead />
       <ClickSpark />
-      <Suspense fallback={<RouteFallback />}>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path={ROUTES.home} element={<Home />} />
-            <Route path={ROUTES.products} element={<Products />} />
-            <Route path={ROUTES.work} element={<Work />} />
-            <Route path={ROUTES.about} element={<About />} />
-            <Route path={ROUTES.contact} element={<Contact />} />
-            <Route path={ROUTES.privacy} element={<Privacy />} />
-            <Route path={ROUTES.terms} element={<Terms />} />
-            <Route path={ROUTES.login} element={<Login />} />
-            <Route path={ROUTES.signup} element={<Signup />} />
-            <Route path={ROUTES.forgotPassword} element={<ForgotPassword />} />
-            <Route path={ROUTES.resetPassword} element={<ResetPassword />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
+      {/* A route is a chunk fetched on navigation, so a lost request is a
+          render error. The boundary is what the reader meets instead of the
+          empty document React leaves when nothing catches one. */}
+      <RouteErrorBoundary>
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path={ROUTES.home} element={<Home />} />
+              <Route path={ROUTES.products} element={<Products />} />
+              <Route path={ROUTES.work} element={<Work />} />
+              <Route path={ROUTES.about} element={<About />} />
+              <Route path={ROUTES.contact} element={<Contact />} />
+              <Route path={ROUTES.privacy} element={<Privacy />} />
+              <Route path={ROUTES.terms} element={<Terms />} />
+              <Route path={ROUTES.login} element={<Login />} />
+              <Route path={ROUTES.signup} element={<Signup />} />
+              <Route path={ROUTES.forgotPassword} element={<ForgotPassword />} />
+              <Route path={ROUTES.resetPassword} element={<ResetPassword />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
 
-          {/* /account carries no view of its own; it points at the portal. */}
-          <Route path={ROUTES.account} element={<Navigate to={ROUTES.portal} replace />} />
+            {/* /account carries no view of its own; it points at the portal. */}
+            <Route path={ROUTES.account} element={<Navigate to={ROUTES.portal} replace />} />
 
-          {/* The portal renders its own shell, so it sits beside the storefront
-              layout rather than inside it. */}
-          <Route
-            path={ROUTES.portal}
-            element={
-              <ProtectedRoute>
-                <PortalLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<PortalDashboard />} />
-            <Route path="orders" element={<PortalOrders />} />
-            <Route path="orders/new" element={<NewOrder />} />
-            <Route path="orders/:orderId" element={<PortalOrderDetail />} />
-            <Route path="profile" element={<PortalProfile />} />
-          </Route>
+            {/* The portal renders its own shell, so it sits beside the storefront
+                layout rather than inside it. */}
+            <Route
+              path={ROUTES.portal}
+              element={
+                <ProtectedRoute>
+                  <PortalLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<PortalDashboard />} />
+              <Route path="orders" element={<PortalOrders />} />
+              <Route path="orders/new" element={<NewOrder />} />
+              <Route path="orders/:orderId" element={<PortalOrderDetail />} />
+              <Route path="profile" element={<PortalProfile />} />
+            </Route>
 
-          <Route
-            path={ROUTES.admin}
-            element={
-              <ProtectedRoute adminOnly>
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<AdminDashboard />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="orders/:orderId" element={<AdminOrderDetail />} />
-            <Route path="customers" element={<AdminCustomers />} />
-            <Route path="customers/:customerId" element={<AdminCustomerDetail />} />
-          </Route>
-        </Routes>
-      </Suspense>
+            <Route
+              path={ROUTES.admin}
+              element={
+                <ProtectedRoute adminOnly>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="orders/:orderId" element={<AdminOrderDetail />} />
+              <Route path="customers" element={<AdminCustomers />} />
+              <Route path="customers/:customerId" element={<AdminCustomerDetail />} />
+            </Route>
+          </Routes>
+        </Suspense>
+      </RouteErrorBoundary>
     </>
   );
 }
